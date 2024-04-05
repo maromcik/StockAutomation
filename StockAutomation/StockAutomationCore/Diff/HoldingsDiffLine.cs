@@ -45,10 +45,10 @@ public readonly struct HoldingsDiffLine
         else
         {
             var changeValue = float.Abs(QuantityDiff) / Old.Quantity;
-            quantityChange = $" ({changeEmoji}{changeValue:P2})";
+            quantityChange = $" ({changeEmoji}{changeValue:0.00%})";
         }
 
-        return $"{CompanyName}, {Ticker}, {New.Quantity}{quantityChange}, {New.Weight:P2}";
+        return $"{CompanyName}, {Ticker}, {New.Quantity}{quantityChange}, {New.Weight:0.00%}";
     }
 
 }
