@@ -21,8 +21,14 @@ public class HoldingsDiff
     private static Dictionary<string, HoldingsDiffLine> CalculateDiff(IEnumerable<HoldingsSnapshotLine> oldHoldings,
         IEnumerable<HoldingsSnapshotLine> newHoldings)
     {
-        var oldd = oldHoldings.ToDictionary(hl => hl.Ticker);
-        var newd = newHoldings.ToDictionary(hl => hl.Ticker);
+        var oldd = oldHoldings.ToDictionary(
+            hl => hl.Ticker,
+            hl => new HoldingsSnapshotLine?(hl)
+        );
+        var newd = newHoldings.ToDictionary(
+            hl => hl.Ticker,
+            hl => new HoldingsSnapshotLine?(hl)
+        );
         var tickers = oldd.Keys.Union(newd.Keys);
         return tickers.ToDictionary(
             t => t,
@@ -30,10 +36,10 @@ public class HoldingsDiff
         );
     }
 
-    private static StringBuilder GetTextSection(string newLine, string title, List<string> lines)
+    private static StringBuilder? GetTextSection(string newLine, string title, List<string> lines)
     {
+        if (lines.Count == 0) return null;
         var result = new StringBuilder();
-        if (lines.Count == 0) return result;
         result.Append(title);
         result.Append(newLine);
         result.AppendJoin(newLine, lines);
@@ -60,16 +66,16 @@ public class HoldingsDiff
 
         if (newPositions.Count == 0 && increasedPositions.Count == 0 && reducedPositions.Count == 0)
         {
-            return $"No changes in the index";
+            return "No changes in the index";
         }
-        List<StringBuilder> sections =
+        List<StringBuilder?> sections =
         [
             GetTextSection(newLine, "New positions:", newPositions),
             GetTextSection(newLine, "Increased positions:", increasedPositions),
             GetTextSection(newLine, "Reduced positions:", reducedPositions)
         ];
         var result = new StringBuilder();
-        result.AppendJoin(newLine + newLine, sections);
+        result.AppendJoin(newLine + newLine, sections.Where(s => s != null));
         return result.ToString();
     }
 

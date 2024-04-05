@@ -1,6 +1,6 @@
 namespace StockAutomationCore.Diff;
 
-public class HoldingsDiffLine
+public readonly struct HoldingsDiffLine
 {
     public HoldingsSnapshotLine Old { get; }
     public HoldingsSnapshotLine New { get; }
@@ -20,12 +20,12 @@ public class HoldingsDiffLine
         else if (oldSnapshot.HasValue)
         {
             Old = oldSnapshot.Value;
-            New = HoldingsSnapshotLine.DefaultFrom(Old);
+            New = HoldingsSnapshotLine.DefaultFrom(oldSnapshot.Value);
         }
         else if (newSnapshot.HasValue)
         {
             New = newSnapshot.Value;
-            Old = HoldingsSnapshotLine.DefaultFrom(New);
+            Old = HoldingsSnapshotLine.DefaultFrom(newSnapshot.Value);
         }
         else
         {
@@ -36,8 +36,19 @@ public class HoldingsDiffLine
     public string GetFormattedString()
     {
         var changeEmoji = QuantityDiff > 0 ? "\ud83d\udd3a" : "\ud83d\udd3b";
-        var quantityChange = Old.Quantity == 0 ? "" : $"({changeEmoji}{QuantityDiff / Old.Quantity:P})";
-        return $"{CompanyName}, {Ticker}, {New.Quantity} , {New.Weight:P}";
+        string quantityChange;
+
+        if (Old.Quantity == 0)
+        {
+            quantityChange = "";
+        }
+        else
+        {
+            var changeValue = float.Abs(QuantityDiff) / Old.Quantity;
+            quantityChange = $" ({changeEmoji}{changeValue:P2})";
+        }
+
+        return $"{CompanyName}, {Ticker}, {New.Quantity}{quantityChange}, {New.Weight:P2}";
     }
 
 }
