@@ -11,40 +11,48 @@ public class Cli(IConfiguration configuration)
 
     public void CliLoop()
     {
+        Prompt.ThrowExceptionOnCancel = true;
         while (true)
         {
             var value = Prompt.Select<Operation>("Select command");
-
-            switch (value)
+            try
             {
-                case Operation.PrintFiles:
-                    PrintFileList();
-                    break;
-                case Operation.DeleteFiles:
-                    DeleteFiles();
-                    break;
-                case Operation.Download:
-                    break;
-                case Operation.Compare:
-                    Console.WriteLine("Call diff here");
-                    break;
-                case Operation.Send:
-                    SendEmail();
-                    break;
-                case Operation.AddSubscriber:
-                    AddSubscriber();
-                    break;
-                case Operation.PrintDir:
-                    Console.WriteLine(Dir);
-                    break;
-                case Operation.ChangeDir:
-                    Console.WriteLine(ChangePath() ? "Directory successfully changed" : "Invalid Path - Does not exist");
-                    break;
-                case Operation.Exit:
-                    return;
-                default:
-                    Console.WriteLine("Unknown command");
-                    break;
+                switch (value)
+                {
+                    case Operation.PrintFiles:
+                        PrintFileList();
+                        break;
+                    case Operation.DeleteFiles:
+                        DeleteFiles();
+                        break;
+                    case Operation.Download:
+                        break;
+                    case Operation.Compare:
+                        Console.WriteLine("Call diff here");
+                        break;
+                    case Operation.Send:
+                        SendEmail();
+                        break;
+                    case Operation.AddSubscriber:
+                        AddSubscriber();
+                        break;
+                    case Operation.PrintDir:
+                        Console.WriteLine(Dir);
+                        break;
+                    case Operation.ChangeDir:
+                        Console.WriteLine(ChangePath()
+                            ? "Directory successfully changed"
+                            : "Invalid Path - Does not exist");
+                        break;
+                    case Operation.Exit:
+                        return;
+                    default:
+                        Console.WriteLine("Unknown command");
+                        break;
+                }
+            }
+            catch (PromptCanceledException)
+            {
             }
         }
     }
