@@ -9,16 +9,16 @@ public readonly struct HoldingsSnapshotLine
     public int Quantity { get; }
     public float Weight { get; }
 
-    public static Result<HoldingsSnapshotLine, Error.Error> New(string companyName, string ticker, int quantity, float weight)
+    public static Result<HoldingsSnapshotLine, ErrorType> New(string companyName, string ticker, int quantity, float weight)
     {
         if (int.IsNegative(quantity))
         {
-            return Error.Error.EmptyString; // TODO: Create a new error type for negative quantity
+            return ErrorType.EmptyString; // TODO: Create a new error type for negative quantity
         }
 
         if (float.IsNegative(weight))
         {
-            return Error.Error.EmptyString; // TODO: Create a new error type for negative weight
+            return ErrorType.EmptyString; // TODO: Create a new error type for negative weight
         }
 
         return new HoldingsSnapshotLine(companyName, ticker, quantity, weight);

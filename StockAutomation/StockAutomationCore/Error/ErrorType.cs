@@ -1,6 +1,6 @@
 namespace StockAutomationCore.Error;
 
-public enum Error
+public enum ErrorType
 {
     EmptyString
 }

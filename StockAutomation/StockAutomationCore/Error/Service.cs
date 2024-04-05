@@ -2,13 +2,13 @@ namespace StockAutomationCore.Error;
 
 public class Service
 {
-    public Result<string, Error> GetString()
+    public Result<string, ErrorType> GetString()
     {
         var s = "null_string";
     
         if (s == null)
         {
-            return Error.EmptyString;
+            return ErrorType.EmptyString;
         }
 
         return s;
