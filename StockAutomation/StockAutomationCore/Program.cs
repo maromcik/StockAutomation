@@ -10,10 +10,11 @@ IConfigurationRoot configuration = builder.Build();
 
 
 //email sending
-var ninaSub = new Subscription { EmailAddress = "ninarybarova29@gmail.com"};
+var emailController = new EmailController();
+emailController.AddSubscriber("ninarybarova29@gmail.com");
 
 var diff = 42;
-var email = EmailController.SendEmail(configuration, [ninaSub.EmailAddress], $"<p> {diff} </p>");
+var email = emailController.SendEmail(configuration, $"<p> {diff} </p>");
 if (email)
 {
     Console.WriteLine("Emails were successfully sent.");

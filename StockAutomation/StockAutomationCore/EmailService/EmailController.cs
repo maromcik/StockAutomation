@@ -4,9 +4,29 @@ using System.Net.Mail;
 using Microsoft.Extensions.Configuration;
 
 
-public static class EmailController
+public class EmailController
 {
-    public static bool SendEmail(IConfiguration configuration, string[] recipients, string body)
+
+    public List<Subscription> Subscriptions = new List<Subscription>();
+    
+
+    public void AddSubscriber(string address)
+    {
+        var newSub = new Subscription { EmailAddress = address};
+        Subscriptions.Add(newSub);
+        Console.WriteLine("Added subscriber.");
+    }
+
+    public void RemoveSubscriber(string address)
+    {
+        var sub = Subscriptions.Where(s => s.EmailAddress == address).FirstOrDefault();
+        if (sub == null || !Subscriptions.Remove(sub))
+        {
+            Console.WriteLine("Cannot remove non-existing subscriber.");
+        }
+    }
+    
+    public bool SendEmail(IConfiguration configuration, string body)
     {
         var smtpConfig = configuration.GetSection("SMTP");
         var host = smtpConfig["Host"];
@@ -39,9 +59,9 @@ public static class EmailController
             IsBodyHtml = true,
         };
 
-        foreach (var recipient in recipients)
+        foreach (var subscription in Subscriptions)
         {
-            mailMessage.Bcc.Add(recipient);
+            mailMessage.Bcc.Add(subscription.EmailAddress);
         }
         
         try
@@ -57,7 +77,7 @@ public static class EmailController
     }
 
 
-    private static string CreateEmailBody(string diff)
+    private string CreateEmailBody(string diff)
     {
         var body = $@"
                     <html>
