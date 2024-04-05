@@ -7,7 +7,7 @@ namespace StockAutomationCore.Cli;
 public class Cli(IConfiguration configuration)
 {
     private static string Dir { get; set; } = Directory.GetCurrentDirectory();
-    private readonly EmailController _emailController = new EmailController();
+    private readonly EmailController _emailController = new();
 
     public void CliLoop()
     {
@@ -42,7 +42,7 @@ public class Cli(IConfiguration configuration)
                     case Operation.ChangeDir:
                         Console.WriteLine(ChangePath()
                             ? "Directory successfully changed"
-                            : "Invalid Path - Does not exist");
+                            : "Directory does not exist");
                         break;
                     case Operation.Exit:
                         return;
