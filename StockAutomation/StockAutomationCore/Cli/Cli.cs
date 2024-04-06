@@ -7,7 +7,6 @@ namespace StockAutomationCore.Cli;
 
 public class Cli
 {
-    private static string Dir { get; set; } = Directory.GetCurrentDirectory();
     private readonly EmailController _emailController = new();
 
     private readonly IConfiguration _configuration;
@@ -89,7 +88,7 @@ public class Cli
                 switch (value)
                 {
                     case WorkingDirOperation.Print:
-                        Console.WriteLine(Dir);
+                        Console.WriteLine(FileUtils.Dir);
                         break;
                     case WorkingDirOperation.Change:
                         Console.WriteLine(ChangePath()
@@ -169,14 +168,14 @@ public class Cli
     {
         var path = Prompt.Input<string>("Enter new working directory");
         if (!Directory.Exists(path)) return false;
-        Dir = path;
+        FileUtils.Dir = path;
         return true;
     }
 
 
     private static void PrintFileList()
     {
-        FileUtils.GetFileList(Dir).MatchVoid(
+        FileUtils.GetFileList().MatchVoid(
             files =>
             {
                 for (var i = 0; i < files.Length; i++)
@@ -190,7 +189,7 @@ public class Cli
 
     private static void DeleteFiles()
     {
-        var filesRes = FileUtils.GetFileList(Dir);
+        var filesRes = FileUtils.GetFileList();
         if (!filesRes.IsOk)
         {
             Console.WriteLine($"Error occured: {filesRes.Error}");

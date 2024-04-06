@@ -5,10 +5,11 @@ namespace StockAutomationCore.Files;
 public static class FileUtils
 {
     public static string SearchPattern { get; set; } = "*.csv";
+    public static string Dir { get; set; } = Directory.GetCurrentDirectory();
     
-    public static Result<FileInfo[], ErrorType> GetFileList(string path)
+    public static Result<FileInfo[], ErrorType> GetFileList()
     {
-        var d = new DirectoryInfo(path);
+        var d = new DirectoryInfo(Dir);
         try
         {
             var files = d.GetFiles(SearchPattern);
