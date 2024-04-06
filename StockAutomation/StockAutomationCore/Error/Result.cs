@@ -34,4 +34,18 @@ public readonly struct Result<T, E> {
         Func<T, R> success,
         Func<E, R> failure) =>
         _success ? success(Value) : failure(Error);
+    
+    public void MatchVoid(
+        Action<T> success,
+        Action<E> failure)
+    {
+        if (_success)
+        {
+            success(Value);
+        }
+        else
+        {
+            failure(Error);
+        }
+    }
 }
