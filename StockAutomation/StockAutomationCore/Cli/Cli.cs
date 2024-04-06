@@ -14,40 +14,47 @@ public class Cli(IConfiguration configuration)
         Prompt.ThrowExceptionOnCancel = true;
         while (true)
         {
-            var value = Prompt.Select<Operation>("Select command");
             try
             {
-                switch (value)
+                var value = Prompt.Select<Operation>("Select command");
+                try
                 {
-                    case Operation.File:
-                        FileOperations();
-                        break;
-                    case Operation.WorkingDir:
-                        WorkingDirOperations();
-                        break;
-                    case Operation.Download:
-                        Console.WriteLine("Call downloader here");
-                        // TODO: Call download
-                        break;
-                    case Operation.Compare:
-                        Console.WriteLine("Call diff here");
-                        // TODO: Call diff
-                        break;
-                    case Operation.Send:
-                        SendEmail();
-                        break;
-                    case Operation.Subscriber:
-                        SubscriberOperations();
-                        break;
-                    case Operation.Exit:
-                        return;
-                    default:
-                        Console.WriteLine("Unknown command");
-                        break;
+                    switch (value)
+                    {
+                        case Operation.File:
+                            FileOperations();
+                            break;
+                        case Operation.WorkingDir:
+                            WorkingDirOperations();
+                            break;
+                        case Operation.Download:
+                            Console.WriteLine("Call downloader here");
+                            // TODO: Call download
+                            break;
+                        case Operation.Compare:
+                            Console.WriteLine("Call diff here");
+                            // TODO: Call diff
+                            break;
+                        case Operation.Send:
+                            SendEmail();
+                            break;
+                        case Operation.Subscriber:
+                            SubscriberOperations();
+                            break;
+                        case Operation.Exit:
+                            return;
+                        default:
+                            Console.WriteLine("Unknown command");
+                            break;
+                    }
+                }
+                catch (PromptCanceledException)
+                {
                 }
             }
             catch (PromptCanceledException)
             {
+                return;
             }
         }
     }
