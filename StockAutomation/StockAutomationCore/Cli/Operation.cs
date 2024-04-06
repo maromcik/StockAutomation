@@ -10,8 +10,8 @@ public enum Operation
     Compare,
     [Display(Name = "send differences")]
     Send,
-    [Display(Name = "directory operations")]
-    WorkingDir,
+    [Display(Name = "snapshot directory operations")]
+    SnapshotDir,
     [Display(Name = "file operations")]
     File,
     [Display(Name = "subscriber operations")]
@@ -29,11 +29,11 @@ public enum FileOperation
 }
 
 
-public enum WorkingDirOperation
+public enum SnapshotDirOperation
 {
-    [Display(Name = "print working directory")]
+    [Display(Name = "print snapshot directory")]
     Print,
-    [Display(Name = "change working directory")]
+    [Display(Name = "change snapshot directory")]
     Change,
 }
 

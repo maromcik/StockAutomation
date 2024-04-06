@@ -17,7 +17,7 @@ public class DownloadController(string downloadUrl)
         }
 
         using var stream = _client.GetStreamAsync(DownloadUrl);
-        using var fs = new FileStream(Path.Join(FileUtils.Dir, filename), FileMode.CreateNew);
+        using var fs = new FileStream(Path.Join(FileUtils.SnapshotDir, filename), FileMode.CreateNew);
         stream.Result.CopyTo(fs);
     }
 

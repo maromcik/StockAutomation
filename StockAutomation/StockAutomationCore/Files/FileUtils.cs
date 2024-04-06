@@ -5,13 +5,13 @@ namespace StockAutomationCore.Files;
 public static class FileUtils
 {
     public static string SearchPattern { get; set; } = "*.csv";
-    public static string Dir { get; set; } = Directory.GetCurrentDirectory() + "/snapshots";
+    public static string SnapshotDir { get; set; } = Directory.GetCurrentDirectory() + "/snapshots";
 
     public static bool CreateSnapshotDir()
     {
         try
         {
-            Directory.CreateDirectory(Dir);
+            Directory.CreateDirectory(SnapshotDir);
             return true;
         }
         catch (Exception)
@@ -19,10 +19,20 @@ public static class FileUtils
             return false;
         }
     }
+
+    public static bool ChangeSnapshotDir(string path)
+    {
+        if (!Directory.Exists(path))
+        {
+            return false;
+        }
+        SnapshotDir = path;
+        return true;
+    }
     
     public static Result<FileInfo[], ErrorType> GetFileList()
     {
-        var d = new DirectoryInfo(Dir);
+        var d = new DirectoryInfo(SnapshotDir);
         try
         {
             var files = d.GetFiles(SearchPattern);

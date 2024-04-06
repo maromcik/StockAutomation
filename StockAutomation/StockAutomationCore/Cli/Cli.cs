@@ -49,8 +49,8 @@ public class Cli
                 case Operation.File:
                     FileOperations();
                     break;
-                case Operation.WorkingDir:
-                    WorkingDirOperations();
+                case Operation.SnapshotDir:
+                    SnapshotDirOperations();
                     break;
                 case Operation.Download:
                     Console.WriteLine("Call downloader here");
@@ -78,22 +78,22 @@ public class Cli
         }
     }
 
-    private static void WorkingDirOperations()
+    private static void SnapshotDirOperations()
     {
         while (true)
         {
             try
             {
-                var value = Prompt.Select<WorkingDirOperation>("Select directory command or return with CTRL + c");
+                var value = Prompt.Select<SnapshotDirOperation>("Select directory command or return with CTRL + c");
                 switch (value)
                 {
-                    case WorkingDirOperation.Print:
-                        Console.WriteLine(FileUtils.Dir);
+                    case SnapshotDirOperation.Print:
+                        Console.WriteLine(FileUtils.SnapshotDir);
                         break;
-                    case WorkingDirOperation.Change:
+                    case SnapshotDirOperation.Change:
                         Console.WriteLine(ChangePath()
-                            ? "Directory successfully changed"
-                            : "Directory does not exist");
+                            ? "Snapshot directory successfully changed"
+                            : "Snapshot directory does not exist");
                         break;
                     default:
                         Console.WriteLine("Unknown command");
@@ -166,10 +166,8 @@ public class Cli
 
     private static bool ChangePath()
     {
-        var path = Prompt.Input<string>("Enter new working directory");
-        if (!Directory.Exists(path)) return false;
-        FileUtils.Dir = path;
-        return true;
+        var path = Prompt.Input<string>("Enter new snapshot directory");
+        return FileUtils.ChangeSnapshotDir(path);
     }
 
 
@@ -180,7 +178,7 @@ public class Cli
             {
                 for (var i = 0; i < files.Length; i++)
                 {
-                    Console.WriteLine($"{i + 1}   {files[i].Name}");
+                    Console.WriteLine($"{i + 1}   {files[i].Name}   {files[i].LastWriteTime}");
                 }
             },
             e => Console.WriteLine($"Error occured: {e}")
