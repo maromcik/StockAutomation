@@ -78,9 +78,9 @@ public class Cli
     {
         while (true)
         {
-            var value = Prompt.Select<WorkingDirOperation>("Select directory command or return with CTRL + c");
             try
             {
+                var value = Prompt.Select<WorkingDirOperation>("Select directory command or return with CTRL + c");
                 switch (value)
                 {
                     case WorkingDirOperation.Print:
@@ -105,11 +105,11 @@ public class Cli
 
     private static void FileOperations()
     {
-        var value = Prompt.Select<FileOperation>("Select file command or return with CTRL + c");
         while (true)
         {
             try
             {
+                var value = Prompt.Select<FileOperation>("Select file command or return with CTRL + c");   
                 switch (value)
                 {
                     case FileOperation.Print:
