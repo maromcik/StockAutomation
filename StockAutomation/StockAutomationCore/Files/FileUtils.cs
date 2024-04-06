@@ -5,7 +5,20 @@ namespace StockAutomationCore.Files;
 public static class FileUtils
 {
     public static string SearchPattern { get; set; } = "*.csv";
-    public static string Dir { get; set; } = Directory.GetCurrentDirectory();
+    public static string Dir { get; set; } = Directory.GetCurrentDirectory() + "/snapshots";
+
+    public static bool CreateSnapshotDir()
+    {
+        try
+        {
+            Directory.CreateDirectory(Dir);
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
     
     public static Result<FileInfo[], ErrorType> GetFileList()
     {
