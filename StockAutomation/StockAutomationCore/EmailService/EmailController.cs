@@ -23,7 +23,7 @@ public class EmailController
         }
     }
     
-    public bool SendEmail(IConfiguration configuration, string body)
+    public void SendEmail(IConfiguration configuration, string body)
     {
         var smtpConfig = configuration.GetSection("SMTP");
         var host = smtpConfig["Host"];
@@ -61,16 +61,7 @@ public class EmailController
             mailMessage.Bcc.Add(subscription.EmailAddress);
         }
         
-        try
-        {
-            smtpClient.Send(mailMessage);
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Failed to send email. Error: {ex.Message}");
-            return false;
-        }
+        smtpClient.Send(mailMessage);
     }
 
 

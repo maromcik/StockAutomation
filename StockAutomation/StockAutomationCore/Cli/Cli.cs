@@ -239,7 +239,15 @@ public class Cli
     private void SendEmail()
     {
         var diff = 42;
-        var email = _emailController.SendEmail(_configuration, $"<p> {diff} </p>");
-        Console.WriteLine(email ? "Emails were successfully sent." : "An error occured during sending emails.");
+        try
+        {
+            _emailController.SendEmail(_configuration, $"<p> {diff} </p>");
+            Console.WriteLine("Emails were successfully sent");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to send email. Error: {ex.Message}");
+        }
+        
     }
 }
