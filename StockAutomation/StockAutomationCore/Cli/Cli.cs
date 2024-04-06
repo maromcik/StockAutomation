@@ -4,10 +4,19 @@ using StockAutomationCore.EmailService;
 
 namespace StockAutomationCore.Cli;
 
-public class Cli(IConfiguration configuration)
+public class Cli
 {
     private static string Dir { get; set; } = Directory.GetCurrentDirectory();
     private readonly EmailController _emailController = new();
+
+    private readonly IConfiguration _configuration;
+
+    public Cli(IConfiguration configuration)
+    {
+        _configuration = configuration;
+        Prompt.ThrowExceptionOnCancel = true;
+    }
+    
 
     public void CliLoop()
     {
@@ -202,6 +211,7 @@ public class Cli(IConfiguration configuration)
     {
         var email = Prompt.Input<string>("Enter email address of the new subscriber");
         _emailController.AddSubscriber(email);
+        Console.WriteLine("Subscriber added");
     }
 
     private void PrintSubscriberList()
@@ -229,7 +239,7 @@ public class Cli(IConfiguration configuration)
     private void SendEmail()
     {
         var diff = 42;
-        var email = _emailController.SendEmail(configuration, $"<p> {diff} </p>");
+        var email = _emailController.SendEmail(_configuration, $"<p> {diff} </p>");
         Console.WriteLine(email ? "Emails were successfully sent." : "An error occured during sending emails.");
     }
 }

@@ -13,16 +13,10 @@ public class EmailController
     {
         var newSub = new Subscription { EmailAddress = address};
         Subscriptions.Add(newSub);
-        Console.WriteLine("Added subscriber.");
     }
 
     public void RemoveSubscribers(IEnumerable<Subscription> subscriptions)
     {
-        // var sub = Subscriptions.FirstOrDefault(s => s.EmailAddress == address);
-        // if (sub == null || !Subscriptions.Remove(sub))
-        // {
-        //     Console.WriteLine("Cannot remove non-existing subscriber.");
-        // }
         foreach (var sub in subscriptions)
         {
             Subscriptions.Remove(sub);
