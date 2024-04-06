@@ -238,10 +238,10 @@ public class Cli
 
     private void SendEmail()
     {
-        var diff = 42;
+        var diff = "42";
         try
         {
-            _emailController.SendEmail(_configuration, $"<p> {diff} </p>");
+            _emailController.SendEmail(_configuration, diff);
             Console.WriteLine("Emails were successfully sent");
         }
         catch (Exception ex)

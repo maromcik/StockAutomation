@@ -12,19 +12,19 @@ public static class FileUtils
             var files = d.GetFiles("*.json");
             return files.OrderByDescending(f => f.LastWriteTime).ToArray();
         }
-        catch (DirectoryNotFoundException e)
+        catch (DirectoryNotFoundException)
         {
             return ErrorType.DoesNotExist;
         }
-        catch (System.Security.SecurityException e)
+        catch (System.Security.SecurityException)
         {
             return ErrorType.PermissionError;
         }
-        catch (System.UnauthorizedAccessException e)
+        catch (UnauthorizedAccessException)
         {
             return ErrorType.Unauthorized;
         }
-        catch (IOException e)
+        catch (IOException)
         {
             return ErrorType.IoError;
         }
@@ -39,15 +39,15 @@ public static class FileUtils
             {
                 file.Delete();
             }
-            catch (System.Security.SecurityException e)
+            catch (System.Security.SecurityException)
             {
                 return ErrorType.PermissionError;
             }
-            catch (System.UnauthorizedAccessException e)
+            catch (UnauthorizedAccessException)
             {
                 return ErrorType.Unauthorized;
             }
-            catch (IOException e)
+            catch (IOException)
             {
                 return ErrorType.IoError;
             }

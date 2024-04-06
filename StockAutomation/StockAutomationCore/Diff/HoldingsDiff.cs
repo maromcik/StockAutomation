@@ -4,7 +4,7 @@ namespace StockAutomationCore.Diff;
 
 public class HoldingsDiff
 {
-    private Dictionary<string, HoldingsDiffLine> _holdingsDiffLines;
+    private readonly Dictionary<string, HoldingsDiffLine> _holdingsDiffLines;
 
     public HoldingsDiff(IEnumerable<HoldingsSnapshotLine> oldHoldings, IEnumerable<HoldingsSnapshotLine> newHoldings)
     {

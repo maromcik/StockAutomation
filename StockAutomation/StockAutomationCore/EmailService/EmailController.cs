@@ -65,7 +65,7 @@ public class EmailController
     }
 
 
-    private string CreateEmailBody(string diff)
+    private static string CreateEmailBody(string diff)
     {
         var body = $@"
                     <html>
