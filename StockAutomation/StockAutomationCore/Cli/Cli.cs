@@ -16,41 +16,7 @@ public class Cli(IConfiguration configuration)
         {
             try
             {
-                var value = Prompt.Select<Operation>("Select command");
-                try
-                {
-                    switch (value)
-                    {
-                        case Operation.File:
-                            FileOperations();
-                            break;
-                        case Operation.WorkingDir:
-                            WorkingDirOperations();
-                            break;
-                        case Operation.Download:
-                            Console.WriteLine("Call downloader here");
-                            // TODO: Call download
-                            break;
-                        case Operation.Compare:
-                            Console.WriteLine("Call diff here");
-                            // TODO: Call diff
-                            break;
-                        case Operation.Send:
-                            SendEmail();
-                            break;
-                        case Operation.Subscriber:
-                            SubscriberOperations();
-                            break;
-                        case Operation.Exit:
-                            return;
-                        default:
-                            Console.WriteLine("Unknown command");
-                            break;
-                    }
-                }
-                catch (PromptCanceledException)
-                {
-                }
+                CliSelector();
             }
             catch (PromptCanceledException)
             {
@@ -59,6 +25,44 @@ public class Cli(IConfiguration configuration)
         }
     }
 
+    private void CliSelector()
+    {
+        var value = Prompt.Select<Operation>("Select command");
+        try
+        {
+            switch (value)
+            {
+                case Operation.File:
+                    FileOperations();
+                    break;
+                case Operation.WorkingDir:
+                    WorkingDirOperations();
+                    break;
+                case Operation.Download:
+                    Console.WriteLine("Call downloader here");
+                    // TODO: Call download
+                    break;
+                case Operation.Compare:
+                    Console.WriteLine("Call diff here");
+                    // TODO: Call diff
+                    break;
+                case Operation.Send:
+                    SendEmail();
+                    break;
+                case Operation.Subscriber:
+                    SubscriberOperations();
+                    break;
+                case Operation.Exit:
+                    return;
+                default:
+                    Console.WriteLine("Unknown command");
+                    break;
+            }
+        }
+        catch (PromptCanceledException)
+        {
+        }
+    }
 
     private static void WorkingDirOperations()
     {
