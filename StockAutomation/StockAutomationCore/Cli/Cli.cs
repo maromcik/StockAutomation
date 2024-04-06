@@ -32,6 +32,11 @@ public class Cli
             {
                 return;
             }
+            catch (SystemException)
+            {
+                Console.WriteLine($"An exception occured, make sure your terminal windows is large enough!");
+                return;
+            }
         }
     }
 
