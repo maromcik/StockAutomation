@@ -6,8 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 public class EmailController
 {
-
-    public List<Subscription> Subscriptions = new List<Subscription>();
+    public List<Subscription> Subscriptions { get; set; } = [];
     
 
     public void AddSubscriber(string address)
@@ -19,7 +18,7 @@ public class EmailController
 
     public void RemoveSubscriber(string address)
     {
-        var sub = Subscriptions.Where(s => s.EmailAddress == address).FirstOrDefault();
+        var sub = Subscriptions.FirstOrDefault(s => s.EmailAddress == address);
         if (sub == null || !Subscriptions.Remove(sub))
         {
             Console.WriteLine("Cannot remove non-existing subscriber.");
