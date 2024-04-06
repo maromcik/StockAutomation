@@ -16,12 +16,16 @@ public class EmailController
         Console.WriteLine("Added subscriber.");
     }
 
-    public void RemoveSubscriber(string address)
+    public void RemoveSubscribers(IEnumerable<Subscription> subscriptions)
     {
-        var sub = Subscriptions.FirstOrDefault(s => s.EmailAddress == address);
-        if (sub == null || !Subscriptions.Remove(sub))
+        // var sub = Subscriptions.FirstOrDefault(s => s.EmailAddress == address);
+        // if (sub == null || !Subscriptions.Remove(sub))
+        // {
+        //     Console.WriteLine("Cannot remove non-existing subscriber.");
+        // }
+        foreach (var sub in subscriptions)
         {
-            Console.WriteLine("Cannot remove non-existing subscriber.");
+            Subscriptions.Remove(sub);
         }
     }
     
