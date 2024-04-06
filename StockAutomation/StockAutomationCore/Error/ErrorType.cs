@@ -5,5 +5,7 @@ public enum ErrorType
     EmptyString,
     PermissionError,
     IsDirectory,
-    IoError
+    IoError,
+    DoesNotExist,
+    Unauthorized,
 }
