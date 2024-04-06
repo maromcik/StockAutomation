@@ -1,27 +1,29 @@
+using StockAutomationCore.Files;
+
 namespace StockAutomationCore.Download;
 
 public class DownloadController(string downloadUrl)
 {
     public string DownloadUrl { get; set; } = downloadUrl;
 
-    private readonly HttpClient client = new();
+    private readonly HttpClient _client = new();
 
-    public void DownloadToFile(string directoryName = "", string filename = "")
+    public void DownloadToFile(string? filename)
     {
-        if (filename == "")
+        if (string.IsNullOrEmpty(filename))
         {
-            string timestamp = DateTime.Now.ToString("s");
+            var timestamp = DateTime.Now.ToString("s");
             filename = $"snapshot-{timestamp}.csv";
         }
 
-        using var stream = client.GetStreamAsync(DownloadUrl);
-        using var fs = new FileStream(Path.Join(directoryName, filename), FileMode.CreateNew);
+        using var stream = _client.GetStreamAsync(DownloadUrl);
+        using var fs = new FileStream(Path.Join(FileUtils.Dir, filename), FileMode.CreateNew);
         stream.Result.CopyTo(fs);
     }
 
     public byte[] DownloadToBytes()
     {
-        using var stream = client.GetStreamAsync(DownloadUrl);
+        using var stream = _client.GetStreamAsync(DownloadUrl);
         using var fileBytes = new MemoryStream((int) stream.Result.Length);
         stream.Result.CopyTo(fileBytes);
 
