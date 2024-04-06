@@ -4,8 +4,7 @@
         <OutputType>Exe</OutputType>
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
-        <!-- we do not want this, right? -->
-        <!-- <Nullable>enable</Nullable>  -->
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
 </Project>
