@@ -1,15 +1,17 @@
 using StockAutomationCore.Error;
 
-namespace StockAutomationCore.Cli;
+namespace StockAutomationCore.Files;
 
 public static class FileUtils
 {
+    public static string SearchPattern { get; set; } = "*.csv";
+    
     public static Result<FileInfo[], ErrorType> GetFileList(string path)
     {
         var d = new DirectoryInfo(path);
         try
         {
-            var files = d.GetFiles("*.json");
+            var files = d.GetFiles(SearchPattern);
             return files.OrderByDescending(f => f.LastWriteTime).ToArray();
         }
         catch (DirectoryNotFoundException)

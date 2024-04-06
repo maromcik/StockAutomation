@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Sharprompt;
 using StockAutomationCore.EmailService;
+using StockAutomationCore.Files;
 
 namespace StockAutomationCore.Cli;
 
