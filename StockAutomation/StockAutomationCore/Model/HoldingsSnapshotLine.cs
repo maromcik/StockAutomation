@@ -1,6 +1,6 @@
 using StockAutomationCore.Error;
 
-namespace StockAutomationCore;
+namespace StockAutomationCore.Model;
 
 public readonly struct HoldingsSnapshotLine
 {

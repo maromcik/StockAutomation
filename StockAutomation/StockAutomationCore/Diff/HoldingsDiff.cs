@@ -1,4 +1,6 @@
 using System.Text;
+using StockAutomationCore.Model;
+using StockAutomationCore.Parser;
 
 namespace StockAutomationCore.Diff;
 
@@ -6,7 +8,7 @@ public class HoldingsDiff
 {
     private readonly Dictionary<string, HoldingsDiffLine> _holdingsDiffLines;
 
-    public HoldingsDiff(IEnumerable<HoldingsSnapshotLine> oldHoldings, IEnumerable<HoldingsSnapshotLine> newHoldings)
+    public HoldingsDiff(IEnumerable<HoldingSnapshotLine> oldHoldings, IEnumerable<HoldingSnapshotLine> newHoldings)
     {
         _holdingsDiffLines = CalculateDiff(oldHoldings, newHoldings);
     }
@@ -15,22 +17,22 @@ public class HoldingsDiff
     {
         ArgumentNullException.ThrowIfNull(holdingsDiffs);
 
-        _holdingsDiffLines = holdingsDiffs.ToDictionary(h => h.Ticker);
+        _holdingsDiffLines = holdingsDiffs.ToDictionary(h => h.Cusip);
     }
 
-    private static Dictionary<string, HoldingsDiffLine> CalculateDiff(IEnumerable<HoldingsSnapshotLine> oldHoldings,
-        IEnumerable<HoldingsSnapshotLine> newHoldings)
+    private static Dictionary<string, HoldingsDiffLine> CalculateDiff(IEnumerable<HoldingSnapshotLine> oldHoldings,
+        IEnumerable<HoldingSnapshotLine> newHoldings)
     {
         var oldd = oldHoldings.ToDictionary(
-            hl => hl.Ticker,
-            hl => new HoldingsSnapshotLine?(hl)
+            hl => hl.Cusip,
+            hl => new HoldingSnapshotLine?(hl)
         );
         var newd = newHoldings.ToDictionary(
-            hl => hl.Ticker,
-            hl => new HoldingsSnapshotLine?(hl)
+            hl => hl.Cusip,
+            hl => new HoldingSnapshotLine?(hl)
         );
-        var tickers = oldd.Keys.Union(newd.Keys);
-        return tickers.ToDictionary(
+        var cusips = oldd.Keys.Union(newd.Keys);
+        return cusips.ToDictionary(
             t => t,
             t => new HoldingsDiffLine(oldd.GetValueOrDefault(t), newd.GetValueOrDefault(t))
         );
@@ -49,12 +51,12 @@ public class HoldingsDiff
     public string ToText(string newLine = "\r\n")
     {
         var newPositions = _holdingsDiffLines.Values
-            .Where(hdl => hdl.Old.Quantity == 0)
+            .Where(hdl => hdl.Old.Shares == 0)
             .OrderBy(hdl => hdl.CompanyName)
             .Select(hdl => hdl.GetFormattedString())
             .ToList();
         var increasedPositions = _holdingsDiffLines.Values
-            .Where(hdl => hdl.Old.Quantity > 0 && hdl.QuantityDiff > 0)
+            .Where(hdl => hdl.Old.Shares > 0 && hdl.QuantityDiff > 0)
             .OrderBy(hdl => hdl.CompanyName)
             .Select(hdl => hdl.GetFormattedString())
             .ToList();

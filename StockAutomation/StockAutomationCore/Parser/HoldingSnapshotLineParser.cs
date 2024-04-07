@@ -46,13 +46,14 @@ public static partial class HoldingSnapshotLineParser
     [GeneratedRegex(@"^(\d{2}/\d{2}/\d{4}),([^,]+),""([^""]+)"",([^,]*),([^,]+),""([^""]+)"",""\$([^""]+)"",([^%]+)%$")]
     private static partial Regex TheLineRegex();
 
-    // demonstration; // todo remove
-    public static void ParseLines(string filepath)
-        => File.ReadLines(filepath)
-        .Skip(1) /* ingnore header */
-        .SkipLast(1) /* ignore whatever that is */
-        .Select(Parse)
-        .ToList() /* bro pls */
-        .ForEach(Console.WriteLine);
+    public static IEnumerable<HoldingSnapshotLine> ParseLines(string filepath)
+    {
+        return File.ReadLines(filepath)
+            .Skip(1) /* ingnore header */
+            .SkipLast(1) /* ignore whatever that is */
+            .Select(Parse)
+            .Where(hsl => hsl.HasValue) // TODO Don't just ignore invalid lines
+            .Select(hsl => hsl!.Value);
+    }
 }
 

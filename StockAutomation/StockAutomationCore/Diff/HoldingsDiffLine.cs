@@ -1,16 +1,21 @@
+using System.Numerics;
+using StockAutomationCore.Model;
+
 namespace StockAutomationCore.Diff;
 
 public readonly struct HoldingsDiffLine
 {
-    public HoldingsSnapshotLine Old { get; }
-    public HoldingsSnapshotLine New { get; }
+    public HoldingSnapshotLine Old { get; }
+    public HoldingSnapshotLine New { get; }
 
     public string CompanyName => New.CompanyName;
     public string Ticker => New.Ticker;
+    public string Cusip => New.Cusip;
 
-    public int QuantityDiff => New.Quantity - Old.Quantity;
 
-    public HoldingsDiffLine(HoldingsSnapshotLine? oldSnapshot, HoldingsSnapshotLine? newSnapshot)
+    public BigInteger QuantityDiff => New.Shares - Old.Shares;
+
+    public HoldingsDiffLine(HoldingSnapshotLine? oldSnapshot, HoldingSnapshotLine? newSnapshot)
     {
         if (oldSnapshot.HasValue && newSnapshot.HasValue)
         {
@@ -20,12 +25,12 @@ public readonly struct HoldingsDiffLine
         else if (oldSnapshot.HasValue)
         {
             Old = oldSnapshot.Value;
-            New = HoldingsSnapshotLine.DefaultFrom(oldSnapshot.Value);
+            New = HoldingSnapshotLine.CreateDefaultFrom(oldSnapshot.Value);
         }
         else if (newSnapshot.HasValue)
         {
             New = newSnapshot.Value;
-            Old = HoldingsSnapshotLine.DefaultFrom(newSnapshot.Value);
+            Old = HoldingSnapshotLine.CreateDefaultFrom(newSnapshot.Value);
         }
         else
         {
@@ -38,17 +43,17 @@ public readonly struct HoldingsDiffLine
         var changeEmoji = QuantityDiff > 0 ? "\ud83d\udd3a" : "\ud83d\udd3b";
         string quantityChange;
 
-        if (Old.Quantity == 0)
+        if (Old.Shares == 0)
         {
             quantityChange = "";
         }
         else
         {
-            var changeValue = float.Abs(QuantityDiff) / Old.Quantity;
+            var changeValue = BigInteger.Abs(QuantityDiff) / Old.Shares;
             quantityChange = $" ({changeEmoji}{changeValue:0.00%})";
         }
 
-        return $"{CompanyName}, {Ticker}, {New.Quantity}{quantityChange}, {New.Weight:0.00%}";
+        return $"{CompanyName}, {Ticker}, {New.Shares}{quantityChange}, {New.Weight:0.00%}";
     }
 
 }
