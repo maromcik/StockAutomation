@@ -23,9 +23,9 @@ public class DownloadController
             filename = $"snapshot-{timestamp}.csv";
         }
 
-        using var stream = _client.GetStreamAsync(DownloadUrl);
+        using var streamResult = _client.GetStreamAsync(DownloadUrl).Result;
         using var fs = new FileStream(Path.Join(FileUtils.SnapshotDir, filename), FileMode.CreateNew);
-        stream.Result.CopyTo(fs);
+        streamResult.CopyTo(fs);
     }
 
     public byte[] DownloadToBytes()
