@@ -1,14 +1,21 @@
+using StockAutomationCore.Configuration;
 using StockAutomationCore.Files;
 
 namespace StockAutomationCore.Download;
 
-public class DownloadController(string downloadUrl)
+public class DownloadController
 {
-    public string DownloadUrl { get; set; } = downloadUrl;
+    public string DownloadUrl { get; set; }
 
     private readonly HttpClient _client = new();
 
-    public void DownloadToFile(string? filename)
+    public DownloadController()
+    {
+        var defaultUrl = StockAutomationConfig.GetSection("download")?["defaultUrl"];
+        DownloadUrl = defaultUrl ?? throw new ArgumentNullException("No default URL specified in config");
+    }
+
+    public void DownloadToFile(string? filename = null)
     {
         if (string.IsNullOrEmpty(filename))
         {
