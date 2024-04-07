@@ -242,7 +242,7 @@ public class Cli
         }
 
         var comparePair = Prompt
-            .MultiSelect("Select files to be deleted", files.Value, minimum: 2, maximum: 2, pageSize: 10,
+            .MultiSelect("Select files to be compared", files.Value, minimum: 2, maximum: 2, pageSize: 10,
                 textSelector: f => f.Name).OrderByDescending(f => f.LastWriteTime)
             .ToList();
 
