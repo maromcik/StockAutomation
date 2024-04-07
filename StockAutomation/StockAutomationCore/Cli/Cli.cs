@@ -12,7 +12,7 @@ public class Cli
 
     private readonly IConfiguration _configuration;
 
-    private string DiffResult { get; set; } 
+    private string? DiffResult { get; set; } 
 
     public Cli(IConfiguration configuration)
     {
@@ -283,6 +283,7 @@ public class Cli
         if (string.IsNullOrEmpty(DiffResult))
         {
             Console.WriteLine("Diff is empty, make sure to run Compare first");
+            return;
         }
         try
         {
