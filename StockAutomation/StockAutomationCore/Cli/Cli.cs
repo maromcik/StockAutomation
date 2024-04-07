@@ -280,6 +280,10 @@ public class Cli
 
     private void SendEmail()
     {
+        if (string.IsNullOrEmpty(DiffResult))
+        {
+            Console.WriteLine("Diff is empty, make sure to run Compare first");
+        }
         try
         {
             _emailController.SendEmail(_configuration, DiffResult);
