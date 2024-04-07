@@ -11,7 +11,7 @@ public class DownloadController
 
     public DownloadController()
     {
-        var defaultUrl = StockAutomationConfig.GetSection("download")?["defaultUrl"];
+        var defaultUrl = StockAutomationConfig.GetSection("download")["defaultUrl"];
         DownloadUrl = defaultUrl ?? throw new ArgumentNullException("No default URL specified in config");
     }
 
