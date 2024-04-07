@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Sharprompt;
+using StockAutomationCore.Diff;
 using StockAutomationCore.EmailService;
 using StockAutomationCore.Files;
 
@@ -10,6 +11,8 @@ public class Cli
     private readonly EmailController _emailController = new();
 
     private readonly IConfiguration _configuration;
+
+    private string DiffResult { get; set; } 
 
     public Cli(IConfiguration configuration)
     {
@@ -31,11 +34,11 @@ public class Cli
             {
                 return;
             }
-            catch (SystemException)
-            {
-                Console.WriteLine($"An exception occured, make sure your terminal windows is large enough!");
-                return;
-            }
+            // catch (SystemException)
+            // {
+            //     Console.WriteLine($"An exception occured, make sure your terminal windows is large enough!");
+            //     return;
+            // }
         }
     }
 
@@ -57,8 +60,7 @@ public class Cli
                     // TODO: Call download
                     break;
                 case Operation.Compare:
-                    Console.WriteLine("Call diff here");
-                    // TODO: Call diff
+                    Compare();
                     break;
                 case Operation.Send:
                     SendEmail();
@@ -187,16 +189,21 @@ public class Cli
 
     private static void DeleteFiles()
     {
-        var filesRes = FileUtils.GetFileList();
-        if (!filesRes.IsOk)
+        var files = FileUtils.GetFileList();
+        if (!files.IsOk)
         {
-            Console.WriteLine($"Error occured: {filesRes.Error}");
+            Console.WriteLine($"Error occured: {files.Error}");
             return;
         }
 
-        var files = filesRes.Value;
+        if (files.Value.Length == 0)
+        {
+            Console.WriteLine("No files found");
+            return;
+        }
+        
         var toBeDeleted =
-            Prompt.MultiSelect("Select files to be deleted", files, pageSize: 10, textSelector: f => f.Name);
+            Prompt.MultiSelect("Select files to be deleted", files.Value, pageSize: 10, textSelector: f => f.Name);
         var isOk = Prompt.Confirm("Is this OK?");
         if (!isOk)
         {
@@ -210,6 +217,38 @@ public class Cli
         );
     }
 
+    private void Compare()
+    {
+        var files = FileUtils.GetFileList();
+        if (!files.IsOk)
+        {
+            Console.WriteLine($"Error occured: {files.Error}");
+            return;
+        }
+        
+        if (files.Value.Length == 0)
+        {
+            Console.WriteLine("No files found");
+            return;
+        }
+        
+        var comparePair = Prompt
+            .MultiSelect("Select files to be deleted", files.Value, minimum: 2, maximum: 2, pageSize: 10,
+                textSelector: f => f.Name).OrderByDescending(f => f.LastWriteTime)
+            .ToList();
+
+        if (comparePair.Count != 2)
+        {
+            Console.WriteLine("Invalid number of files selected. Please select exactly 2 files.");
+            return;
+        }
+
+        DiffResult = DiffCalculator.GetDiffText(comparePair[0].ToString(), comparePair[1].ToString());
+
+        Console.WriteLine($"Differences:\n{DiffResult}");
+
+    }
+    
     private void AddSubscriber()
     {
         var email = Prompt.Input<string>("Enter email address of the new subscriber");
@@ -241,10 +280,9 @@ public class Cli
 
     private void SendEmail()
     {
-        var diff = "42";
         try
         {
-            _emailController.SendEmail(_configuration, diff);
+            _emailController.SendEmail(_configuration, DiffResult);
             Console.WriteLine("Emails were successfully sent");
         }
         catch (Exception ex)
