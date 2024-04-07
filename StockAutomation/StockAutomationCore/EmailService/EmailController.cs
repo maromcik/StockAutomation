@@ -1,13 +1,13 @@
+using StockAutomationCore.Configuration;
+
 namespace StockAutomationCore.EmailService;
 using System.Net;
 using System.Net.Mail;
-using Microsoft.Extensions.Configuration;
 
 
 public class EmailController
 {
     public List<Subscription> Subscriptions { get; set; } = [];
-    
 
     public void AddSubscriber(string address)
     {
@@ -22,10 +22,10 @@ public class EmailController
             Subscriptions.Remove(sub);
         }
     }
-    
-    public void SendEmail(IConfiguration configuration, string body)
+
+    public void SendEmail(string body)
     {
-        var smtpConfig = configuration.GetSection("SMTP");
+        var smtpConfig = StockAutomationConfig.GetSection("SMTP");
         var host = smtpConfig["Host"];
         var port = Convert.ToInt32(smtpConfig["Port"]);
         var username = smtpConfig["Username"];
@@ -60,7 +60,7 @@ public class EmailController
         {
             mailMessage.Bcc.Add(subscription.EmailAddress);
         }
-        
+
         smtpClient.Send(mailMessage);
     }
 

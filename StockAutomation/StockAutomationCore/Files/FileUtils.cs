@@ -29,7 +29,7 @@ public static class FileUtils
         SnapshotDir = path;
         return true;
     }
-    
+
     public static Result<FileInfo[], ErrorType> GetFileList()
     {
         var d = new DirectoryInfo(SnapshotDir);
@@ -54,7 +54,7 @@ public static class FileUtils
         {
             return ErrorType.IoError;
         }
-        
+
     }
 
     public static Result<bool, ErrorType> DeleteFiles(IEnumerable<FileInfo> files)

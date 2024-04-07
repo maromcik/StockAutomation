@@ -1,5 +1,5 @@
-using Microsoft.Extensions.Configuration;
 using Sharprompt;
+using StockAutomationCore.Download;
 using StockAutomationCore.Diff;
 using StockAutomationCore.EmailService;
 using StockAutomationCore.Files;
@@ -9,17 +9,14 @@ namespace StockAutomationCore.Cli;
 public class Cli
 {
     private readonly EmailController _emailController = new();
+    private readonly DownloadController _downloadController = new();
 
-    private readonly IConfiguration _configuration;
+    private string DiffResult { get; set; }
 
-    private string DiffResult { get; set; } 
-
-    public Cli(IConfiguration configuration)
+    public Cli()
     {
-        _configuration = configuration;
         Prompt.ThrowExceptionOnCancel = true;
     }
-    
 
     public void CliLoop()
     {
@@ -56,8 +53,7 @@ public class Cli
                     SnapshotDirOperations();
                     break;
                 case Operation.Download:
-                    Console.WriteLine("Call downloader here");
-                    // TODO: Call download
+                    DownloadFile();
                     break;
                 case Operation.Compare:
                     Compare();
@@ -77,6 +73,18 @@ public class Cli
         }
         catch (PromptCanceledException)
         {
+        }
+    }
+
+    private void DownloadFile()
+    {
+        try
+        {
+            _downloadController.DownloadToFile();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error during file download: {e.Message}");
         }
     }
 
@@ -115,7 +123,7 @@ public class Cli
         {
             try
             {
-                var value = Prompt.Select<FileOperation>("Select file command or return with CTRL + c");   
+                var value = Prompt.Select<FileOperation>("Select file command or return with CTRL + c");
                 switch (value)
                 {
                     case FileOperation.Print:
@@ -201,7 +209,7 @@ public class Cli
             Console.WriteLine("No files found");
             return;
         }
-        
+
         var toBeDeleted =
             Prompt.MultiSelect("Select files to be deleted", files.Value, pageSize: 10, textSelector: f => f.Name);
         var isOk = Prompt.Confirm("Is this OK?");
@@ -225,13 +233,13 @@ public class Cli
             Console.WriteLine($"Error occured: {files.Error}");
             return;
         }
-        
+
         if (files.Value.Length == 0)
         {
             Console.WriteLine("No files found");
             return;
         }
-        
+
         var comparePair = Prompt
             .MultiSelect("Select files to be deleted", files.Value, minimum: 2, maximum: 2, pageSize: 10,
                 textSelector: f => f.Name).OrderByDescending(f => f.LastWriteTime)
@@ -248,7 +256,7 @@ public class Cli
         Console.WriteLine($"Differences:\n{DiffResult}");
 
     }
-    
+
     private void AddSubscriber()
     {
         var email = Prompt.Input<string>("Enter email address of the new subscriber");
@@ -282,13 +290,13 @@ public class Cli
     {
         try
         {
-            _emailController.SendEmail(_configuration, DiffResult);
+            _emailController.SendEmail(DiffResult);
             Console.WriteLine("Emails were successfully sent");
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Failed to send email. Error: {ex.Message}");
         }
-        
     }
 }
+
