@@ -11,6 +11,8 @@ public class DownloadController
 
     public DownloadController()
     {
+        _client.DefaultRequestHeaders.Add("User-Agent", "StockAutomationCore/1.0");
+
         var defaultUrl = StockAutomationConfig.GetSection("download")["defaultUrl"];
         DownloadUrl = defaultUrl ?? throw new ArgumentNullException("No default URL specified in config");
     }
