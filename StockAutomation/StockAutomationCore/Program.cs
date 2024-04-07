@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using StockAutomationCore.Cli;
+﻿using StockAutomationCore.Cli;
 using StockAutomationCore.Files;
 
 if (!FileUtils.CreateSnapshotDir())
