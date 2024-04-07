@@ -4,7 +4,7 @@ namespace StockAutomationCore.Configuration;
 
 public static class StockAutomationConfig
 {
-    private static readonly IConfiguration _configuration;
+    private static readonly IConfiguration Configuration;
 
     static StockAutomationConfig()
     {
@@ -12,11 +12,11 @@ public static class StockAutomationConfig
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
-        _configuration = builder.Build();
+        Configuration = builder.Build();
     }
 
     public static IConfigurationSection GetSection(string section)
     {
-        return _configuration.GetSection(section);
+        return Configuration.GetSection(section);
     }
 }

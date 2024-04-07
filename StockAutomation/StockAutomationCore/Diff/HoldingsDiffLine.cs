@@ -55,5 +55,4 @@ public readonly struct HoldingsDiffLine
 
         return $"{CompanyName}, {Ticker}, {New.Shares}{quantityChange}, {New.Weight:0.00%}";
     }
-
 }

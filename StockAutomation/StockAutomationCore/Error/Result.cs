@@ -3,7 +3,8 @@ namespace StockAutomationCore.Error;
 // Proudly stolen from:
 // https://dev.to/ephilips/better-error-handling-in-c-with-result-types-4aan
 
-public readonly struct Result<T, E> {
+public readonly struct Result<T, E>
+{
     private readonly bool _success;
     public readonly T Value;
     public readonly E Error;
@@ -34,7 +35,7 @@ public readonly struct Result<T, E> {
         Func<T, R> success,
         Func<E, R> failure) =>
         _success ? success(Value) : failure(Error);
-    
+
     public void MatchVoid(
         Action<T> success,
         Action<E> failure)

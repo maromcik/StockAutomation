@@ -12,7 +12,7 @@ public class Cli
     private readonly EmailController _emailController = new();
     private readonly DownloadController _downloadController = new();
 
-    private string? DiffResult { get; set; } 
+    private string? DiffResult { get; set; }
 
     public Cli()
     {
@@ -255,7 +255,6 @@ public class Cli
         DiffResult = DiffCalculator.GetDiffText(comparePair[0].ToString(), comparePair[1].ToString());
 
         Console.WriteLine($"Differences:\n{DiffResult}");
-
     }
 
     private void AddSubscriber()
@@ -276,13 +275,15 @@ public class Cli
     private void DeleteSubscriber()
     {
         var toBeDeleted =
-            Prompt.MultiSelect("Select files to be deleted", _emailController.Subscriptions, pageSize: 10, textSelector: s => s.EmailAddress);
+            Prompt.MultiSelect("Select files to be deleted", _emailController.Subscriptions, pageSize: 10,
+                textSelector: s => s.EmailAddress);
         var isOk = Prompt.Confirm("Is this OK?");
         if (!isOk)
         {
             Console.WriteLine("No action performed");
             return;
         }
+
         _emailController.RemoveSubscribers(toBeDeleted);
         Console.WriteLine("Selected subscribers were deleted successfully");
     }
@@ -294,6 +295,7 @@ public class Cli
             Console.WriteLine("Diff is empty, make sure to run Compare first");
             return;
         }
+
         try
         {
             _emailController.SendEmail(DiffResult);
@@ -305,4 +307,3 @@ public class Cli
         }
     }
 }
-

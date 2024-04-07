@@ -31,7 +31,7 @@ public class DownloadController
     public byte[] DownloadToBytes()
     {
         using var stream = _client.GetStreamAsync(DownloadUrl);
-        using var fileBytes = new MemoryStream((int) stream.Result.Length);
+        using var fileBytes = new MemoryStream((int)stream.Result.Length);
         stream.Result.CopyTo(fileBytes);
 
         return fileBytes.ToArray();

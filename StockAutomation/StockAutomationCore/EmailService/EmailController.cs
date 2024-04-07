@@ -1,9 +1,9 @@
 using StockAutomationCore.Configuration;
 
 namespace StockAutomationCore.EmailService;
+
 using System.Net;
 using System.Net.Mail;
-
 
 public class EmailController
 {
@@ -11,7 +11,7 @@ public class EmailController
 
     public void AddSubscriber(string address)
     {
-        var newSub = new Subscription { EmailAddress = address};
+        var newSub = new Subscription { EmailAddress = address };
         Subscriptions.Add(newSub);
     }
 

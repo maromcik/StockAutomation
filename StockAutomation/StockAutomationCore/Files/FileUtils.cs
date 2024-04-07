@@ -26,6 +26,7 @@ public static class FileUtils
         {
             return false;
         }
+
         SnapshotDir = path;
         return true;
     }
@@ -54,7 +55,6 @@ public static class FileUtils
         {
             return ErrorType.IoError;
         }
-
     }
 
     public static Result<bool, ErrorType> DeleteFiles(IEnumerable<FileInfo> files)

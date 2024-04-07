@@ -29,7 +29,8 @@ public static partial class HoldingSnapshotLineParser
         string marketValueUSD = match.Groups[7].Value;
         string weight = match.Groups[8].Value;
 
-        if (!DateTime.TryParseExact(date, "MM/dd/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime properDate)) return null;
+        if (!DateTime.TryParseExact(date, "MM/dd/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None,
+                out DateTime properDate)) return null;
         string properFund = fund; // trivial
         string properCompany = company; // trivial
         string properTicker = ticker; // trivial
@@ -39,7 +40,8 @@ public static partial class HoldingSnapshotLineParser
         if (!decimal.TryParse(weight, out decimal properWeight)) return null;
 
         return HoldingSnapshotLine.Create(
-            properDate, properFund, properCompany, properTicker, properCusip, properShares, properMarketValueUSD, properWeight
+            properDate, properFund, properCompany, properTicker, properCusip, properShares, properMarketValueUSD,
+            properWeight
         );
     }
 
@@ -56,4 +58,3 @@ public static partial class HoldingSnapshotLineParser
             .Select(hsl => hsl!.Value);
     }
 }
-

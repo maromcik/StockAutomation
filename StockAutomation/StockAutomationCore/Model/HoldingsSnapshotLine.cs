@@ -9,7 +9,8 @@ public readonly struct HoldingsSnapshotLine
     public int Quantity { get; }
     public float Weight { get; }
 
-    public static Result<HoldingsSnapshotLine, ErrorType> New(string companyName, string ticker, int quantity, float weight)
+    public static Result<HoldingsSnapshotLine, ErrorType> New(string companyName, string ticker, int quantity,
+        float weight)
     {
         if (int.IsNegative(quantity))
         {

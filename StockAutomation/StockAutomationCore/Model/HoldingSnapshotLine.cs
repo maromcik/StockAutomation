@@ -13,7 +13,8 @@ public readonly struct HoldingSnapshotLine
     public decimal MarketValueUSD { get; }
     public decimal Weight { get; }
 
-    private HoldingSnapshotLine(DateTime date, string fund, string companyName, string ticker, string cusip, BigInteger shares, decimal marketValueUSD, decimal weight)
+    private HoldingSnapshotLine(DateTime date, string fund, string companyName, string ticker, string cusip,
+        BigInteger shares, decimal marketValueUSD, decimal weight)
     {
         Date = date;
         Fund = fund;
@@ -37,7 +38,8 @@ public readonly struct HoldingSnapshotLine
         Weight = 0;
     }
 
-    public static HoldingSnapshotLine Create(DateTime date, string fund, string company, string ticker, string cusip, BigInteger shares, decimal marketValueUSD, decimal weight)
+    public static HoldingSnapshotLine Create(DateTime date, string fund, string company, string ticker, string cusip,
+        BigInteger shares, decimal marketValueUSD, decimal weight)
     {
         // todo assertions
         return new HoldingSnapshotLine(date, fund, company, ticker, cusip, shares, marketValueUSD, weight);
@@ -50,6 +52,7 @@ public readonly struct HoldingSnapshotLine
 
     public override string ToString()
     {
-        return $"HoldingSnapshotLine({Date}, {Fund}, {CompanyName}, {Ticker}, {Cusip}, {Shares}, {MarketValueUSD}, {Weight})";
+        return
+            $"HoldingSnapshotLine({Date}, {Fund}, {CompanyName}, {Ticker}, {Cusip}, {Shares}, {MarketValueUSD}, {Weight})";
     }
 }

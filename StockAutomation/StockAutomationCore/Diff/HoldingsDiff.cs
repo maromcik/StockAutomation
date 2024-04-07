@@ -70,6 +70,7 @@ public class HoldingsDiff
         {
             return "No changes in the index";
         }
+
         List<StringBuilder?> sections =
         [
             GetTextSection(newLine, "New positions:", newPositions),
