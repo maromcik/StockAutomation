@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Configuration;
 using Sharprompt;
 using StockAutomationCore.Download;
 using StockAutomationCore.Diff;
