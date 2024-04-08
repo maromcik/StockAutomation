@@ -56,7 +56,8 @@ public class Cli
                     EmailOperations();
                     break;
                 case Operation.Exit:
-                    return;
+                    Environment.Exit(0);
+                    break;
                 default:
                     Console.WriteLine("Unknown command");
                     break;
@@ -66,7 +67,7 @@ public class Cli
         {
         }
     }
-    
+
 
     private static void SnapshotDirOperations()
     {
@@ -162,7 +163,7 @@ public class Cli
             }
         }
     }
-    
+
     private static bool ChangePath()
     {
         var path = Prompt.Input<string>("Enter new snapshot directory");
@@ -225,7 +226,7 @@ public class Cli
             Console.WriteLine($"Error during file download: {e.Message}");
         }
     }
-    
+
     private void Compare()
     {
         var files = FileUtils.GetFileList();
