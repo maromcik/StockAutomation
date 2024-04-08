@@ -4,22 +4,17 @@ namespace StockAutomationCore.Cli;
 
 public enum Operation
 {
-    [Display(Name = "download new file")] Download,
-    [Display(Name = "compare files")] Compare,
-    [Display(Name = "send differences")] Send,
-
-    [Display(Name = "snapshot directory operations")]
-    SnapshotDir,
     [Display(Name = "file operations")] File,
-
-    [Display(Name = "subscriber operations")]
-    Subscriber,
+    [Display(Name = "email operations")] Email,
+    [Display(Name = "snapshot directory operations")] SnapshotDir,
     [Display(Name = "exit")] Exit,
 }
 
 public enum FileOperation
 {
     [Display(Name = "print files")] Print,
+    [Display(Name = "download new file")] Download,
+    [Display(Name = "compare files")] Compare,
     [Display(Name = "delete files")] Delete,
 }
 
@@ -32,8 +27,9 @@ public enum SnapshotDirOperation
     Change,
 }
 
-public enum SubscriberOperation
+public enum EmailOperation
 {
+    [Display(Name = "send differences")] Send,
     [Display(Name = "print subscribers")] Print,
     [Display(Name = "add subscriber")] Add,
     [Display(Name = "delete subscriber")] Delete,

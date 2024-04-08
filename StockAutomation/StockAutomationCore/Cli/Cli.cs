@@ -53,17 +53,8 @@ public class Cli
                 case Operation.SnapshotDir:
                     SnapshotDirOperations();
                     break;
-                case Operation.Download:
-                    DownloadFile();
-                    break;
-                case Operation.Compare:
-                    Compare();
-                    break;
-                case Operation.Send:
-                    SendEmail();
-                    break;
-                case Operation.Subscriber:
-                    SubscriberOperations();
+                case Operation.Email:
+                    EmailOperations();
                     break;
                 case Operation.Exit:
                     return;
@@ -76,18 +67,7 @@ public class Cli
         {
         }
     }
-
-    private void DownloadFile()
-    {
-        try
-        {
-            _downloadController.DownloadToFile();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine($"Error during file download: {e.Message}");
-        }
-    }
+    
 
     private static void SnapshotDirOperations()
     {
@@ -118,7 +98,7 @@ public class Cli
         }
     }
 
-    private static void FileOperations()
+    private void FileOperations()
     {
         while (true)
         {
@@ -133,6 +113,12 @@ public class Cli
                     case FileOperation.Delete:
                         DeleteFiles();
                         break;
+                    case FileOperation.Download:
+                        DownloadFile();
+                        break;
+                    case FileOperation.Compare:
+                        Compare();
+                        break;
                     default:
                         Console.WriteLine("Unknown command");
                         break;
@@ -145,23 +131,26 @@ public class Cli
         }
     }
 
-    private void SubscriberOperations()
+    private void EmailOperations()
     {
         while (true)
         {
             try
             {
-                var value = Prompt.Select<SubscriberOperation>("Select subscriber command or return with CTRL + c");
+                var value = Prompt.Select<EmailOperation>("Select email command or return with CTRL + c");
                 switch (value)
                 {
-                    case SubscriberOperation.Print:
+                    case EmailOperation.Print:
                         PrintSubscriberList();
                         break;
-                    case SubscriberOperation.Add:
+                    case EmailOperation.Add:
                         AddSubscriber();
                         break;
-                    case SubscriberOperation.Delete:
+                    case EmailOperation.Delete:
                         DeleteSubscriber();
+                        break;
+                    case EmailOperation.Send:
+                        SendEmail();
                         break;
                     default:
                         Console.WriteLine("Unknown command");
@@ -174,7 +163,7 @@ public class Cli
             }
         }
     }
-
+    
     private static bool ChangePath()
     {
         var path = Prompt.Input<string>("Enter new snapshot directory");
@@ -226,6 +215,18 @@ public class Cli
         );
     }
 
+    private void DownloadFile()
+    {
+        try
+        {
+            _downloadController.DownloadToFile();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error during file download: {e.Message}");
+        }
+    }
+    
     private void Compare()
     {
         var files = FileUtils.GetFileList();
