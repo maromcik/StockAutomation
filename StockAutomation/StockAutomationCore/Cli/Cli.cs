@@ -33,7 +33,7 @@ public class Cli
             }
             catch (SystemException)
             {
-                Console.WriteLine($"An exception occured, make sure your terminal windows is large enough!");
+                Console.WriteLine("An exception occured, make sure your terminal windows is large enough!");
                 return;
             }
         }
@@ -170,38 +170,40 @@ public class Cli
         return FileUtils.ChangeSnapshotDir(path);
     }
 
+    private static FileInfo[] FetchFiles()
+    {
+        try
+        {
+            return FileUtils.GetFileList();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"File error occured: {e.Message}");
+            return Array.Empty<FileInfo>();
+        }
+    }
 
     private static void PrintFileList()
     {
-        FileUtils.GetFileList().MatchVoid(
-            files =>
-            {
-                for (var i = 0; i < files.Length; i++)
-                {
-                    Console.WriteLine($"{i + 1}   {files[i].Name}   {files[i].LastWriteTime}");
-                }
-            },
-            e => Console.WriteLine($"Error occured: {e}")
-        );
+        var files = FetchFiles();
+        for (var i = 0; i < files.Length; i++)
+        {
+            Console.WriteLine($"{i + 1}   {files[i].Name}   {files[i].LastWriteTime}");
+        }
     }
 
     private static void DeleteFiles()
     {
-        var files = FileUtils.GetFileList();
-        if (!files.IsOk)
-        {
-            Console.WriteLine($"Error occured: {files.Error}");
-            return;
-        }
+        var files = FetchFiles();
 
-        if (files.Value.Length == 0)
+        if (files.Length == 0)
         {
             Console.WriteLine("No files found");
             return;
         }
 
         var toBeDeleted =
-            Prompt.MultiSelect("Select files to be deleted", files.Value, pageSize: 10, textSelector: f => f.Name);
+            Prompt.MultiSelect("Select files to be deleted", files, pageSize: 10, textSelector: f => f.Name);
         var isOk = Prompt.Confirm("Is this OK?");
         if (!isOk)
         {
@@ -209,10 +211,16 @@ public class Cli
             return;
         }
 
-        FileUtils.DeleteFiles(toBeDeleted).MatchVoid(
-            _ => Console.WriteLine("Selected files were deleted"),
-            e => Console.WriteLine($"Error occured: {e}")
-        );
+        try
+        {
+            FileUtils.DeleteFiles(toBeDeleted);
+            Console.WriteLine("Selected files were deleted");
+        }
+
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error occured: {e.Message}");
+        }
     }
 
     private void DownloadFile()
@@ -229,21 +237,16 @@ public class Cli
 
     private void Compare()
     {
-        var files = FileUtils.GetFileList();
-        if (!files.IsOk)
-        {
-            Console.WriteLine($"Error occured: {files.Error}");
-            return;
-        }
+        var files = FetchFiles();
 
-        if (files.Value.Length == 0)
+        if (files.Length == 0)
         {
             Console.WriteLine("No files found");
             return;
         }
 
         var comparePair = Prompt
-            .MultiSelect("Select files to be compared", files.Value, minimum: 2, maximum: 2, pageSize: 10,
+            .MultiSelect("Select files to be compared", files, minimum: 2, maximum: 2, pageSize: 10,
                 textSelector: f => f.Name).OrderByDescending(f => f.LastWriteTime)
             .ToList();
 
@@ -275,6 +278,11 @@ public class Cli
 
     private void DeleteSubscriber()
     {
+        if (_emailController.Subscriptions.Count == 0)
+        {
+            Console.WriteLine("Subscriber list is empty");
+            return;
+        }
         var toBeDeleted =
             Prompt.MultiSelect("Select files to be deleted", _emailController.Subscriptions, pageSize: 10,
                 textSelector: s => s.EmailAddress);
@@ -302,9 +310,9 @@ public class Cli
             _emailController.SendEmail(DiffResult);
             Console.WriteLine("Emails were successfully sent");
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
-            Console.WriteLine($"Failed to send email. Error: {ex.Message}");
+            Console.WriteLine($"Failed to send email. Error: {e.Message}");
         }
     }
 }

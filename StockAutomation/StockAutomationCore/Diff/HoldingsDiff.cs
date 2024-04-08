@@ -1,6 +1,5 @@
 using System.Text;
 using StockAutomationCore.Model;
-using StockAutomationCore.Parser;
 
 namespace StockAutomationCore.Diff;
 
