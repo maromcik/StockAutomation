@@ -31,8 +31,6 @@ public static class HoldingSnapshotLineParser
 
             var line = HoldingSnapshotLine.Create(date, fund, companyName, ticker, cusip, shares, marketValueUSD, weight);
 
-            Console.WriteLine(line);
-
             yield return line;
         }
     }
