@@ -27,7 +27,7 @@ public static class HoldingSnapshotLineParser
             string cusip = fields[4];
             BigInteger shares = BigInteger.Parse(fields[5].Replace(",", ""), CultureInfo.InvariantCulture);
             decimal marketValueUSD = decimal.Parse(fields[6].Replace("$", "").Replace(",", ""), CultureInfo.InvariantCulture);
-            decimal weight = decimal.Parse(fields[7].Replace("%", ""), CultureInfo.InvariantCulture);
+            decimal weight = decimal.Parse(fields[7].Replace("%", ""), CultureInfo.InvariantCulture) / 100;
 
             var line = HoldingSnapshotLine.Create(date, fund, companyName, ticker, cusip, shares, marketValueUSD, weight);
 
