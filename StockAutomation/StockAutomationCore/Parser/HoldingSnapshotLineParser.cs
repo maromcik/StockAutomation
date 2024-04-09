@@ -18,7 +18,7 @@ public static class HoldingSnapshotLineParser
         lineParser.ReadLine(); // skip header
         while (!lineParser.EndOfData)
         {
-            var fields = lineParser.ReadFields() ?? throw new InvalidOperationException("why tf would this return null");
+            var fields = lineParser.ReadFields() ?? throw new InvalidOperationException("parser returned null");
 
             if (!DateTime.TryParseExact(fields[0], "MM/dd/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date)) yield break;
             string fund = fields[1];
