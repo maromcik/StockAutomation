@@ -49,7 +49,7 @@ public readonly struct HoldingsDiffLine
         }
         else
         {
-            var changeValue = BigInteger.Abs(QuantityDiff) / Old.Shares;
+            var changeValue = (decimal) BigInteger.Abs(QuantityDiff) / (decimal) Old.Shares;
             quantityChange = $" ({changeEmoji}{changeValue:0.00%})";
         }
 
