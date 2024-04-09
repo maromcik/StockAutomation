@@ -247,7 +247,7 @@ public class Cli
 
         var comparePair = Prompt
             .MultiSelect("Select files to be compared", files, minimum: 2, maximum: 2, pageSize: 10,
-                textSelector: f => f.Name).OrderByDescending(f => f.LastWriteTime)
+                textSelector: f => f.Name).OrderBy(f => f.LastWriteTime)
             .ToList();
 
         if (comparePair.Count != 2)
