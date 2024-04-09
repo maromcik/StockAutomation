@@ -77,6 +77,9 @@ public class EmailController
                                 margin: 20px;
                                 padding: 0;
                             }}
+                            .diff {{
+                                white-space: pre;
+                            }}
                             .header {{
                                 color: #fff;
                                 background-color: #2B9ED1;
@@ -105,7 +108,7 @@ public class EmailController
                         <div class='content'>
                             <p>Hello,</p>
                             <p>There are new stock changes in our holdings. Please see below for details:</p>
-                            <p>{diff}</p> <!-- You can use more HTML to format the actual body content -->
+                            <p class='diff'>{diff}</p>
                             <p>Best regards,</p>
                             <p>Your Quality Soldiers</p>
                         </div>
