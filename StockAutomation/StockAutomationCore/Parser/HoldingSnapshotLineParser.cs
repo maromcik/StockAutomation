@@ -15,7 +15,6 @@ public static class HoldingSnapshotLineParser
         };
         lineParser.SetDelimiters(",");
 
-        // List<HoldingSnapshotLine> lines = [];
         var snapshots = new List<HoldingSnapshotLine>();
 
         lineParser.ReadLine(); // skip header
