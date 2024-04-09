@@ -237,15 +237,19 @@ public class Cli
 
     private void Compare()
     {
-        var files = FetchFiles();
+        var files = FetchFiles().ToList();
 
-        if (files.Length < 2)
+        if (files.Count < 2)
         {
             Console.WriteLine("You must download two or more files");
             return;
         }
 
+
         var oldFile = Prompt.Select<FileInfo>("Select old file", files, textSelector: f => $"{f.Name}     {f.LastWriteTime}");
+
+        files.Remove(oldFile);
+
         var newFile = Prompt.Select<FileInfo>("Select new file", files, textSelector: f => $"{f.Name}     {f.LastWriteTime}");
 
         DiffResult = DiffCalculator.GetDiffText(oldFile.ToString(), newFile.ToString());
