@@ -203,7 +203,7 @@ public class Cli
         }
 
         var toBeDeleted =
-            Prompt.MultiSelect("Select files to be deleted", files, pageSize: 10, textSelector: f => f.Name);
+            Prompt.MultiSelect("Select files to be deleted", files, pageSize: 10, textSelector: f => $"{f.Name}     {f.LastWriteTime}");
         var isOk = Prompt.Confirm("Is this OK?");
         if (!isOk)
         {
@@ -239,24 +239,16 @@ public class Cli
     {
         var files = FetchFiles();
 
-        if (files.Length == 0)
+        if (files.Length < 2)
         {
-            Console.WriteLine("No files found");
+            Console.WriteLine("You must download two or more files");
             return;
         }
 
-        var comparePair = Prompt
-            .MultiSelect("Select files to be compared", files, minimum: 2, maximum: 2, pageSize: 10,
-                textSelector: f => f.Name).OrderBy(f => f.LastWriteTime)
-            .ToList();
+        var oldFile = Prompt.Select<FileInfo>("Select old file", files, textSelector: f => $"{f.Name}     {f.LastWriteTime}");
+        var newFile = Prompt.Select<FileInfo>("Select new file", files, textSelector: f => $"{f.Name}     {f.LastWriteTime}");
 
-        if (comparePair.Count != 2)
-        {
-            Console.WriteLine("Invalid number of files selected. Please select exactly 2 files.");
-            return;
-        }
-
-        DiffResult = DiffCalculator.GetDiffText(comparePair[0].ToString(), comparePair[1].ToString());
+        DiffResult = DiffCalculator.GetDiffText(oldFile.ToString(), newFile.ToString());
 
         Console.WriteLine($"Differences:\n{DiffResult}");
     }
