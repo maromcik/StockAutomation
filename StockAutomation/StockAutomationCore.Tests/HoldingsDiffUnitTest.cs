@@ -1,10 +1,11 @@
 using StockAutomationCore.Diff;
+using StockAutomationCore.DiffFormat;
 using StockAutomationCore.Model;
 
 namespace StockAutomationCore.Tests;
 using StockAutomationCore;
 
-public class HoldingsDiffUnitTest  // Very useful, since HoldingsSnapshotLine is not used anywhere in the project
+public class TextFormatterUnitTest
 {
     [SetUp]
     public void Setup() { }
@@ -17,7 +18,7 @@ public class HoldingsDiffUnitTest  // Very useful, since HoldingsSnapshotLine is
             new List<HoldingSnapshotLine> {}
         );
         const string expected = "No changes in the index";
-        Assert.That(diff.ToText(), Is.EqualTo(expected));
+        Assert.That(TextDiffFormatter.ToText(diff), Is.EqualTo(expected));
     }
 
     [Test]
@@ -30,7 +31,7 @@ public class HoldingsDiffUnitTest  // Very useful, since HoldingsSnapshotLine is
             new List<HoldingSnapshotLine> { holding1, holding2 }
          );
         const string expected = "No changes in the index";
-        Assert.That(diff.ToText(), Is.EqualTo(expected));
+        Assert.That(TextDiffFormatter.ToText(diff), Is.EqualTo(expected));
     }
 
     [Test]
@@ -43,7 +44,7 @@ public class HoldingsDiffUnitTest  // Very useful, since HoldingsSnapshotLine is
             new List<HoldingSnapshotLine> { holding1, holding2 }
         );
         const string expected = "New positions:\r\nCompany 2, TICKER2, 200, 20.00%";
-        Assert.That(diff.ToText(), Is.EqualTo(expected));
+        Assert.That(TextDiffFormatter.ToText(diff), Is.EqualTo(expected));
     }
 
     [Test]
@@ -56,7 +57,7 @@ public class HoldingsDiffUnitTest  // Very useful, since HoldingsSnapshotLine is
             new List<HoldingSnapshotLine> { holding1 }
         );
         const string expected = "Reduced positions:\r\nCompany 2, TICKER2, 0 (📉100.00%), 0.00%";
-        Assert.That(diff.ToText(), Is.EqualTo(expected));
+        Assert.That(TextDiffFormatter.ToText(diff), Is.EqualTo(expected));
     }
 
     [Test]
@@ -70,7 +71,7 @@ public class HoldingsDiffUnitTest  // Very useful, since HoldingsSnapshotLine is
             new List<HoldingSnapshotLine> { holding1, holding3 }
         );
         const string expected = "Increased positions:\r\nCompany 2, TICKER2, 300 (📈50.00%), 30.00%";
-        Assert.That(diff.ToText(), Is.EqualTo(expected));
+        Assert.That(TextDiffFormatter.ToText(diff), Is.EqualTo(expected));
     }
 
     [Test]
@@ -86,7 +87,7 @@ public class HoldingsDiffUnitTest  // Very useful, since HoldingsSnapshotLine is
             new List<HoldingSnapshotLine> {holding3, holding4 }
         );
         const string expected = "New positions:\r\nCompany 3, TICKER3, 400, 40.00%\r\n\r\nIncreased positions:\r\nCompany 2, TICKER2, 300 (📈50.00%), 30.00%\r\n\r\nReduced positions:\r\nCompany 1, TICKER1, 0 (📉100.00%), 0.00%";
-        Assert.That(diff.ToText(), Is.EqualTo(expected));
+        Assert.That(TextDiffFormatter.ToText(diff), Is.EqualTo(expected));
     }
 
 }

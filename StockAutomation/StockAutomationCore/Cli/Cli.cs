@@ -1,8 +1,10 @@
 using Sharprompt;
 using StockAutomationCore.Download;
 using StockAutomationCore.Diff;
+using StockAutomationCore.DiffFormat;
 using StockAutomationCore.EmailService;
 using StockAutomationCore.Files;
+using StockAutomationCore.Parser;
 
 namespace StockAutomationCore.Cli;
 
@@ -256,7 +258,11 @@ public class Cli
         var oldFile = Prompt.Select<FileInfo>("Select old file", files,
             textSelector: f => $"{f.Name}     {f.LastWriteTime}");
 
-        DiffResult = DiffCalculator.GetDiffText(oldFile.ToString(), newFile.ToString());
+        var parsedOldFile = HoldingSnapshotLineParser.ParseLines(oldFile.ToString());
+        var parsedNewFile = HoldingSnapshotLineParser.ParseLines(newFile.ToString());
+
+        var diff = new HoldingsDiff(parsedOldFile, parsedNewFile);
+        DiffResult = TextDiffFormatter.ToText(diff);
 
         Console.WriteLine($"Differences:\n{DiffResult}");
     }
