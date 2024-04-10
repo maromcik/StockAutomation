@@ -33,7 +33,8 @@ public class Cli
             }
             catch (SystemException e)
             {
-                Console.WriteLine($"An exception occured, make sure your terminal windows is large enough!\nOriginal message{e.Message}");
+                Console.WriteLine(
+                    $"An exception occured, make sure your terminal windows is large enough!\nOriginal message{e.Message}");
                 return;
             }
         }
@@ -203,7 +204,8 @@ public class Cli
         }
 
         var toBeDeleted =
-            Prompt.MultiSelect("Select files to be deleted", files, pageSize: 10, textSelector: f => $"{f.Name}     {f.LastWriteTime}");
+            Prompt.MultiSelect("Select files to be deleted", files, pageSize: 10,
+                textSelector: f => $"{f.Name}     {f.LastWriteTime}");
         var isOk = Prompt.Confirm("Is this OK?");
         if (!isOk)
         {
@@ -246,11 +248,13 @@ public class Cli
         }
 
 
-        var oldFile = Prompt.Select<FileInfo>("Select old file", files, textSelector: f => $"{f.Name}     {f.LastWriteTime}");
+        var newFile = Prompt.Select<FileInfo>("Select new file", files,
+            textSelector: f => $"{f.Name}     {f.LastWriteTime}");
 
-        files.Remove(oldFile);
+        files.Remove(newFile);
 
-        var newFile = Prompt.Select<FileInfo>("Select new file", files, textSelector: f => $"{f.Name}     {f.LastWriteTime}");
+        var oldFile = Prompt.Select<FileInfo>("Select old file", files,
+            textSelector: f => $"{f.Name}     {f.LastWriteTime}");
 
         DiffResult = DiffCalculator.GetDiffText(oldFile.ToString(), newFile.ToString());
 
@@ -279,6 +283,7 @@ public class Cli
             Console.WriteLine("Subscriber list is empty");
             return;
         }
+
         var toBeDeleted =
             Prompt.MultiSelect("Select files to be deleted", _emailController.Subscriptions, pageSize: 10,
                 textSelector: s => s.EmailAddress);
