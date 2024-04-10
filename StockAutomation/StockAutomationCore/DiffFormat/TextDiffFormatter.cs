@@ -6,22 +6,27 @@ namespace StockAutomationCore.DiffFormat;
 
 public static class TextDiffFormatter
 {
-    public static string ToText(HoldingsDiff diff, string newLine = "\r\n")
+
+    public static string ChevronUp => "<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAGElEQVR4nGNwOhSqBcIMjgfD3Rz2hbkDADh8BkHeKoTKAAAAAElFTkSuQmCC'>";
+
+    public static string ChevronDown => "<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAACGUlEQVR4nO3YXU8aQRQG4DFeNlZsbetXWxP/RYM5o2LjVe3NnkPBX+itiUkD5IwCplq/KK1V/PwnmNm0sCogzu4AG+dN5nazT3bmnc0RwsXFxcXFxcXleSVZzIyBwrxUVF3Me9MijgFeTQDTrlRU9xdjLXYY4NWEZNprIAKYVCk9JeKynaTCnw8Q/xYwng08JumfCdpvh4gFJrntvQHGymOIBkbR6fxWdlIMGkIy/eoWMZCY5fLaWxNEc+FfYG+i/whFVXPEAGAW8+l3oPB3eESjACrA38ZjjQicmeOeYfQWAKY/USOCmKXc19fWEZLxxBZCNteRNQxwdkYqOu8Bov4f83nHexUpYn6L3oPCC8MXqhqfJ6Y9/d/WfwTjid6OYWoamA70r08oRKrofTBF3G8gjTH9MqBo3xjjIxgvTfd3qxr1MaaNx7Sz8iP78kmIhULmo2S6stE4/h0UAvOp9GXEPoLxsJva1BjTGgfG8qMYYJqVCq9tIqK4k0BRqT2mLobMv4RZTeq7KUQjbrZ9sN6DT//UtBum6/16NyuVo7YPTeW80ZZDAxu1GAbDWNNf02wCEkUdRlD3wHjW9VjJx3SehJSjRAQxssM5NRpa+AO2FhORzo1hDwOKTo0nLy3GO0WbiDt3WeAaCIW4MyFRVJQKN5a/r70QPcpCgeZA4Y3+Z9MXqIhzvHVvWN9v/X4PFxcXFxcXEZfcAg05iUIAeTgAAAAAAElFTkSuQmCC'>";
+
+    public static string Format(HoldingsDiff diff, string newLine = "\r\n")
     {
         var newPositions = diff.HoldingsDiffLines.Values
             .Where(hdl => hdl.Old.Shares == 0)
             .OrderBy(hdl => hdl.CompanyName)
-            .Select(hdl => hdl.GetFormattedString())
+            .Select(GetFormattedLine)
             .ToList();
         var increasedPositions = diff.HoldingsDiffLines.Values
             .Where(hdl => hdl.Old.Shares > 0 && hdl.QuantityDiff > 0)
             .OrderBy(hdl => hdl.CompanyName)
-            .Select(hdl => hdl.GetFormattedString())
+            .Select(GetFormattedLine)
             .ToList();
         var reducedPositions = diff.HoldingsDiffLines.Values
             .Where(hdl => hdl.QuantityDiff < 0)
             .OrderBy(hdl => hdl.CompanyName)
-            .Select(hdl => hdl.GetFormattedString())
+            .Select(GetFormattedLine)
             .ToList();
 
         if (newPositions.Count == 0 && increasedPositions.Count == 0 && reducedPositions.Count == 0)
@@ -50,7 +55,7 @@ public static class TextDiffFormatter
         return result;
     }
 
-    private static string GetFormattedString(HoldingsDiffLine diffLine)
+    private static string GetFormattedLine(HoldingsDiffLine diffLine)
     {
         var changeEmoji = diffLine.QuantityDiff > 0 ? "\ud83d\udcc8" : "\ud83d\udcc9";
         string quantityChange;

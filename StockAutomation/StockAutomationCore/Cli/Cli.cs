@@ -262,7 +262,7 @@ public class Cli
         var parsedNewFile = HoldingSnapshotLineParser.ParseLines(newFile.ToString());
 
         var diff = new HoldingsDiff(parsedOldFile, parsedNewFile);
-        DiffResult = TextDiffFormatter.ToText(diff);
+        DiffResult = TextDiffFormatter.Format(diff);
 
         Console.WriteLine($"Differences:\n{DiffResult}");
     }
