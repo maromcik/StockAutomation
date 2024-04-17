@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stock-automation
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stock-automation
+  template:
+    metadata:
+      labels:
+        app: stock-automation
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: stock-automation
+        image: cerit.io/roman_alexander_mariancik/stock-automation-image
+        imagePullPolicy: Always
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "1500Mi"
+            cpu: "1"
+          limits:
+            memory: "1500Mi"
+            cpu: "1"
