@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccessLayer", "DataAcce
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockAutomationClient", "StockAutomationClient\StockAutomationClient.csproj", "{0AAAC5CD-5521-499C-9B2F-D91C37827C83}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockAutomationWeb", "StockAutomationWeb\StockAutomationWeb.csproj", "{0253D973-8DFE-4D80-B77B-2ECB8EEF1FB2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 		{0AAAC5CD-5521-499C-9B2F-D91C37827C83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0AAAC5CD-5521-499C-9B2F-D91C37827C83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0AAAC5CD-5521-499C-9B2F-D91C37827C83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0253D973-8DFE-4D80-B77B-2ECB8EEF1FB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0253D973-8DFE-4D80-B77B-2ECB8EEF1FB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0253D973-8DFE-4D80-B77B-2ECB8EEF1FB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0253D973-8DFE-4D80-B77B-2ECB8EEF1FB2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
