@@ -37,11 +37,12 @@ public static class FileUtils
         return files.OrderByDescending(f => f.LastWriteTime).ToArray();
     }
 
-    public static void DeleteFiles(IEnumerable<FileInfo> files)
+    public static void DeleteFiles(IEnumerable<string> paths)
     {
-        foreach (var file in files)
+        foreach (var path in paths)
         {
-            file.Delete();
+            var f = new FileInfo(path);
+            f.Delete();
         }
     }
 }

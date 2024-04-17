@@ -30,7 +30,7 @@ public class SnapshotController : Controller
         }
     }
 
-    [HttpGet("download")]
+    [HttpGet("Download")]
     public async Task<ActionResult> DownloadSnapshots()
     {
         try
@@ -46,12 +46,12 @@ public class SnapshotController : Controller
         }
     }
 
-    [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteSnapshot(int id)
+    [HttpPost("Delete")]
+    public async Task<ActionResult> DeleteSnapshots(List<int> ids)
     {
         try
         {
-            await _snapshotService.DeleteSnapshotAsync(id);
+            await _snapshotService.DeleteSnapshotsAsync(ids);
             return Ok();
         }
         catch (Exception e)
@@ -62,7 +62,7 @@ public class SnapshotController : Controller
         }
     }
 
-    [HttpPost("compare")]
+    [HttpPost("Compare")]
     public async Task<ActionResult<string>> CompareSnapshots(SnapshotCompare compare)
     {
         try

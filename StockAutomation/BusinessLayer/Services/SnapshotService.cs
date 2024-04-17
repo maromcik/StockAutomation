@@ -50,40 +50,41 @@ public class SnapshotService : ISnapshotService
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteSnapshotAsync(int id)
+    public async Task DeleteSnapshotsAsync(List<int> ids)
     {
-        var snapshot = await _context.Snapshots.FirstOrDefaultAsync(s => s.Id == id);
-        if (snapshot is null)
-        {
-            // TODO handle snapshot not found
-            return;
-        }
-        _context.Snapshots.Remove(snapshot);
+        var snapshots = await _context.Snapshots.Where(s => ids.Contains(s.Id)).ToListAsync();
+        _context.Snapshots.RemoveRange(snapshots);
+        FileUtils.DeleteFiles(snapshots.Select(s => GetFullPath(s.FilePath)));
         await _context.SaveChangesAsync();
     }
 
     public async Task<string> CompareSnapshotsAsync(int idNew, int idOld)
     {
-        var newFileName = await _context.Snapshots.FirstOrDefaultAsync(s => s.Id == idNew);
-        var oldFileName = await _context.Snapshots.FirstOrDefaultAsync(s => s.Id == idOld);
+        var newSnapshot = await _context.Snapshots.FirstOrDefaultAsync(s => s.Id == idNew);
+        var oldSnapshot = await _context.Snapshots.FirstOrDefaultAsync(s => s.Id == idOld);
 
-        if (oldFileName is null)
+        if (oldSnapshot is null)
         {
             // TODO handle oldfile not found
             return "";
         }
 
-        if (newFileName is null)
+        if (newSnapshot is null)
         {
             // TODO handle newfile not found
             return "";
         }
 
-        var parsedOldFile = HoldingSnapshotLineParser.ParseLines($"{SnapshotDir}/{oldFileName.FilePath}");
-        var parsedNewFile = HoldingSnapshotLineParser.ParseLines($"{SnapshotDir}/{newFileName.FilePath}");
+        var parsedOldFile = HoldingSnapshotLineParser.ParseLines(GetFullPath(oldSnapshot.FilePath));
+        var parsedNewFile = HoldingSnapshotLineParser.ParseLines(GetFullPath(newSnapshot.FilePath));
 
         // TODO handle various formats
         var diff = new HoldingsDiff(parsedOldFile, parsedNewFile);
         return TextDiffFormatter.Format(diff);
+    }
+
+    private string GetFullPath(string filename)
+    {
+        return $"{SnapshotDir}/{filename}";
     }
 }

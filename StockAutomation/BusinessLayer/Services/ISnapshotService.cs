@@ -6,6 +6,6 @@ public interface ISnapshotService
 {
     public Task<IEnumerable<Snapshot>> GetSnapshotsAsync();
     public Task DownloadSnapshotAsync();
-    public Task DeleteSnapshotAsync(int id);
+    public Task DeleteSnapshotsAsync(List<int> ids);
     public Task<string> CompareSnapshotsAsync(int idNew, int idOld);
 }

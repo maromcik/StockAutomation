@@ -148,7 +148,7 @@ public class Cli
     {
         var files = await FetchFiles();
 
-        if (files.Count() == 0)
+        if (files.Count == 0)
         {
             Console.WriteLine("No files found");
             return;
@@ -156,7 +156,7 @@ public class Cli
 
         var toBeDeleted =
             Prompt.MultiSelect("Select files to be deleted", files, pageSize: 10,
-                textSelector: f => $"{f.FilePath}     {f.DownloadedAt}");
+                textSelector: f => $"{f.FilePath}     {f.DownloadedAt}").Select(s => s.Id).ToList();
         var isOk = Prompt.Confirm("Is this OK?");
         if (!isOk)
         {
@@ -166,7 +166,7 @@ public class Cli
 
         try
         {
-            // FileUtils.DeleteFiles(toBeDeleted);
+            await ApiConnection.DeleteSnapshots(toBeDeleted);
             Console.WriteLine("Selected files were deleted");
         }
 

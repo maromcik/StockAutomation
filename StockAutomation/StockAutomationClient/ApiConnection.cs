@@ -23,7 +23,7 @@ public static class ApiConnection
 
     public static async Task DownloadSnapshot()
     {
-        var response = await Client.GetAsync($"{ApiUri}/Snapshot/download");
+        var response = await Client.GetAsync($"{ApiUri}/Snapshot/Download");
         if (response.IsSuccessStatusCode)
         {
         }
@@ -32,7 +32,13 @@ public static class ApiConnection
     public static async Task<string> CompareSnapshots(SnapshotCompare snapshotCompare)
     {
         var response = await Client.PostAsJsonAsync(
-            $"{ApiUri}/Snapshot/compare", snapshotCompare);
+            $"{ApiUri}/Snapshot/Compare", snapshotCompare);
         return await response.Content.ReadAsStringAsync();
+    }
+
+    public static async Task DeleteSnapshots(List<int> ids)
+    {
+        var response = await Client.PostAsJsonAsync(
+            $"{ApiUri}/Snapshot/Delete", ids);
     }
 }

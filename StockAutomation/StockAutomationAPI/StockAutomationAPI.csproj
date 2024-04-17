@@ -29,4 +29,8 @@
       <ProjectReference Include="..\StockAutomationCore\StockAutomationCore.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="snapshots\" />
+    </ItemGroup>
+
 </Project>
