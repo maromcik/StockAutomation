@@ -1,3 +1,11 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using StockAutomationCore.Cli;
+using StockAutomationCore.Files;
 
-Console.WriteLine("Hello, World!");
+if (!FileUtils.CreateSnapshotDir())
+{
+    Console.WriteLine("Snapshot directory could not be created, check your file permissions");
+    return;
+}
+
+var cli = new Cli();
+cli.CliLoop();
