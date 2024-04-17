@@ -8,4 +8,4 @@ if (!FileUtils.CreateSnapshotDir(FileUtils.SnapshotDir))
 }
 
 var cli = new Cli();
-cli.CliLoop();
+await cli.CliLoop();

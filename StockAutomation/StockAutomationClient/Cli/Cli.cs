@@ -1,33 +1,25 @@
+using BusinessLayer.Models;
 using Sharprompt;
-using StockAutomationCore.Diff;
-using StockAutomationCore.DiffFormat;
-using StockAutomationCore.Download;
-using StockAutomationCore.EmailService;
-using StockAutomationCore.Files;
-using StockAutomationCore.Parser;
+using StockAutomationClient.Models;
 
 namespace StockAutomationClient.Cli;
 
 public class Cli
 {
-    private readonly EmailController _emailController = new();
-    private readonly DownloadController _downloadController = new();
-
-    private string? DiffResult { get; set; }
 
     public Cli()
     {
         Prompt.ThrowExceptionOnCancel = true;
     }
 
-    public void CliLoop()
+    public async Task CliLoop()
     {
         Prompt.ThrowExceptionOnCancel = true;
         while (true)
         {
             try
             {
-                CliSelector();
+                await CliSelector();
             }
             catch (PromptCanceledException)
             {
@@ -42,7 +34,7 @@ public class Cli
         }
     }
 
-    private void CliSelector()
+    private async Task CliSelector()
     {
         var value = Prompt.Select<Operation>("Select command");
         try
@@ -50,10 +42,7 @@ public class Cli
             switch (value)
             {
                 case Operation.File:
-                    FileOperations();
-                    break;
-                case Operation.SnapshotDir:
-                    SnapshotDirOperations();
+                    await FileOperations();
                     break;
                 case Operation.Email:
                     EmailOperations();
@@ -72,36 +61,8 @@ public class Cli
     }
 
 
-    private static void SnapshotDirOperations()
-    {
-        while (true)
-        {
-            try
-            {
-                var value = Prompt.Select<SnapshotDirOperation>("Select directory command or return with CTRL + c");
-                switch (value)
-                {
-                    case SnapshotDirOperation.Print:
-                        Console.WriteLine(FileUtils.SnapshotDir);
-                        break;
-                    case SnapshotDirOperation.Change:
-                        Console.WriteLine(ChangePath()
-                            ? "Snapshot directory successfully changed"
-                            : "Snapshot directory does not exist");
-                        break;
-                    default:
-                        Console.WriteLine("Unknown command");
-                        break;
-                }
-            }
-            catch (PromptCanceledException)
-            {
-                return;
-            }
-        }
-    }
 
-    private void FileOperations()
+    private async Task FileOperations()
     {
         while (true)
         {
@@ -111,16 +72,16 @@ public class Cli
                 switch (value)
                 {
                     case FileOperation.Print:
-                        PrintFileList();
+                        await PrintFileList();
                         break;
                     case FileOperation.Delete:
-                        DeleteFiles();
+                        await DeleteFiles();
                         break;
                     case FileOperation.Download:
-                        DownloadFile();
+                        await DownloadFile();
                         break;
                     case FileOperation.Compare:
-                        Compare();
+                        await Compare();
                         break;
                     default:
                         Console.WriteLine("Unknown command");
@@ -167,39 +128,27 @@ public class Cli
         }
     }
 
-    private static bool ChangePath()
+
+
+    private static async Task<List<Snapshot>> FetchFiles()
     {
-        var path = Prompt.Input<string>("Enter new snapshot directory");
-        return FileUtils.ChangeSnapshotDir(path);
+        return (await ApiConnection.GetSnapshots()).ToList();
     }
 
-    private static FileInfo[] FetchFiles()
+    private static async Task PrintFileList()
     {
-        try
+        var files = await FetchFiles();
+        for (var i = 0; i < files.Count; i++)
         {
-            return FileUtils.GetFileList();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine($"File error occured: {e.Message}");
-            return Array.Empty<FileInfo>();
+            Console.WriteLine($"{i + 1}   {files[i].FilePath}   {files[i].DownloadedAt}");
         }
     }
 
-    private static void PrintFileList()
+    private static async Task DeleteFiles()
     {
-        var files = FetchFiles();
-        for (var i = 0; i < files.Length; i++)
-        {
-            Console.WriteLine($"{i + 1}   {files[i].Name}   {files[i].LastWriteTime}");
-        }
-    }
+        var files = await FetchFiles();
 
-    private static void DeleteFiles()
-    {
-        var files = FetchFiles();
-
-        if (files.Length == 0)
+        if (files.Count() == 0)
         {
             Console.WriteLine("No files found");
             return;
@@ -207,7 +156,7 @@ public class Cli
 
         var toBeDeleted =
             Prompt.MultiSelect("Select files to be deleted", files, pageSize: 10,
-                textSelector: f => $"{f.Name}     {f.LastWriteTime}");
+                textSelector: f => $"{f.FilePath}     {f.DownloadedAt}");
         var isOk = Prompt.Confirm("Is this OK?");
         if (!isOk)
         {
@@ -217,7 +166,7 @@ public class Cli
 
         try
         {
-            FileUtils.DeleteFiles(toBeDeleted);
+            // FileUtils.DeleteFiles(toBeDeleted);
             Console.WriteLine("Selected files were deleted");
         }
 
@@ -229,19 +178,12 @@ public class Cli
 
     private async Task DownloadFile()
     {
-        try
-        {
-            await _downloadController.DownloadToFile();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine($"Error during file download: {e.Message}");
-        }
+        await ApiConnection.DownloadSnapshot();
     }
 
-    private void Compare()
+    private async Task Compare()
     {
-        var files = FetchFiles().ToList();
+        var files = await FetchFiles();
 
         if (files.Count < 2)
         {
@@ -249,50 +191,47 @@ public class Cli
             return;
         }
 
-
-        var newFile = Prompt.Select<FileInfo>("Select new file", files,
-            textSelector: f => $"{f.Name}     {f.LastWriteTime}");
+        var newFile = Prompt.Select<Snapshot>("Select new file", files,
+            textSelector: f => $"{f.FilePath}     {f.DownloadedAt}");
 
         files.Remove(newFile);
 
-        var oldFile = Prompt.Select<FileInfo>("Select old file", files,
-            textSelector: f => $"{f.Name}     {f.LastWriteTime}");
+        var oldFile = Prompt.Select<Snapshot>("Select old file", files,
+            textSelector: f => $"{f.FilePath}     {f.DownloadedAt}");
+        var diff = await ApiConnection.CompareSnapshots(new SnapshotCompare
+        {
+            NewId = newFile.Id,
+            OldId = oldFile.Id
+        });
+        Console.WriteLine($"Differences:\n{diff}");
 
-        var parsedOldFile = HoldingSnapshotLineParser.ParseLines(oldFile.ToString());
-        var parsedNewFile = HoldingSnapshotLineParser.ParseLines(newFile.ToString());
-
-        var diff = new HoldingsDiff(parsedOldFile, parsedNewFile);
-        DiffResult = TextDiffFormatter.Format(diff);
-
-        Console.WriteLine($"Differences:\n{DiffResult}");
     }
 
     private void AddSubscriber()
     {
         var email = Prompt.Input<string>("Enter email address of the new subscriber");
-        _emailController.AddSubscriber(email);
         Console.WriteLine("Subscriber added");
     }
 
     private void PrintSubscriberList()
     {
-        for (var i = 0; i < _emailController.Subscriptions.Count; i++)
-        {
-            Console.WriteLine($"{i + 1}   {_emailController.Subscriptions[i].EmailAddress}");
-        }
+        // for (var i = 0; i < _emailController.Subscriptions.Count; i++)
+        // {
+        //     Console.WriteLine($"{i + 1}   {_emailController.Subscriptions[i].EmailAddress}");
+        // }
     }
 
     private void DeleteSubscriber()
     {
-        if (_emailController.Subscriptions.Count == 0)
-        {
-            Console.WriteLine("Subscriber list is empty");
-            return;
-        }
+        // if (_emailController.Subscriptions.Count == 0)
+        // {
+        //     Console.WriteLine("Subscriber list is empty");
+        //     return;
+        // }
 
         var toBeDeleted =
-            Prompt.MultiSelect("Select files to be deleted", _emailController.Subscriptions, pageSize: 10,
-                textSelector: s => s.EmailAddress);
+            Prompt.MultiSelect("Select files to be deleted", new List<Subscriber>(), pageSize: 10,
+                textSelector: s => s.Email);
         var isOk = Prompt.Confirm("Is this OK?");
         if (!isOk)
         {
@@ -300,21 +239,13 @@ public class Cli
             return;
         }
 
-        _emailController.RemoveSubscribers(toBeDeleted);
         Console.WriteLine("Selected subscribers were deleted successfully");
     }
 
     private void SendEmail()
     {
-        if (string.IsNullOrEmpty(DiffResult))
-        {
-            Console.WriteLine("Diff is empty, make sure to run Compare first");
-            return;
-        }
-
         try
         {
-            _emailController.SendEmail(DiffResult);
             Console.WriteLine("Emails were successfully sent");
         }
         catch (Exception e)

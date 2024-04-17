@@ -6,7 +6,6 @@ public enum Operation
 {
     [Display(Name = "file operations")] File,
     [Display(Name = "email operations")] Email,
-    [Display(Name = "snapshot directory operations")] SnapshotDir,
     [Display(Name = "exit")] Exit,
 }
 
@@ -18,14 +17,7 @@ public enum FileOperation
     [Display(Name = "delete files")] Delete,
 }
 
-public enum SnapshotDirOperation
-{
-    [Display(Name = "print snapshot directory")]
-    Print,
 
-    [Display(Name = "change snapshot directory")]
-    Change,
-}
 
 public enum EmailOperation
 {

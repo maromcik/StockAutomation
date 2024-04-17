@@ -44,7 +44,7 @@ public class SnapshotService : ISnapshotService
         var filename = await Downloader.DownloadToFile(_client, DownloadUrl, SnapshotDir);
         var file = new Snapshot
         {
-            FilePath = $"{FileUtils.SnapshotDir}/{filename}",
+            FilePath = filename
         };
         _context.Snapshots.Add(file);
         await _context.SaveChangesAsync();
@@ -79,8 +79,8 @@ public class SnapshotService : ISnapshotService
             return "";
         }
 
-        var parsedOldFile = HoldingSnapshotLineParser.ParseLines(oldFileName.FilePath);
-        var parsedNewFile = HoldingSnapshotLineParser.ParseLines(newFileName.FilePath);
+        var parsedOldFile = HoldingSnapshotLineParser.ParseLines($"{SnapshotDir}/{oldFileName.FilePath}");
+        var parsedNewFile = HoldingSnapshotLineParser.ParseLines($"{SnapshotDir}/{newFileName.FilePath}");
 
         // TODO handle various formats
         var diff = new HoldingsDiff(parsedOldFile, parsedNewFile);
