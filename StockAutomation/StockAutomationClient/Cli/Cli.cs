@@ -228,11 +228,11 @@ public class Cli
         }
     }
 
-    private void DownloadFile()
+    private async Task DownloadFile()
     {
         try
         {
-            _downloadController.DownloadToFile();
+            await _downloadController.DownloadToFile();
         }
         catch (Exception e)
         {

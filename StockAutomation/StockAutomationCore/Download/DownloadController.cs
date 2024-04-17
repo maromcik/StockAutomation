@@ -12,30 +12,30 @@ public class DownloadController
     public DownloadController()
     {
         _client.DefaultRequestHeaders.Add("User-Agent", "StockAutomationCore/1.0");
-
         var defaultUrl = StockAutomationConfig.GetSection("download")["defaultUrl"];
         DownloadUrl = defaultUrl ?? throw new ArgumentNullException("No default URL specified in config");
     }
 
-    public void DownloadToFile(string? filename = null)
+    public DownloadController(string url)
     {
-        if (string.IsNullOrEmpty(filename))
-        {
-            var timestamp = DateTime.Now.ToString("s");
-            filename = $"snapshot-{timestamp}.csv";
-        }
-
-        using var streamResult = _client.GetStreamAsync(DownloadUrl).Result;
-        using var fs = new FileStream(Path.Join(FileUtils.SnapshotDir, filename), FileMode.CreateNew);
-        streamResult.CopyTo(fs);
+        DownloadUrl = url;
     }
 
-    public byte[] DownloadToBytes()
+    public async Task<string> DownloadToFile()
+    {
+        var timestamp = DateTime.Now.ToString("s");
+        var filename = $"snapshot-{timestamp}.csv";
+        await using var streamResult = _client.GetStreamAsync(DownloadUrl).Result;
+        await using var fs = new FileStream(Path.Join(FileUtils.SnapshotDir, filename), FileMode.CreateNew);
+        await streamResult.CopyToAsync(fs);
+        return filename;
+    }
+
+    public async Task<byte[]> DownloadToBytes()
     {
         using var stream = _client.GetStreamAsync(DownloadUrl);
         using var fileBytes = new MemoryStream((int)stream.Result.Length);
-        stream.Result.CopyTo(fileBytes);
-
+        await stream.Result.CopyToAsync(fileBytes);
         return fileBytes.ToArray();
     }
 }
