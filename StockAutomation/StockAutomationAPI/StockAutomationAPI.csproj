@@ -23,6 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\BusinessLayer\BusinessLayer.csproj" />
       <ProjectReference Include="..\DataAccessLayer\DataAccessLayer.csproj" />
       <ProjectReference Include="..\StockAutomationCore.Tests\StockAutomationCore.Tests.csproj" />
       <ProjectReference Include="..\StockAutomationCore\StockAutomationCore.csproj" />
