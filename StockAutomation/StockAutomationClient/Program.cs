@@ -1,4 +1,4 @@
-﻿using StockAutomationCore.Cli;
+﻿using StockAutomationClient.Cli;
 using StockAutomationCore.Files;
 
 if (!FileUtils.CreateSnapshotDir())

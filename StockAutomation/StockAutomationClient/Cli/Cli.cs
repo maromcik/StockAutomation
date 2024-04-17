@@ -1,12 +1,13 @@
 using Sharprompt;
-using StockAutomationCore.Download;
+using StockAutomationCore.Cli;
 using StockAutomationCore.Diff;
 using StockAutomationCore.DiffFormat;
+using StockAutomationCore.Download;
 using StockAutomationCore.EmailService;
 using StockAutomationCore.Files;
 using StockAutomationCore.Parser;
 
-namespace StockAutomationCore.Cli;
+namespace StockAutomationClient.Cli;
 
 public class Cli
 {
