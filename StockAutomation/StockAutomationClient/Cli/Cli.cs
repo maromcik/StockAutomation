@@ -1,5 +1,4 @@
 using Sharprompt;
-using StockAutomationCore.Cli;
 using StockAutomationCore.Diff;
 using StockAutomationCore.DiffFormat;
 using StockAutomationCore.Download;

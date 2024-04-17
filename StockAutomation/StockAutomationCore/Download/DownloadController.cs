@@ -3,6 +3,8 @@ using StockAutomationCore.Files;
 
 namespace StockAutomationCore.Download;
 
+// TODO DEPRECATE THIS
+
 public class DownloadController
 {
     public string DownloadUrl { get; set; }
@@ -23,6 +25,8 @@ public class DownloadController
 
     public async Task<string> DownloadToFile()
     {
+        _client.DefaultRequestHeaders.Add("User-Agent", "StockAutomationCore/1.0");
+
         var timestamp = DateTime.Now.ToString("s");
         var filename = $"snapshot-{timestamp}.csv";
         await using var streamResult = _client.GetStreamAsync(DownloadUrl).Result;

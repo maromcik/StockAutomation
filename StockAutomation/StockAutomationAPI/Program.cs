@@ -1,6 +1,8 @@
 using BusinessLayer.Services;
 using DataAccessLayer;
+using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
+using StockAutomationCore.Files;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -17,6 +19,12 @@ builder.Services.AddLogging();
 builder.Services.AddRazorPages();
 builder.Services.AddTransient<ISnapshotService, SnapshotService>();
 builder.Services.AddTransient<IEmailService, EmailService>();
+builder.Services.AddHttpClient<ISnapshotService, SnapshotService>(c =>
+{
+    c.DefaultRequestHeaders.Add("User-Agent", "StockAutomationCore/1.0");
+    c.BaseAddress = new System.Uri(configuration.GetSection("download")["defaultUrl"] ??
+                                   "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv");
+});
 
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>

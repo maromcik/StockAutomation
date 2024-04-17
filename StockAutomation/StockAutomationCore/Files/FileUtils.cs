@@ -5,11 +5,11 @@ public static class FileUtils
     public static string SearchPattern { get; set; } = "*.csv";
     public static string SnapshotDir { get; set; } = Directory.GetCurrentDirectory() + "/snapshots";
 
-    public static bool CreateSnapshotDir()
+    public static bool CreateSnapshotDir(string snapshotDir)
     {
         try
         {
-            Directory.CreateDirectory(SnapshotDir);
+            Directory.CreateDirectory(snapshotDir);
             return true;
         }
         catch (Exception)

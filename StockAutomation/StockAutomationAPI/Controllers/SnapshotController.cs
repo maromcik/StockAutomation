@@ -1,3 +1,4 @@
+using BusinessLayer.Models;
 using BusinessLayer.Services;
 using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +22,54 @@ public class SnapshotController : Controller
         try
         {
             return Ok(await _snapshotService.GetSnapshotsAsync());
+        }
+        catch (Exception e)
+        {
+            // TODO handle exceptions
+            return NotFound();
+        }
+    }
+
+    [HttpGet("download")]
+    public async Task<ActionResult> DownloadSnapshots()
+    {
+        try
+        {
+            await _snapshotService.DownloadSnapshotAsync();
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            // TODO handle exceptions
+            Console.WriteLine(e);
+            return NotFound(e);
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteSnapshot(int id)
+    {
+        try
+        {
+            await _snapshotService.DeleteSnapshotAsync(id);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            // TODO handle exceptions
+            Console.WriteLine(e);
+            return NotFound(e);
+        }
+    }
+
+    [HttpPost("compare")]
+    public async Task<ActionResult<string>> CompareSnapshots(SnapshotCompare compare)
+    {
+        try
+        {
+            var diff = await _snapshotService.CompareSnapshotsAsync(compare.NewId, compare.OldId);
+            Console.WriteLine(diff);
+            return Ok(diff);
         }
         catch (Exception e)
         {

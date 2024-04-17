@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using StockAutomationCore.Diff;
 using StockAutomationCore.DiffFormat;
 using StockAutomationCore.Download;
+using StockAutomationCore.Files;
 using StockAutomationCore.Parser;
 
 namespace BusinessLayer.Services;
@@ -11,13 +12,26 @@ namespace BusinessLayer.Services;
 public class SnapshotService : ISnapshotService
 {
     private readonly StockAutomationDbContext _context;
-    private readonly DownloadController _downloadController;
+    private readonly HttpClient _client;
+    private string DownloadUrl { get; set; }
+    private string SnapshotDir { get; set; }
 
-    public SnapshotService(StockAutomationDbContext context)
+    public SnapshotService(StockAutomationDbContext context, HttpClient client)
     {
         _context = context;
+        _client = client;
+        SnapshotDir = Directory.GetCurrentDirectory() + "/snapshots";
+        FileUtils.CreateSnapshotDir(SnapshotDir);
         var url = context.Configurations.FirstOrDefault()?.DownloadUrl;
-        _downloadController = url is null ? new DownloadController() : new DownloadController(url);
+        if (url is null)
+        {
+            DownloadUrl = client.BaseAddress?.ToString() ?? string.Empty;
+        }
+        else
+        {
+            DownloadUrl = url;
+        }
+
     }
 
     public async Task<IEnumerable<Snapshot>> GetSnapshotsAsync()
@@ -27,10 +41,10 @@ public class SnapshotService : ISnapshotService
 
     public async Task DownloadSnapshotAsync()
     {
-        var filename = await _downloadController.DownloadToFile();
+        var filename = await Downloader.DownloadToFile(_client, DownloadUrl, SnapshotDir);
         var file = new Snapshot
         {
-            FilePath = filename,
+            FilePath = $"{FileUtils.SnapshotDir}/{filename}",
         };
         _context.Snapshots.Add(file);
         await _context.SaveChangesAsync();

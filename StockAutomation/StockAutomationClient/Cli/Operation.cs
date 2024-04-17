@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace StockAutomationCore.Cli;
+namespace StockAutomationClient.Cli;
 
 public enum Operation
 {
