@@ -19,62 +19,36 @@ public class SnapshotController : Controller
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Snapshot>>> GetSnapshots()
     {
-        try
-        {
-            return Ok(await _snapshotService.GetSnapshotsAsync());
-        }
-        catch (Exception e)
-        {
-            // TODO handle exceptions
-            return NotFound();
-        }
+        return Ok(await _snapshotService.GetSnapshotsAsync());
     }
 
     [HttpGet("Download")]
-    public async Task<ActionResult> DownloadSnapshots()
+    public async Task<IActionResult> DownloadSnapshots()
     {
-        try
-        {
-            await _snapshotService.DownloadSnapshotAsync();
-            return Ok();
-        }
-        catch (Exception e)
-        {
-            // TODO handle exceptions
-            Console.WriteLine(e);
-            return NotFound(e);
-        }
+        var result = await _snapshotService.DownloadSnapshotAsync();
+        return result.Match<IActionResult>(
+            _ => Ok(),
+            e => BadRequest(e.Message)
+        );
     }
 
     [HttpPost("Delete")]
-    public async Task<ActionResult> DeleteSnapshots(List<int> ids)
+    public async Task<IActionResult> DeleteSnapshots(List<int> ids)
     {
-        try
-        {
-            await _snapshotService.DeleteSnapshotsAsync(ids);
-            return Ok();
-        }
-        catch (Exception e)
-        {
-            // TODO handle exceptions
-            Console.WriteLine(e);
-            return NotFound(e);
-        }
+        var result = await _snapshotService.DeleteSnapshotsAsync(ids);
+        return result.Match<IActionResult>(
+            _ => Ok(),
+            e => BadRequest(e.Message)
+        );
     }
 
     [HttpPost("Compare")]
-    public async Task<ActionResult<string>> CompareSnapshots(SnapshotCompare compare)
+    public async Task<IActionResult> CompareSnapshots(SnapshotCompare compare)
     {
-        try
-        {
-            var diff = await _snapshotService.CompareSnapshotsAsync(compare.NewId, compare.OldId);
-            Console.WriteLine(diff);
-            return Ok(diff);
-        }
-        catch (Exception e)
-        {
-            // TODO handle exceptions
-            return NotFound();
-        }
+        var result = await _snapshotService.CompareSnapshotsAsync(compare.NewId, compare.OldId);
+        return result.Match<IActionResult>(
+            Ok,
+            e => BadRequest(e.Message)
+        );
     }
 }

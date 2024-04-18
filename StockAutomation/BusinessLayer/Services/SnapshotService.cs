@@ -1,3 +1,4 @@
+using BusinessLayer.Errors;
 using DataAccessLayer;
 using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -39,40 +40,67 @@ public class SnapshotService : ISnapshotService
         return await _context.Snapshots.ToListAsync();
     }
 
-    public async Task DownloadSnapshotAsync()
+    public async Task<Result<bool, Error>> DownloadSnapshotAsync()
     {
-        var filename = await Downloader.DownloadToFile(_client, DownloadUrl, SnapshotDir);
-        var file = new Snapshot
+        try
         {
-            FilePath = filename
-        };
-        _context.Snapshots.Add(file);
-        await _context.SaveChangesAsync();
+            var filename = await Downloader.DownloadToFile(_client, DownloadUrl, SnapshotDir);
+            var file = new Snapshot
+            {
+                FilePath = filename
+            };
+            _context.Snapshots.Add(file);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        catch (Exception e)
+        {
+            return new Error
+            {
+                ErrorType = ErrorType.DownloadError,
+                Message = e.Message
+            };
+        }
     }
 
-    public async Task DeleteSnapshotsAsync(List<int> ids)
+    public async Task<Result<bool, Error>> DeleteSnapshotsAsync(List<int> ids)
     {
         var snapshots = await _context.Snapshots.Where(s => ids.Contains(s.Id)).ToListAsync();
+        if (snapshots.Count == 0)
+        {
+            return new Error
+            {
+                ErrorType = ErrorType.NoSnapshotsFound,
+                Message = "Could not delete selected snapshots - not found"
+            };
+        }
         _context.Snapshots.RemoveRange(snapshots);
         FileUtils.DeleteFiles(snapshots.Select(s => GetFullPath(s.FilePath)));
         await _context.SaveChangesAsync();
+        return true;
     }
 
-    public async Task<string> CompareSnapshotsAsync(int idNew, int idOld)
+    public async Task<Result<string, Error>> CompareSnapshotsAsync(int idNew, int idOld)
     {
         var newSnapshot = await _context.Snapshots.FirstOrDefaultAsync(s => s.Id == idNew);
         var oldSnapshot = await _context.Snapshots.FirstOrDefaultAsync(s => s.Id == idOld);
 
         if (oldSnapshot is null)
         {
-            // TODO handle oldfile not found
-            return "";
+            return new Error
+            {
+                ErrorType = ErrorType.SnapshotNotFound,
+                Message = "Selected old snapshot could not be found"
+            };
         }
 
         if (newSnapshot is null)
         {
-            // TODO handle newfile not found
-            return "";
+            return new Error
+            {
+                ErrorType = ErrorType.SnapshotNotFound,
+                Message = "Selected new snapshot could not be found"
+            };
         }
 
         var parsedOldFile = HoldingSnapshotLineParser.ParseLines(GetFullPath(oldSnapshot.FilePath));
