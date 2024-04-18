@@ -2,9 +2,9 @@ using System.Net.Http.Json;
 using BusinessLayer.Models;
 using StockAutomationClient.Models;
 
-namespace StockAutomationClient;
+namespace StockAutomationClient.ApiConnector;
 
-public static class ApiConnection
+public static class SnapshotApi
 {
     private static string ApiUri = "http://localhost:5401";
     private static readonly HttpClient Client = new();

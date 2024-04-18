@@ -1,4 +1,4 @@
-namespace BusinessLayer.Models;
+namespace StockAutomationClient.Models;
 
 public class SubscriberCreate
 {

@@ -1,12 +1,12 @@
 using BusinessLayer.Models;
 using Sharprompt;
+using StockAutomationClient.ApiConnector;
 using StockAutomationClient.Models;
 
 namespace StockAutomationClient.Cli;
 
 public class Cli
 {
-
     public Cli()
     {
         Prompt.ThrowExceptionOnCancel = true;
@@ -50,7 +50,7 @@ public class Cli
                     await FileOperations();
                     break;
                 case Operation.Email:
-                    EmailOperations();
+                    await EmailOperations();
                     break;
                 case Operation.Exit:
                     Environment.Exit(0);
@@ -64,7 +64,6 @@ public class Cli
         {
         }
     }
-
 
 
     private async Task FileOperations()
@@ -100,7 +99,7 @@ public class Cli
         }
     }
 
-    private void EmailOperations()
+    private async Task EmailOperations()
     {
         while (true)
         {
@@ -110,13 +109,13 @@ public class Cli
                 switch (value)
                 {
                     case EmailOperation.Print:
-                        PrintSubscriberList();
+                        await PrintSubscriberList();
                         break;
                     case EmailOperation.Add:
-                        AddSubscriber();
+                        await AddSubscriber();
                         break;
                     case EmailOperation.Delete:
-                        DeleteSubscriber();
+                        await DeleteSubscriber();
                         break;
                     case EmailOperation.Send:
                         SendEmail();
@@ -134,10 +133,9 @@ public class Cli
     }
 
 
-
     private static async Task<List<Snapshot>> FetchFiles()
     {
-        return (await ApiConnection.GetSnapshots()).ToList();
+        return (await SnapshotApi.GetSnapshots()).ToList();
     }
 
     private static async Task PrintFileList()
@@ -168,12 +166,13 @@ public class Cli
             Console.WriteLine("No action performed");
             return;
         }
-        Console.WriteLine(await ApiConnection.DeleteSnapshots(toBeDeleted));
+
+        Console.WriteLine(await SnapshotApi.DeleteSnapshots(toBeDeleted));
     }
 
     private async Task DownloadFile()
     {
-        Console.WriteLine(await ApiConnection.DownloadSnapshot());
+        Console.WriteLine(await SnapshotApi.DownloadSnapshot());
     }
 
     private async Task Compare()
@@ -193,40 +192,45 @@ public class Cli
 
         var oldFile = Prompt.Select<Snapshot>("Select old file", files,
             textSelector: f => $"{f.FilePath}     {f.DownloadedAt}");
-        var diff = await ApiConnection.CompareSnapshots(new SnapshotCompare
+        var diff = await SnapshotApi.CompareSnapshots(new SnapshotCompare
         {
             NewId = newFile.Id,
             OldId = oldFile.Id
         });
         Console.WriteLine($"Differences:\n{diff}");
-
     }
 
-    private void AddSubscriber()
+    private async Task AddSubscriber()
     {
         var email = Prompt.Input<string>("Enter email address of the new subscriber");
-        Console.WriteLine("Subscriber added");
+        var response = await EmailApi.CreateSubscriber(new SubscriberCreate
+        {
+            Email = email
+        });
+        Console.WriteLine(response);
     }
 
-    private void PrintSubscriberList()
+    private async Task PrintSubscriberList()
     {
-        // for (var i = 0; i < _emailController.Subscriptions.Count; i++)
-        // {
-        //     Console.WriteLine($"{i + 1}   {_emailController.Subscriptions[i].EmailAddress}");
-        // }
+        var subscribers = await EmailApi.GetSubscribers();
+        for (var i = 0; i < subscribers.Count; i++)
+        {
+            Console.WriteLine($"{i + 1}   {subscribers[i].Email}");
+        }
     }
 
-    private void DeleteSubscriber()
+    private async Task DeleteSubscriber()
     {
-        // if (_emailController.Subscriptions.Count == 0)
-        // {
-        //     Console.WriteLine("Subscriber list is empty");
-        //     return;
-        // }
+        var subscribers = await EmailApi.GetSubscribers();
+        if (subscribers.Count == 0)
+        {
+            Console.WriteLine("Subscriber list is empty");
+            return;
+        }
 
         var toBeDeleted =
-            Prompt.MultiSelect("Select files to be deleted", new List<Subscriber>(), pageSize: 10,
-                textSelector: s => s.Email);
+            Prompt.MultiSelect("Select files to be deleted", subscribers, pageSize: 10,
+                textSelector: s => s.Email).Select(e => e.Id).ToList();
         var isOk = Prompt.Confirm("Is this OK?");
         if (!isOk)
         {
@@ -234,7 +238,8 @@ public class Cli
             return;
         }
 
-        Console.WriteLine("Selected subscribers were deleted successfully");
+        var response = await EmailApi.DeleteSubscribers(toBeDeleted);
+        Console.WriteLine(response);
     }
 
     private void SendEmail()

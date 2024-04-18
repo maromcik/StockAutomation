@@ -5,5 +5,8 @@ public enum ErrorType
     SnapshotNotFound,
     NoSnapshotsFound,
 
-    DownloadError
+    DownloadError,
+
+    EmailEmpty,
+    NoSubscribersFound,
 }
