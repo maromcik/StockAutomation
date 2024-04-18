@@ -168,22 +168,12 @@ public class Cli
             Console.WriteLine("No action performed");
             return;
         }
-
-        try
-        {
-            await ApiConnection.DeleteSnapshots(toBeDeleted);
-            Console.WriteLine("Selected files were deleted");
-        }
-
-        catch (Exception e)
-        {
-            Console.WriteLine($"Error occured: {e.Message}");
-        }
+        Console.WriteLine(await ApiConnection.DeleteSnapshots(toBeDeleted));
     }
 
     private async Task DownloadFile()
     {
-        await ApiConnection.DownloadSnapshot();
+        Console.WriteLine(await ApiConnection.DownloadSnapshot());
     }
 
     private async Task Compare()

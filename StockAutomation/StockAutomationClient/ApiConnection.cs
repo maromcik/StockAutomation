@@ -21,12 +21,15 @@ public static class ApiConnection
         return snapshots;
     }
 
-    public static async Task DownloadSnapshot()
+    public static async Task<string> DownloadSnapshot()
     {
         var response = await Client.GetAsync($"{ApiUri}/Snapshot/Download");
         if (response.IsSuccessStatusCode)
         {
+            return "Successfully downloaded";
         }
+
+        return await response.Content.ReadAsStringAsync();
     }
 
     public static async Task<string> CompareSnapshots(SnapshotCompare snapshotCompare)
@@ -36,9 +39,15 @@ public static class ApiConnection
         return await response.Content.ReadAsStringAsync();
     }
 
-    public static async Task DeleteSnapshots(List<int> ids)
+    public static async Task<string> DeleteSnapshots(List<int> ids)
     {
         var response = await Client.PostAsJsonAsync(
             $"{ApiUri}/Snapshot/Delete", ids);
+        if (response.IsSuccessStatusCode)
+        {
+            return "Successfully deleted";
+        }
+
+        return await response.Content.ReadAsStringAsync();
     }
 }
