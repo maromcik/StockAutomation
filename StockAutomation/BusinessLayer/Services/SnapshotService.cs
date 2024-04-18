@@ -37,7 +37,7 @@ public class SnapshotService : ISnapshotService
 
     public async Task<IEnumerable<Snapshot>> GetSnapshotsAsync()
     {
-        return await _context.Snapshots.ToListAsync();
+        return await _context.Snapshots.OrderByDescending(s => s.DownloadedAt).ToListAsync();
     }
 
     public async Task<Result<bool, Error>> DownloadSnapshotAsync()
