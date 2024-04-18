@@ -1,3 +1,4 @@
+using BusinessLayer.Facades;
 using BusinessLayer.Services;
 using DataAccessLayer;
 using DataAccessLayer.Entities;
@@ -25,6 +26,8 @@ builder.Services.AddHttpClient<ISnapshotService, SnapshotService>(c =>
     c.BaseAddress = new Uri(configuration.GetSection("download")["defaultUrl"] ??
                                    "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv");
 });
+
+builder.Services.AddTransient<IProcessFacade, ProcessFacade>();
 
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>

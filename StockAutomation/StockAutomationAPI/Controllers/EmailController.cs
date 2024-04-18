@@ -1,3 +1,4 @@
+using BusinessLayer.Facades;
 using BusinessLayer.Models;
 using BusinessLayer.Services;
 using DataAccessLayer.Entities;
@@ -7,7 +8,7 @@ namespace StockAutomationAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class EmailController(IEmailService emailService) : Controller
+public class EmailController(IEmailService emailService, IProcessFacade processFacade) : Controller
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Subscriber>>> GetSubscribers()
@@ -25,11 +26,15 @@ public class EmailController(IEmailService emailService) : Controller
             e => BadRequest(e.Message)
         );
     }
-    
+
     [HttpPost("Send")]
-    public async Task<IActionResult> SendEmail()
+    public async Task<IActionResult> SendEmail(EmailSend emailSend)
     {
-        return Ok(await emailService.SendEmailAsync());
+        var result = await processFacade.ProcessDiff(emailSend);
+        return result.Match<IActionResult>(
+            s => Ok(),
+            e => BadRequest(e.Message)
+        );
     }
 
     [HttpPost]
