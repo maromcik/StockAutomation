@@ -118,7 +118,7 @@ public class Cli
                         await DeleteSubscriber();
                         break;
                     case EmailOperation.Send:
-                        SendEmail();
+                        await SendEmail();
                         break;
                     default:
                         Console.WriteLine("Unknown command");
@@ -242,15 +242,9 @@ public class Cli
         Console.WriteLine(response);
     }
 
-    private void SendEmail()
+    private async Task SendEmail()
     {
-        try
-        {
-            Console.WriteLine("Emails were successfully sent");
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine($"Failed to send email. Error: {e.Message}");
-        }
+        var response = await EmailApi.SendEmail();
+        Console.WriteLine(response);
     }
 }

@@ -12,6 +12,13 @@ public class EmailService(StockAutomationDbContext context) : IEmailService
     {
         return await context.Subscribers.ToListAsync();
     }
+    
+    public async Task<Result<bool, Error>> SendEmailAsync()
+    {
+        var subscribers = await context.Subscribers.ToListAsync();
+        
+        return true;
+    }
 
     public async Task<Result<bool, Error>> CreateSubscriber(SubscriberCreate subscriberCreate)
     {
@@ -34,7 +41,7 @@ public class EmailService(StockAutomationDbContext context) : IEmailService
         return true;
     }
 
-    public async Task<Result<bool, Error>> DeleteSSubscribersAsync(List<int> ids)
+    public async Task<Result<bool, Error>> DeleteSubscribersAsync(List<int> ids)
     {
         var subscribers = await context.Subscribers.Where(s => ids.Contains(s.Id)).ToListAsync();
         if (subscribers.Count == 0)

@@ -20,7 +20,16 @@ public static class EmailApi
 
         return emails;
     }
-
+    
+    public static async Task<string> SendEmail()
+    {
+        var response = await Client.GetAsync($"{ApiConfiguration.ApiUri}/Email/Send");
+        if (response.IsSuccessStatusCode)
+        {
+            return "Emails were successfully sent";
+        }
+        return await response.Content.ReadAsStringAsync();
+    }
 
     public static async Task<string> CreateSubscriber(SubscriberCreate subscriberCreate)
     {

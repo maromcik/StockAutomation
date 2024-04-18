@@ -19,11 +19,17 @@ public class EmailController(IEmailService emailService) : Controller
     [HttpPost("Delete")]
     public async Task<IActionResult> DeleteSubscribers(List<int> ids)
     {
-        var result = await emailService.DeleteSSubscribersAsync(ids);
+        var result = await emailService.DeleteSubscribersAsync(ids);
         return result.Match<IActionResult>(
             _ => Ok(),
             e => BadRequest(e.Message)
         );
+    }
+    
+    [HttpPost("Send")]
+    public async Task<IActionResult> SendEmail()
+    {
+        return Ok(await emailService.SendEmailAsync());
     }
 
     [HttpPost]
