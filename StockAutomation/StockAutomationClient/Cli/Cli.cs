@@ -25,10 +25,15 @@ public class Cli
             {
                 return;
             }
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine(
+                    $"Could not connect to the API server\nOriginal message: {e.Message}");
+            }
             catch (SystemException e)
             {
                 Console.WriteLine(
-                    $"An exception occured, make sure your terminal windows is large enough!\nOriginal message{e.Message}");
+                    $"An exception occured, make sure your terminal windows is large enough!\nOriginal message: {e.Message}");
                 return;
             }
         }
