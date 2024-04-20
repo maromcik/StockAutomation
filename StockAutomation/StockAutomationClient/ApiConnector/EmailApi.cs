@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using BusinessLayer.Models;
 using StockAutomationClient.Models;
 using StockAutomationCore.Configuration;
 using StockAutomationConfig = StockAutomationClient.Configuration.StockAutomationConfig;
@@ -21,9 +22,9 @@ public static class EmailApi
         return emails;
     }
 
-    public static async Task<string> SendEmail()
+    public static async Task<string> SendEmail(SnapshotCompare snapshotCompare)
     {
-        var response = await Client.GetAsync($"{ApiConfiguration.ApiUri}/Email/Send");
+        var response = await Client.PostAsJsonAsync($"{ApiConfiguration.ApiUri}/Email/Send", snapshotCompare);
         return await response.Content.ReadAsStringAsync();
     }
 

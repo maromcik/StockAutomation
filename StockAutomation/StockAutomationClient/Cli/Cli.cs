@@ -175,14 +175,14 @@ public class Cli
         Console.WriteLine(await SnapshotApi.DownloadSnapshot());
     }
 
-    private async Task Compare()
+    private async Task<(bool result, SnapshotCompare snapshotCompare)> ChooseSnapshots()
     {
         var files = await FetchFiles();
 
         if (files.Count < 2)
         {
             Console.WriteLine("You must download two or more files");
-            return;
+            return (false, new SnapshotCompare());
         }
 
         var newFile = Prompt.Select<Snapshot>("Select new file", files,
@@ -192,11 +192,21 @@ public class Cli
 
         var oldFile = Prompt.Select<Snapshot>("Select old file", files,
             textSelector: f => $"{f.FilePath}     {f.DownloadedAt}");
-        var diff = await SnapshotApi.CompareSnapshots(new SnapshotCompare
+        return (true, new SnapshotCompare
         {
             NewId = newFile.Id,
             OldId = oldFile.Id
         });
+    }
+
+    private async Task Compare()
+    {
+        var chooseSnapshots = await ChooseSnapshots();
+        if (!chooseSnapshots.result)
+        {
+            return;
+        }
+        var diff = await SnapshotApi.CompareSnapshots(chooseSnapshots.snapshotCompare);
         Console.WriteLine($"Differences:\n{diff}");
     }
 
@@ -244,7 +254,12 @@ public class Cli
 
     private async Task SendEmail()
     {
-        var response = await EmailApi.SendEmail();
+        var chooseSnapshots = await ChooseSnapshots();
+        if (!chooseSnapshots.result)
+        {
+            return;
+        }
+        var response = await EmailApi.SendEmail(chooseSnapshots.snapshotCompare);
         Console.WriteLine(response);
     }
 }
