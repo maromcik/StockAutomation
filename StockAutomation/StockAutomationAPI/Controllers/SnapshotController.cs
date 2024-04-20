@@ -1,3 +1,4 @@
+using BusinessLayer.Errors;
 using BusinessLayer.Models;
 using BusinessLayer.Services;
 using DataAccessLayer.Entities;
@@ -41,7 +42,15 @@ public class SnapshotController(ISnapshotService snapshotService) : Controller
         var result = await snapshotService.CompareSnapshotsAsync(compare.NewId, compare.OldId);
         return result.Match<IActionResult>(
             Ok,
-            e => BadRequest(e.Message)
+            e =>
+            {
+                return e.ErrorType switch
+                {
+                    ErrorType.SnapshotNotFound => NotFound(e.Message),
+                    ErrorType.NoSnapshotsFound => NotFound(e.Message),
+                    _ => BadRequest(e.Message)
+                };
+            }
         );
     }
 }

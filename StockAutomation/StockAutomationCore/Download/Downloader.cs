@@ -9,6 +9,7 @@ public static class Downloader
         await using var streamResult = client.GetStreamAsync(downloadUrl).Result;
         await using var fs = new FileStream(Path.Join(snapshotDir, filename), FileMode.CreateNew);
         await streamResult.CopyToAsync(fs);
+        await fs.FlushAsync();
         return filename;
     }
 }

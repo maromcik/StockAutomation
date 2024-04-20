@@ -21,7 +21,7 @@ public class SnapshotService : ISnapshotService
     {
         _context = context;
         _client = client;
-        SnapshotDir = Directory.GetCurrentDirectory() + "/snapshots";
+        SnapshotDir = Directory.GetCurrentDirectory() + "/../" + "/snapshots";
         FileUtils.CreateSnapshotDir(SnapshotDir);
         var url = context.Configurations.FirstOrDefault()?.DownloadUrl;
         if (url is null)
@@ -103,12 +103,22 @@ public class SnapshotService : ISnapshotService
             };
         }
 
-        var parsedOldFile = HoldingSnapshotLineParser.ParseLines(GetFullPath(oldSnapshot.FilePath));
-        var parsedNewFile = HoldingSnapshotLineParser.ParseLines(GetFullPath(newSnapshot.FilePath));
-
-        // TODO handle various formats
-        var diff = new HoldingsDiff(parsedOldFile, parsedNewFile);
-        return TextDiffFormatter.Format(diff);
+        try
+        {
+            var parsedOldFile = HoldingSnapshotLineParser.ParseLines(GetFullPath(oldSnapshot.FilePath));
+            var parsedNewFile = HoldingSnapshotLineParser.ParseLines(GetFullPath(newSnapshot.FilePath));
+            // TODO handle various formats
+            var diff = new HoldingsDiff(parsedOldFile, parsedNewFile);
+            return TextDiffFormatter.Format(diff);
+        }
+        catch (IOException)
+        {
+            return new Error
+            {
+                ErrorType = ErrorType.FileNotFound,
+                Message = "File could not be found."
+            };
+        }
     }
 
     private string GetFullPath(string filename)
