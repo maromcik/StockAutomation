@@ -20,7 +20,7 @@ public class SnapshotController(ISnapshotService snapshotService) : Controller
     {
         var result = await snapshotService.DownloadSnapshotAsync();
         return result.Match<IActionResult>(
-            _ => Ok(),
+            _ => Ok("Successfully downloaded"),
             e => BadRequest(e.Message)
         );
     }
@@ -30,7 +30,7 @@ public class SnapshotController(ISnapshotService snapshotService) : Controller
     {
         var result = await snapshotService.DeleteSnapshotsAsync(ids);
         return result.Match<IActionResult>(
-            _ => Ok(),
+            _ => Ok("Successfully deleted"),
             e => BadRequest(e.Message)
         );
     }

@@ -23,11 +23,6 @@ public static class SnapshotApi
     public static async Task<string> DownloadSnapshot()
     {
         var response = await Client.GetAsync($"{ApiConfiguration.ApiUri}/Snapshot/Download");
-        if (response.IsSuccessStatusCode)
-        {
-            return "Successfully downloaded";
-        }
-
         return await response.Content.ReadAsStringAsync();
     }
 
@@ -42,11 +37,6 @@ public static class SnapshotApi
     {
         var response = await Client.PostAsJsonAsync(
             $"{ApiConfiguration.ApiUri}/Snapshot/Delete", ids);
-        if (response.IsSuccessStatusCode)
-        {
-            return "Successfully deleted";
-        }
-
         return await response.Content.ReadAsStringAsync();
     }
 }

@@ -20,14 +20,10 @@ public static class EmailApi
 
         return emails;
     }
-    
+
     public static async Task<string> SendEmail()
     {
         var response = await Client.GetAsync($"{ApiConfiguration.ApiUri}/Email/Send");
-        if (response.IsSuccessStatusCode)
-        {
-            return "Emails were successfully sent";
-        }
         return await response.Content.ReadAsStringAsync();
     }
 
@@ -35,10 +31,6 @@ public static class EmailApi
     {
         var response = await Client.PostAsJsonAsync(
             $"{ApiConfiguration.ApiUri}/Email", subscriberCreate);
-        if (response.IsSuccessStatusCode)
-        {
-            return "Successfully created";
-        }
         return await response.Content.ReadAsStringAsync();
     }
 
@@ -46,11 +38,6 @@ public static class EmailApi
     {
         var response = await Client.PostAsJsonAsync(
             $"{ApiConfiguration.ApiUri}/Email/Delete", ids);
-        if (response.IsSuccessStatusCode)
-        {
-            return "Successfully deleted";
-        }
-
         return await response.Content.ReadAsStringAsync();
     }
 }

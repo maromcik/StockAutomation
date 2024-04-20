@@ -22,7 +22,7 @@ public class EmailController(IEmailService emailService, IProcessFacade processF
     {
         var result = await emailService.DeleteSubscribersAsync(ids);
         return result.Match<IActionResult>(
-            _ => Ok(),
+            _ => Ok("Successfully deleted"),
             e => BadRequest(e.Message)
         );
     }
@@ -32,7 +32,7 @@ public class EmailController(IEmailService emailService, IProcessFacade processF
     {
         var result = await processFacade.ProcessDiff(emailSend);
         return result.Match<IActionResult>(
-            s => Ok(),
+            s => Ok("Emails were successfully sent"),
             e => BadRequest(e.Message)
         );
     }
@@ -42,7 +42,7 @@ public class EmailController(IEmailService emailService, IProcessFacade processF
     {
         var result = await emailService.CreateSubscriber(subscriberCreate);
         return result.Match<IActionResult>(
-            _ => Ok(),
+            _ => Ok("Successfully created"),
             e => BadRequest(e.Message)
         );
     }
