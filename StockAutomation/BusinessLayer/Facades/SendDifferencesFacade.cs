@@ -4,7 +4,7 @@ using BusinessLayer.Services;
 
 namespace BusinessLayer.Facades;
 
-public class ProcessFacade(IEmailService emailService, ISnapshotService snapshotService) : IProcessFacade
+public class SendDifferencesFacade(IEmailService emailService, ISnapshotService snapshotService) : ISendDifferencesFacade
 {
     public async Task<Result<bool, Error>> ProcessDiff(EmailSend emailSend)
     {

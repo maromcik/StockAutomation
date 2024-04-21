@@ -47,7 +47,7 @@ public class SnapshotService : ISnapshotService
             var filename = await Downloader.DownloadToFile(_client, DownloadUrl, SnapshotDir);
             var file = new Snapshot
             {
-                FilePath = filename
+                FileName = filename
             };
             _context.Snapshots.Add(file);
             await _context.SaveChangesAsync();
@@ -75,7 +75,7 @@ public class SnapshotService : ISnapshotService
             };
         }
         _context.Snapshots.RemoveRange(snapshots);
-        FileUtils.DeleteFiles(snapshots.Select(s => GetFullPath(s.FilePath)));
+        FileUtils.DeleteFiles(snapshots.Select(s => GetFullPath(s.FileName)));
         await _context.SaveChangesAsync();
         return true;
     }
@@ -105,8 +105,8 @@ public class SnapshotService : ISnapshotService
 
         try
         {
-            var parsedOldFile = HoldingSnapshotLineParser.ParseLines(GetFullPath(oldSnapshot.FilePath));
-            var parsedNewFile = HoldingSnapshotLineParser.ParseLines(GetFullPath(newSnapshot.FilePath));
+            var parsedOldFile = HoldingSnapshotLineParser.ParseLines(GetFullPath(oldSnapshot.FileName));
+            var parsedNewFile = HoldingSnapshotLineParser.ParseLines(GetFullPath(newSnapshot.FileName));
             // TODO handle various formats
             var diff = new HoldingsDiff(parsedOldFile, parsedNewFile);
             return TextDiffFormatter.Format(diff);

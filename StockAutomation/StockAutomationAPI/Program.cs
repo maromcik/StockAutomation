@@ -27,7 +27,7 @@ builder.Services.AddHttpClient<ISnapshotService, SnapshotService>(c =>
                                    "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv");
 });
 
-builder.Services.AddTransient<IProcessFacade, ProcessFacade>();
+builder.Services.AddTransient<ISendDifferencesFacade, SendDifferencesFacade>();
 
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>

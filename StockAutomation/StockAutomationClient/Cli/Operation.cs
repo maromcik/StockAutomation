@@ -4,17 +4,17 @@ namespace StockAutomationClient.Cli;
 
 public enum Operation
 {
-    [Display(Name = "file operations")] File,
+    [Display(Name = "snapshot operations")] Snapshot,
     [Display(Name = "email operations")] Email,
     [Display(Name = "exit")] Exit,
 }
 
-public enum FileOperation
+public enum SnapshotOperation
 {
-    [Display(Name = "print files")] Print,
-    [Display(Name = "download new file")] Download,
-    [Display(Name = "compare files")] Compare,
-    [Display(Name = "delete files")] Delete,
+    [Display(Name = "print snapshots")] Print,
+    [Display(Name = "download new snapshot")] Download,
+    [Display(Name = "compare snapshots")] Compare,
+    [Display(Name = "delete snapshots")] Delete,
 }
 
 

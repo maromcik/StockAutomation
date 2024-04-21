@@ -8,7 +8,7 @@ namespace StockAutomationAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class EmailController(IEmailService emailService, IProcessFacade processFacade) : Controller
+public class EmailController(IEmailService emailService, ISendDifferencesFacade sendDifferencesFacade) : Controller
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Subscriber>>> GetSubscribers()
@@ -30,7 +30,7 @@ public class EmailController(IEmailService emailService, IProcessFacade processF
     [HttpPost("Send")]
     public async Task<IActionResult> SendEmail(EmailSend emailSend)
     {
-        var result = await processFacade.ProcessDiff(emailSend);
+        var result = await sendDifferencesFacade.ProcessDiff(emailSend);
         return result.Match<IActionResult>(
             s => Ok("Emails were successfully sent"),
             e => BadRequest(e.Message)

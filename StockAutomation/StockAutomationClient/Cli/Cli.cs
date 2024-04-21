@@ -46,8 +46,8 @@ public class Cli
         {
             switch (value)
             {
-                case Operation.File:
-                    await FileOperations();
+                case Operation.Snapshot:
+                    await SnapshotOperations();
                     break;
                 case Operation.Email:
                     await EmailOperations();
@@ -66,25 +66,25 @@ public class Cli
     }
 
 
-    private async Task FileOperations()
+    private async Task SnapshotOperations()
     {
         while (true)
         {
             try
             {
-                var value = Prompt.Select<FileOperation>("Select file command or return with CTRL + c");
+                var value = Prompt.Select<SnapshotOperation>("Select snapshot command or return with CTRL + c");
                 switch (value)
                 {
-                    case FileOperation.Print:
-                        await PrintFileList();
+                    case SnapshotOperation.Print:
+                        await PrintSnapshotList();
                         break;
-                    case FileOperation.Delete:
-                        await DeleteFiles();
+                    case SnapshotOperation.Delete:
+                        await DeleteSnapshots();
                         break;
-                    case FileOperation.Download:
-                        await DownloadFile();
+                    case SnapshotOperation.Download:
+                        await DownloadSnapshot();
                         break;
-                    case FileOperation.Compare:
+                    case SnapshotOperation.Compare:
                         await Compare();
                         break;
                     default:
@@ -133,33 +133,33 @@ public class Cli
     }
 
 
-    private static async Task<List<Snapshot>> FetchFiles()
+    private static async Task<List<Snapshot>> FetchSnapshots()
     {
         return (await SnapshotApi.GetSnapshots()).ToList();
     }
 
-    private static async Task PrintFileList()
+    private static async Task PrintSnapshotList()
     {
-        var files = await FetchFiles();
-        for (var i = 0; i < files.Count; i++)
+        var snapshots = await FetchSnapshots();
+        for (var i = 0; i < snapshots.Count; i++)
         {
-            Console.WriteLine($"{i + 1}   {files[i].FilePath}   {files[i].DownloadedAt}");
+            Console.WriteLine($"{i + 1}   {snapshots[i].FileName}   {snapshots[i].DownloadedAt}");
         }
     }
 
-    private static async Task DeleteFiles()
+    private static async Task DeleteSnapshots()
     {
-        var files = await FetchFiles();
+        var snapshots = await FetchSnapshots();
 
-        if (files.Count == 0)
+        if (snapshots.Count == 0)
         {
-            Console.WriteLine("No files found");
+            Console.WriteLine("No snapshots found");
             return;
         }
 
         var toBeDeleted =
-            Prompt.MultiSelect("Select files to be deleted", files, pageSize: 10,
-                textSelector: f => $"{f.FilePath}     {f.DownloadedAt}").Select(s => s.Id).ToList();
+            Prompt.MultiSelect("Select snapshots to be deleted", snapshots, pageSize: 10,
+                textSelector: f => $"{f.FileName}     {f.DownloadedAt}").Select(s => s.Id).ToList();
         var isOk = Prompt.Confirm("Is this OK?");
         if (!isOk)
         {
@@ -170,32 +170,32 @@ public class Cli
         Console.WriteLine(await SnapshotApi.DeleteSnapshots(toBeDeleted));
     }
 
-    private async Task DownloadFile()
+    private async Task DownloadSnapshot()
     {
         Console.WriteLine(await SnapshotApi.DownloadSnapshot());
     }
 
     private async Task<(bool result, SnapshotCompare snapshotCompare)> ChooseSnapshots()
     {
-        var files = await FetchFiles();
+        var snapshots = await FetchSnapshots();
 
-        if (files.Count < 2)
+        if (snapshots.Count < 2)
         {
-            Console.WriteLine("You must download two or more files");
+            Console.WriteLine("You must download two or more snapshots");
             return (false, new SnapshotCompare());
         }
 
-        var newFile = Prompt.Select<Snapshot>("Select new file", files,
-            textSelector: f => $"{f.FilePath}     {f.DownloadedAt}");
+        var newSnapshot = Prompt.Select<Snapshot>("Select new snapshot", snapshots,
+            textSelector: f => $"{f.FileName}     {f.DownloadedAt}");
 
-        files.Remove(newFile);
+        snapshots.Remove(newSnapshot);
 
-        var oldFile = Prompt.Select<Snapshot>("Select old file", files,
-            textSelector: f => $"{f.FilePath}     {f.DownloadedAt}");
+        var oldSnapshot = Prompt.Select<Snapshot>("Select old snapshot", snapshots,
+            textSelector: f => $"{f.FileName}     {f.DownloadedAt}");
         return (true, new SnapshotCompare
         {
-            NewId = newFile.Id,
-            OldId = oldFile.Id
+            NewId = newSnapshot.Id,
+            OldId = oldSnapshot.Id
         });
     }
 
@@ -215,7 +215,7 @@ public class Cli
         var email = Prompt.Input<string>("Enter email address of the new subscriber");
         var response = await EmailApi.CreateSubscriber(new SubscriberCreate
         {
-            Email = email
+            EmailAddress = email
         });
         Console.WriteLine(response);
     }
@@ -225,7 +225,7 @@ public class Cli
         var subscribers = await EmailApi.GetSubscribers();
         for (var i = 0; i < subscribers.Count; i++)
         {
-            Console.WriteLine($"{i + 1}   {subscribers[i].Email}");
+            Console.WriteLine($"{i + 1}   {subscribers[i].EmailAddress}");
         }
     }
 
@@ -239,8 +239,8 @@ public class Cli
         }
 
         var toBeDeleted =
-            Prompt.MultiSelect("Select files to be deleted", subscribers, pageSize: 10,
-                textSelector: s => s.Email).Select(e => e.Id).ToList();
+            Prompt.MultiSelect("Select snapshots to be deleted", subscribers, pageSize: 10,
+                textSelector: s => s.EmailAddress).Select(e => e.Id).ToList();
         var isOk = Prompt.Confirm("Is this OK?");
         if (!isOk)
         {

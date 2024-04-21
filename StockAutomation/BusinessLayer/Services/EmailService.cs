@@ -22,7 +22,7 @@ public class EmailService(StockAutomationDbContext context) : IEmailService
 
     public async Task<Result<bool, Error>> CreateSubscriber(SubscriberCreate subscriberCreate)
     {
-        if (string.IsNullOrEmpty(subscriberCreate.Email))
+        if (string.IsNullOrEmpty(subscriberCreate.EmailAddress))
         {
             return new Error
             {
@@ -34,7 +34,7 @@ public class EmailService(StockAutomationDbContext context) : IEmailService
         // Validate emails
         var subscriber = new Subscriber
         {
-            Email = subscriberCreate.Email
+            EmailAddress = subscriberCreate.EmailAddress
         };
         context.Add(subscriber);
         await context.SaveChangesAsync();
