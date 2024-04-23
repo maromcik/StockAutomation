@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using StockAutomationCore.Files;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddConfiguration(StockAutomationCore.Configuration.StockAutomationConfig.Configuration);
 var configuration = builder.Configuration;
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

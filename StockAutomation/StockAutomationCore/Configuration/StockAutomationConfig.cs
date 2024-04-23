@@ -4,12 +4,14 @@ namespace StockAutomationCore.Configuration;
 
 public static class StockAutomationConfig
 {
-    private static readonly IConfiguration Configuration;
+    public static readonly IConfiguration Configuration;
 
     static StockAutomationConfig()
     {
+        var projectDir = Directory.GetParent(Directory.GetCurrentDirectory())?.FullName ?? Directory.GetCurrentDirectory();
+
         var builder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
+            .SetBasePath(projectDir)
             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
         Configuration = builder.Build();
