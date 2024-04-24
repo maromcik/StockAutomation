@@ -14,8 +14,8 @@ public class SendDifferencesFacade(IEmailService emailService, ISnapshotService 
             return result.Error;
         }
 
-        // pass result.Value here
-        var email = await emailService.SendEmailAsync();
+        var diff = result.Value;
+        var email = await emailService.SendEmailAsync(diff);
         if (!email.IsOk)
         {
             return email.Error;
