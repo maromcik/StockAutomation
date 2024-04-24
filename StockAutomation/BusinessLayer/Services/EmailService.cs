@@ -20,14 +20,14 @@ public class EmailService(StockAutomationDbContext context, IConfiguration confi
     public async Task<Result<bool, Error>> SendEmailAsync(string diff)
     {
         var subscribers = await context.Subscribers.ToListAsync();
-        var smtpConfig = StockAutomationCore.Configuration.StockAutomationConfig.GetSection("SMTP");
-        
+        var smtpConfig = configuration.GetSection("SMTP");
+
         var host = smtpConfig["Host"];
         var port = Convert.ToInt32(smtpConfig["Port"]);
         var username = smtpConfig["Username"];
         var password = smtpConfig["Password"];
         var from = smtpConfig["From"];
-        
+
         if (string.IsNullOrEmpty(host) ||
             port == 0 ||
             string.IsNullOrEmpty(username) ||
@@ -40,7 +40,7 @@ public class EmailService(StockAutomationDbContext context, IConfiguration confi
                 Message = "Invalid credentials"
             };
         }
-        
+
         var smtpClient = new SmtpClient(host)
         {
             Port = port,
@@ -55,7 +55,7 @@ public class EmailService(StockAutomationDbContext context, IConfiguration confi
             Body = CreateEmailBody(diff),
             IsBodyHtml = true,
         };
-        
+
         foreach (var subscription in subscribers)
         {
             mailMessage.Bcc.Add(subscription.EmailAddress);
@@ -84,7 +84,7 @@ public class EmailService(StockAutomationDbContext context, IConfiguration confi
                 Message = "Invalid email address"
             };
         }
-        
+
         var subscriber = new Subscriber
         {
             EmailAddress = subscriberCreate.EmailAddress
@@ -93,7 +93,7 @@ public class EmailService(StockAutomationDbContext context, IConfiguration confi
         await context.SaveChangesAsync();
         return true;
     }
-    
+
     private bool IsEmailAddressValid(string emailAddress)
     {
         try
@@ -124,7 +124,7 @@ public class EmailService(StockAutomationDbContext context, IConfiguration confi
         await context.SaveChangesAsync();
         return true;
     }
-    
+
     private string CreateEmailBody(string diff)
     {
         var body = $@"
