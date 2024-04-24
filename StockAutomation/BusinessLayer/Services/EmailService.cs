@@ -3,20 +3,21 @@ using BusinessLayer.Models;
 using DataAccessLayer;
 using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace BusinessLayer.Services;
 
-public class EmailService(StockAutomationDbContext context) : IEmailService
+public class EmailService(StockAutomationDbContext context, IConfiguration configuration) : IEmailService
 {
     public async Task<IEnumerable<Subscriber>> GetSubscribersAsync()
     {
         return await context.Subscribers.ToListAsync();
     }
-    
+
     public async Task<Result<bool, Error>> SendEmailAsync()
     {
         var subscribers = await context.Subscribers.ToListAsync();
-        
+        Console.WriteLine(configuration.GetSection("SMTP")["Username"]);
         return true;
     }
 
