@@ -64,6 +64,19 @@ public class EmailService(StockAutomationDbContext context, IConfiguration confi
         smtpClient.Send(mailMessage);
         return true;
     }
+    
+    public async Task<Result<bool, Error>> SaveEmailSettingsAsync(FormatSettings settings)
+    {
+        // Matúš alebo Kubo
+        return true;
+    }
+    
+    public async Task<FormatSettings> GetEmailSettings()
+    {
+        // Matúš alebo Kubo
+        var settings = new FormatSettings("json");
+        return settings;
+    }
 
     public async Task<Result<bool, Error>> CreateSubscriber(SubscriberCreate subscriberCreate)
     {

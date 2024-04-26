@@ -33,18 +33,6 @@ public class HomeController : Controller
         return View(model);
     }
     
-    
-    
-    public IActionResult Subscribers()
-    {
-        return View();
-    }
-
-    public IActionResult EmailConfiguration()
-    {
-        return View();
-    }
-    
     public IActionResult Privacy()
     {
         return View();

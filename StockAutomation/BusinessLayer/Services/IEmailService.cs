@@ -13,4 +13,8 @@ public interface IEmailService
     public Task<Result<bool, Error>> CreateSubscriber(SubscriberCreate subscriberCreate);
     public Task<Result<bool, Error>> DeleteSubscribersAsync(List<int> ids);
     public Task<Result<bool, Error>> SendEmailAsync(string diff);
+    public Task<Result<bool, Error>> SaveEmailSettingsAsync(FormatSettings settings);
+
+    public Task<FormatSettings> GetEmailSettings();
+
 }
