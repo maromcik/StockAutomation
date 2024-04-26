@@ -124,6 +124,28 @@ public class EmailService(StockAutomationDbContext context, IConfiguration confi
         await context.SaveChangesAsync();
         return true;
     }
+    
+    public async Task<SubscriberView> GetSearchSubscribersAsync(PaginationSettings? paginationSettings, string? query)
+    {
+        var subscribers = context.Subscribers.AsQueryable();
+
+
+        if (paginationSettings != null)
+        {
+            var subscribersCount = await subscribers.CountAsync();
+            var pageCount = subscribersCount / paginationSettings.PageSize + int.Min( subscribersCount % paginationSettings.PageSize, 1);
+            subscribers = subscribers
+                .Skip((paginationSettings.PageNumber - 1) * paginationSettings.PageSize)
+                .Take(paginationSettings.PageSize);
+            var result = await subscribers.ToListAsync();
+            return new SubscriberView(result,
+                paginationSettings.PageNumber, pageCount);
+        }
+        var result2 = await subscribers.ToListAsync(); 
+        return new SubscriberView(result2,
+            1, 1);
+
+    }
 
     private string CreateEmailBody(string diff)
     {

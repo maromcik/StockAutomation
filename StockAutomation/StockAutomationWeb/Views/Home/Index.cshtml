@@ -1,8 +1,44 @@
-﻿@{
+﻿@model StockAutomationWeb.Models.SnapshotsListModel;
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
+<style>
+    .scrollable-table {
+        max-height: 400px;
+        overflow-y: scroll;
+        /*background-color: #f8f9fa;*/
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+</style>
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4 mb-2">All snapshots</h1>
+    <div class="scrollable-table mt-4">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Filename</th>
+                        <th>Downloaded At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var snapshot in Model.Snapshots)
+                    {
+                        <tr>
+                            <td>@snapshot.FileName</td>
+                            <td>@snapshot.DownloadedAt</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
 </div>
