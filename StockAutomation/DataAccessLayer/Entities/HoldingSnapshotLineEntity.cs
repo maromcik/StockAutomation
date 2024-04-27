@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Numerics;
 
 namespace DataAccessLayer.Entities;
@@ -14,5 +15,5 @@ public class HoldingSnapshotLineEntity : BaseEntity
     public decimal Weight { get; set; }
 
     public int HoldingSnapshotId { get; set; }  // Foreign key
-    public HoldingSnapshot HoldingSnapshot { get; set; }  // Navigation
+    [ForeignKey("HoldingSnapshotId")] public HoldingSnapshot HoldingSnapshot { get; set; } = null!; // Navigation
 }
