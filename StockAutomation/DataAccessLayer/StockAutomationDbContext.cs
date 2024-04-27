@@ -35,6 +35,10 @@ public class StockAutomationDbContext : DbContext
         {
             relationship.DeleteBehavior = DeleteBehavior.Cascade;
         }
+
+        modelBuilder.Entity<HoldingSnapshot>()
+            .HasIndex(h => h.DownloadedAt);
+
         base.OnModelCreating(modelBuilder);
     }
 }

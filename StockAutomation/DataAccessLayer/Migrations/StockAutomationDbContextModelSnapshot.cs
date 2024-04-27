@@ -60,6 +60,8 @@ namespace DataAccessLayer.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DownloadedAt");
+
                     b.ToTable("HoldingSnapshots");
                 });
 
