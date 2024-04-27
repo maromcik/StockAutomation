@@ -1,3 +1,4 @@
+@using DataAccessLayer.Entities
 @model BusinessLayer.Models.FormatSettings
 
 @{
@@ -18,16 +19,16 @@
         <div style="display: flex; align-items: center; margin-bottom: 20px;">
             <div style="margin-right: 20px;"><label>Select email format:</label></div>
             <div style="margin-right: 10px;">
-                <input type="radio" id="json" name="PreferredFormat" value="json" @(Model.PreferredFormat == "json" ? "checked" : "")>
+                <input type="radio" id="json" name="PreferredFormat" value="json" @(Model.PreferredFormat == OutputFormat.JSON ? "checked" : "")>
                 <label for="json">JSON</label>
             </div>
             <div>
-                <input type="radio" id="html" name="PreferredFormat" value="html" @(Model.PreferredFormat == "html" ? "checked" : "")>
+                <input type="radio" id="html" name="PreferredFormat" value="html" @(Model.PreferredFormat == OutputFormat.HTML ? "checked" : "")>
                 <label for="html">HTML</label>
             </div>
             <div style="margin-left: 10px;">
-                <input type="radio" id="none" name="PreferredFormat" value="none" @(Model.PreferredFormat == "none" ? "checked" : "")>
-                <label for="none">None</label>
+                <input type="radio" id="text" name="PreferredFormat" value="text" @(Model.PreferredFormat == OutputFormat.Text ? "checked" : "")>
+                <label for="text">Text</label>
             </div>
         </div>
         <button type="submit" class="btn btn-primary">Save Settings</button>

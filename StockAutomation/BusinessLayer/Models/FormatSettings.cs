@@ -1,13 +1,10 @@
+using DataAccessLayer.Entities;
+
 namespace BusinessLayer.Models;
 
-public class FormatSettings
+public class FormatSettings(OutputFormat format)
 {
-    public string PreferredFormat { get; set; }
-    
-    public FormatSettings(string format)
-    {
-        PreferredFormat = format;
-    }
-    
-    public FormatSettings() {}
+    public OutputFormat PreferredFormat { get; set; } = format;
+
+    public FormatSettings() : this(OutputFormat.Text) {}
 }

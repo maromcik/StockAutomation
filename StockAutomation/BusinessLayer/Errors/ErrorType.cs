@@ -12,5 +12,7 @@ public enum ErrorType
     EmailEmpty,
     NoSubscribersFound,
     InvalidEmailAddress,
-    InvalidEmailCredetials
+    InvalidEmailCredentials,
+
+    ConfigurationError,
 }

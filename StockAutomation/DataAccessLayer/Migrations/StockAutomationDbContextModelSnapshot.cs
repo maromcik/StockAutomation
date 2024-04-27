@@ -32,6 +32,7 @@ namespace DataAccessLayer.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("DownloadUrl")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("OutputFormat")
@@ -150,12 +151,17 @@ namespace DataAccessLayer.Migrations
             modelBuilder.Entity("DataAccessLayer.Entities.HoldingSnapshotLineEntity", b =>
                 {
                     b.HasOne("DataAccessLayer.Entities.HoldingSnapshot", "HoldingSnapshot")
-                        .WithMany()
+                        .WithMany("Lines")
                         .HasForeignKey("HoldingSnapshotId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("HoldingSnapshot");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.HoldingSnapshot", b =>
+                {
+                    b.Navigation("Lines");
                 });
 #pragma warning restore 612, 618
         }

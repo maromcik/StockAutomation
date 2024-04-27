@@ -36,7 +36,7 @@ public class EmailService(StockAutomationDbContext context, IConfiguration confi
         {
             return new Error
             {
-                ErrorType = ErrorType.InvalidEmailCredetials,
+                ErrorType = ErrorType.InvalidEmailCredentials,
                 Message = "Invalid credentials"
             };
         }
@@ -64,17 +64,46 @@ public class EmailService(StockAutomationDbContext context, IConfiguration confi
         smtpClient.Send(mailMessage);
         return true;
     }
-    
+
     public async Task<Result<bool, Error>> SaveEmailSettingsAsync(FormatSettings settings)
     {
-        // Matúš alebo Kubo
-        return true;
+        try
+        {
+            // needed to differentiate in used methods later (Add vs Update)
+            var dbConfig = await context.Configurations.FindAsync(1);
+            var config = dbConfig ?? new Configuration
+            {
+                Id = 1,
+                SnapshotDir = "",
+                DownloadUrl = "",
+                OutputFormat = OutputFormat.Text
+            };
+            config.OutputFormat = settings.PreferredFormat;
+            if (dbConfig is null)
+            {
+                await context.Configurations.AddAsync(config);
+            }
+            else
+            {
+                context.Configurations.Update(config);
+            }
+            await context.SaveChangesAsync();
+            return true;
+        }
+        catch (Exception e)
+        {
+            return new Error
+            {
+                ErrorType = ErrorType.ConfigurationError,
+                Message = e.Message
+            };
+        }
     }
-    
+
     public async Task<FormatSettings> GetEmailSettings()
     {
-        // Matúš alebo Kubo
-        var settings = new FormatSettings("json");
+        var config = await context.Configurations.FindAsync(1);
+        var settings = new FormatSettings(config?.OutputFormat ?? OutputFormat.Text);
         return settings;
     }
 
@@ -137,7 +166,7 @@ public class EmailService(StockAutomationDbContext context, IConfiguration confi
         await context.SaveChangesAsync();
         return true;
     }
-    
+
     public async Task<SubscriberView> GetSearchSubscribersAsync(PaginationSettings? paginationSettings, string? query)
     {
         var subscribers = context.Subscribers.AsQueryable();
@@ -154,7 +183,7 @@ public class EmailService(StockAutomationDbContext context, IConfiguration confi
             return new SubscriberView(result,
                 paginationSettings.PageNumber, pageCount);
         }
-        var result2 = await subscribers.ToListAsync(); 
+        var result2 = await subscribers.ToListAsync();
         return new SubscriberView(result2,
             1, 1);
 
