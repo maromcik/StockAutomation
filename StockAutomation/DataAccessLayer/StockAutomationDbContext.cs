@@ -9,6 +9,8 @@ public class StockAutomationDbContext : DbContext
     public DbSet<Configuration> Configurations { get; set; }
     public DbSet<Snapshot> Snapshots { get; set; }
     public DbSet<Subscriber> Subscribers { get; set; }
+    public DbSet<HoldingSnapshot> HoldingSnapshots { get; set; }
+    public DbSet<HoldingSnapshotLineEntity> HoldingSnapshotLines { get; set; }
 
     public StockAutomationDbContext(DbContextOptions options) : base(options)
     {
@@ -29,7 +31,6 @@ public class StockAutomationDbContext : DbContext
     // https://docs.microsoft.com/en-us/ef/core/modeling/
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-
         foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
         {
             relationship.DeleteBehavior = DeleteBehavior.Cascade;
