@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using BusinessLayer.Services;
+using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Mvc;
 using StockAutomationWeb.Models;
 
@@ -21,18 +22,10 @@ public class HomeController : Controller
     public async Task<IActionResult> Index()
     {
         var snapshots = await _snapshotService.GetSnapshotsAsync();
-
-        var snapshotsList = snapshots.ToList();
-        var firstNineSnapshots = snapshotsList.ToList();
-
-        var model = new SnapshotsListModel
-        {
-            Snapshots = firstNineSnapshots
-        };
-
-        return View(model);
+        var snapshotsList = new List<HoldingSnapshot>(snapshots);
+        return View(snapshotsList);
     }
-    
+
     public IActionResult Privacy()
     {
         return View();

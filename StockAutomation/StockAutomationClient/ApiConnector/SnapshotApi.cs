@@ -1,6 +1,6 @@
 using System.Net.Http.Json;
 using BusinessLayer.Models;
-using StockAutomationClient.Models;
+using DataAccessLayer.Entities;
 
 namespace StockAutomationClient.ApiConnector;
 
@@ -8,15 +8,14 @@ public static class SnapshotApi
 {
     private static readonly HttpClient Client = new();
 
-    public static async Task<List<Snapshot>> GetSnapshots()
+    public static async Task<List<HoldingSnapshot>> GetSnapshots()
     {
-        var snapshots = new List<Snapshot>();
+        var snapshots = new List<HoldingSnapshot>();
         var response = await Client.GetAsync($"{ApiConfiguration.ApiUri}/Snapshot");
         if (response.IsSuccessStatusCode)
         {
-            snapshots = await response.Content.ReadFromJsonAsync<List<Snapshot>>() ?? [];
+            snapshots = await response.Content.ReadFromJsonAsync<List<HoldingSnapshot>>() ?? [];
         }
-
         return snapshots;
     }
 

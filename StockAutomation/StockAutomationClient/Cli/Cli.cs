@@ -1,4 +1,5 @@
 using BusinessLayer.Models;
+using DataAccessLayer.Entities;
 using Sharprompt;
 using StockAutomationClient.ApiConnector;
 using StockAutomationClient.Models;
@@ -132,8 +133,7 @@ public class Cli
         }
     }
 
-
-    private static async Task<List<Snapshot>> FetchSnapshots()
+    private static async Task<List<HoldingSnapshot>> FetchSnapshots()
     {
         return (await SnapshotApi.GetSnapshots()).ToList();
     }
@@ -143,7 +143,7 @@ public class Cli
         var snapshots = await FetchSnapshots();
         for (var i = 0; i < snapshots.Count; i++)
         {
-            Console.WriteLine($"{i + 1}   {snapshots[i].FileName}   {snapshots[i].DownloadedAt}");
+            Console.WriteLine($"  {i + 1}    {snapshots[i].DownloadedAt}");
         }
     }
 
@@ -159,7 +159,7 @@ public class Cli
 
         var toBeDeleted =
             Prompt.MultiSelect("Select snapshots to be deleted", snapshots, pageSize: 10,
-                textSelector: f => $"{f.FileName}     {f.DownloadedAt}").Select(s => s.Id).ToList();
+                textSelector: f => $"{f.DownloadedAt}").Select(s => s.Id).ToList();
         var isOk = Prompt.Confirm("Is this OK?");
         if (!isOk)
         {
@@ -185,13 +185,13 @@ public class Cli
             return (false, new SnapshotCompare());
         }
 
-        var newSnapshot = Prompt.Select<Snapshot>("Select new snapshot", snapshots,
-            textSelector: f => $"{f.FileName}     {f.DownloadedAt}");
+        var newSnapshot = Prompt.Select("Select new snapshot", snapshots,
+            textSelector: f => $"{f.DownloadedAt}");
 
         snapshots.Remove(newSnapshot);
 
-        var oldSnapshot = Prompt.Select<Snapshot>("Select old snapshot", snapshots,
-            textSelector: f => $"{f.FileName}     {f.DownloadedAt}");
+        var oldSnapshot = Prompt.Select("Select old snapshot", snapshots,
+            textSelector: f => $"{f.DownloadedAt}");
         return (true, new SnapshotCompare
         {
             NewId = newSnapshot.Id,

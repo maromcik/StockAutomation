@@ -7,9 +7,19 @@ namespace StockAutomationCore.Parser;
 
 public static class HoldingSnapshotLineParser
 {
-    public static IEnumerable<HoldingSnapshotLine> ParseLines(string path)
+    public static IEnumerable<HoldingSnapshotLine> ParseLinesFromFile(string filename)
     {
-        using var lineParser = new TextFieldParser(new FileStream(path, FileMode.Open, FileAccess.Read));
+        return ParseLines(new FileStream(filename, FileMode.Open, FileAccess.Read));
+    }
+
+    public static IEnumerable<HoldingSnapshotLine> ParseLinesFromBytes(byte[] bytes)
+    {
+        return ParseLines(new MemoryStream(bytes));
+    }
+
+    private static IEnumerable<HoldingSnapshotLine> ParseLines(Stream stream)
+    {
+        using var lineParser = new TextFieldParser(stream);
         lineParser.HasFieldsEnclosedInQuotes = true;
         lineParser.SetDelimiters(",");
 

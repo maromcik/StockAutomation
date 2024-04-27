@@ -6,6 +6,7 @@ using StockAutomationCore.Diff;
 using StockAutomationCore.DiffFormat;
 using StockAutomationCore.Download;
 using StockAutomationCore.Files;
+using StockAutomationCore.Model;
 using StockAutomationCore.Parser;
 
 namespace BusinessLayer.Services;
@@ -35,21 +36,37 @@ public class SnapshotService : ISnapshotService
 
     }
 
-    public async Task<IEnumerable<Snapshot>> GetSnapshotsAsync()
+    public async Task<IEnumerable<HoldingSnapshot>> GetSnapshotsAsync()
     {
-        return await _context.Snapshots.OrderByDescending(s => s.DownloadedAt).ToListAsync();
+        return await _context.HoldingSnapshots.OrderByDescending(s => s.DownloadedAt).ToListAsync();
     }
 
     public async Task<Result<bool, Error>> DownloadSnapshotAsync()
     {
         try
         {
-            var filename = await Downloader.DownloadToFile(_client, DownloadUrl, SnapshotDir);
-            var file = new Snapshot
+            var fileBytes = await Downloader.DownloadToBytes(_client, DownloadUrl);
+            var parsedFile = HoldingSnapshotLineParser.ParseLinesFromBytes(fileBytes);
+            var lines = parsedFile.Select(snapshotLine => new HoldingSnapshotLineEntity
+                {
+                    Date = snapshotLine.Date,
+                    Fund = snapshotLine.Fund,
+                    CompanyName = snapshotLine.CompanyName,
+                    Ticker = snapshotLine.Ticker,
+                    Cusip = snapshotLine.Cusip,
+                    Shares = snapshotLine.Shares,
+                    MarketValueUsd = snapshotLine.MarketValueUsd,
+                    Weight = snapshotLine.Weight,
+                }
+            ).ToList();
+
+            var holdingSnapshot = new HoldingSnapshot
             {
-                FileName = filename
+                DownloadedAt = DateTime.Now,
+                Lines = lines
             };
-            _context.Snapshots.Add(file);
+            _context.HoldingSnapshots.Add(holdingSnapshot);
+
             await _context.SaveChangesAsync();
             return true;
         }
@@ -65,8 +82,11 @@ public class SnapshotService : ISnapshotService
 
     public async Task<Result<bool, Error>> DeleteSnapshotsAsync(List<int> ids)
     {
-        var snapshots = await _context.Snapshots.Where(s => ids.Contains(s.Id)).ToListAsync();
-        if (snapshots.Count == 0)
+        var snapshots = await _context.HoldingSnapshots
+            .Where(s => ids.Contains(s.Id)).ToListAsync();
+        var snapshotLines = await _context.HoldingSnapshotLines
+            .Where(s => ids.Contains(s.HoldingSnapshotId)).ToListAsync();
+        if (snapshots.Count == 0 || snapshotLines.Count == 0)
         {
             return new Error
             {
@@ -74,18 +94,21 @@ public class SnapshotService : ISnapshotService
                 Message = "Could not delete selected snapshots - not found"
             };
         }
-        _context.Snapshots.RemoveRange(snapshots);
-        FileUtils.DeleteFiles(snapshots.Select(s => GetFullPath(s.FileName)));
+        _context.HoldingSnapshots.RemoveRange(snapshots);
+        _context.HoldingSnapshotLines.RemoveRange(snapshotLines);
+
         await _context.SaveChangesAsync();
         return true;
     }
 
     public async Task<Result<string, Error>> CompareSnapshotsAsync(int idNew, int idOld)
     {
-        var newSnapshot = await _context.Snapshots.FirstOrDefaultAsync(s => s.Id == idNew);
-        var oldSnapshot = await _context.Snapshots.FirstOrDefaultAsync(s => s.Id == idOld);
+        var newSnapshot = _context.HoldingSnapshotLines
+            .Where(s => s.HoldingSnapshotId == idNew);
+        var oldSnapshot = _context.HoldingSnapshotLines
+            .Where(s => s.HoldingSnapshotId == idOld);
 
-        if (oldSnapshot is null)
+        if (oldSnapshot.Count() == 0)
         {
             return new Error
             {
@@ -94,7 +117,7 @@ public class SnapshotService : ISnapshotService
             };
         }
 
-        if (newSnapshot is null)
+        if (newSnapshot.Count() == 0)
         {
             return new Error
             {
@@ -105,10 +128,12 @@ public class SnapshotService : ISnapshotService
 
         try
         {
-            var parsedOldFile = HoldingSnapshotLineParser.ParseLines(GetFullPath(oldSnapshot.FileName));
-            var parsedNewFile = HoldingSnapshotLineParser.ParseLines(GetFullPath(newSnapshot.FileName));
-            // TODO handle various formats
-            var diff = new HoldingsDiff(parsedOldFile, parsedNewFile);
+            var newSnapshotStruct = newSnapshot.Select(l => HoldingSnapshotLine.Create(
+                l.Date, l.Fund, l.CompanyName, l.Ticker, l.Cusip, l.Shares, l.MarketValueUsd, l.Weight));
+            var oldSnapshotStruct = oldSnapshot.Select(l => HoldingSnapshotLine.Create(
+                l.Date, l.Fund, l.CompanyName, l.Ticker, l.Cusip, l.Shares, l.MarketValueUsd, l.Weight));
+            // TODO handle various formats???
+            var diff = new HoldingsDiff(oldSnapshotStruct, newSnapshotStruct);
             return TextDiffFormatter.Format(diff);
         }
         catch (IOException)

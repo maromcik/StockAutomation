@@ -11,7 +11,7 @@ namespace StockAutomationAPI.Controllers;
 public class SnapshotController(ISnapshotService snapshotService) : Controller
 {
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Snapshot>>> GetSnapshots()
+    public async Task<ActionResult<IEnumerable<HoldingSnapshot>>> GetSnapshots()
     {
         return Ok(await snapshotService.GetSnapshotsAsync());
     }
