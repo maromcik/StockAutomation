@@ -1,9 +1,7 @@
 using BusinessLayer.Facades;
 using BusinessLayer.Services;
 using DataAccessLayer;
-using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
-using StockAutomationCore.Files;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddConfiguration(StockAutomationCore.Configuration.StockAutomationConfig.Configuration);
