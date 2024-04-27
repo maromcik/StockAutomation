@@ -26,15 +26,13 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Filename</th>
-                        <th>Downloaded At</th>
+                        <th>Snapshot timestamp</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var snapshot in Model.Snapshots)
                     {
                         <tr>
-                            <td>@snapshot.FileName</td>
                             <td>@snapshot.DownloadedAt</td>
                         </tr>
                     }
