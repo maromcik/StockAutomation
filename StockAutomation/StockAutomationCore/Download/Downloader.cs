@@ -12,4 +12,13 @@ public static class Downloader
         await fs.FlushAsync();
         return filename;
     }
+
+    public static async Task<byte[]> DownloadToBytes(HttpClient client, string downloadUrl)
+    {
+        await using var streamResult = client.GetStreamAsync(downloadUrl).Result;
+        await using var fileBytes = new MemoryStream((int) streamResult.Length);
+        await streamResult.CopyToAsync(fileBytes);
+        await fileBytes.FlushAsync();
+        return fileBytes.ToArray();
+    }
 }
