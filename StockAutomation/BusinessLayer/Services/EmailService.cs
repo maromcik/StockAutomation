@@ -140,7 +140,7 @@ public class EmailService(StockAutomationDbContext context, IConfiguration confi
     {
         try
         {
-            MailAddress m = new MailAddress(emailAddress);
+            var m = new MailAddress(emailAddress);
 
             return true;
         }
@@ -167,7 +167,7 @@ public class EmailService(StockAutomationDbContext context, IConfiguration confi
         return true;
     }
 
-    public async Task<SubscriberView> GetSearchSubscribersAsync(PaginationSettings? paginationSettings, string? query)
+    public async Task<SubscriberView> SearchSubscribersAsync(PaginationSettings? paginationSettings, string? query)
     {
         var subscribers = context.Subscribers.AsQueryable();
 

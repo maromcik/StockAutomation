@@ -22,7 +22,7 @@ public class SubscriberController : BaseController
     public async Task<IActionResult> Index(int? page = 1)
     {
         var paginationSetting = new PaginationSettings(10, page ?? 1);
-        var subscribers = await _emailService.GetSearchSubscribersAsync(paginationSetting, null);
+        var subscribers = await _emailService.SearchSubscribersAsync(paginationSetting, null);
         return View(subscribers);
     }
 
