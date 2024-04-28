@@ -84,9 +84,7 @@ public class SnapshotService : ISnapshotService
     {
         var snapshots = await _context.HoldingSnapshots
             .Where(s => ids.Contains(s.Id)).ToListAsync();
-        var snapshotLines = await _context.HoldingSnapshotLines
-            .Where(s => ids.Contains(s.HoldingSnapshotId)).ToListAsync();
-        if (snapshots.Count == 0 || snapshotLines.Count == 0)
+        if (snapshots.Count == 0)
         {
             return new Error
             {
@@ -94,8 +92,8 @@ public class SnapshotService : ISnapshotService
                 Message = "Could not delete selected snapshots - not found"
             };
         }
+
         _context.HoldingSnapshots.RemoveRange(snapshots);
-        _context.HoldingSnapshotLines.RemoveRange(snapshotLines);
 
         await _context.SaveChangesAsync();
         return true;
