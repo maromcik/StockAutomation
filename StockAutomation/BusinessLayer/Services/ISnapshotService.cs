@@ -9,4 +9,5 @@ public interface ISnapshotService
     public Task<Result<bool, Error>> DownloadSnapshotAsync();
     public Task<Result<bool, Error>> DeleteSnapshotsAsync(List<int> ids);
     public Task<Result<string, Error>> CompareSnapshotsAsync(int idNew, int idOld);
+    public Task<Result<string, Error>> CompareLatestSnapshotsAsync();
 }

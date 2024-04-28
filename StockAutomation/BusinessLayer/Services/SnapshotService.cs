@@ -96,21 +96,38 @@ public class SnapshotService : ISnapshotService
 
     public async Task<Result<string, Error>> CompareSnapshotsAsync(int idNew, int idOld)
     {
-        var newSnapshot = await _context.HoldingSnapshotLines
-            .Where(s => s.HoldingSnapshotId == idNew).ToListAsync();
-        var oldSnapshot = await _context.HoldingSnapshotLines
-            .Where(s => s.HoldingSnapshotId == idOld).ToListAsync();
+        var newSnapshot = await _context
+            .HoldingSnapshots
+            .Include(s => s.Lines)
+            .FirstOrDefaultAsync(s => s.Id == idNew);
+        var oldSnapshot = await _context
+            .HoldingSnapshots
+            .Include(s => s.Lines)
+            .FirstOrDefaultAsync(s => s.Id == idOld);
+        return CompareSnapshotLinesAsync(newSnapshot, oldSnapshot);
+    }
 
-        if (oldSnapshot.Count == 0)
-        {
-            return new Error
-            {
-                ErrorType = ErrorType.SnapshotNotFound,
-                Message = "Selected old snapshot could not be found"
-            };
-        }
+    public async Task<Result<string, Error>> CompareLatestSnapshotsAsync()
+    {
+        var newSnapshot = await _context
+            .HoldingSnapshots
+            .Include(s => s.Lines)
+            .OrderByDescending(s => s.DownloadedAt)
+            .FirstOrDefaultAsync();
+        var oldSnapshot = await _context
+            .HoldingSnapshots
+            .Include(s => s.Lines)
+            .OrderByDescending(s => s.DownloadedAt)
+            .Skip(1)
+            .FirstOrDefaultAsync();
 
-        if (newSnapshot.Count == 0)
+
+        return CompareSnapshotLinesAsync(newSnapshot, oldSnapshot);
+    }
+
+    private Result<string, Error> CompareSnapshotLinesAsync(HoldingSnapshot? newSnapshot, HoldingSnapshot? oldSnapshot)
+    {
+        if (newSnapshot == null)
         {
             return new Error
             {
@@ -119,9 +136,36 @@ public class SnapshotService : ISnapshotService
             };
         }
 
-        var newSnapshotStruct = newSnapshot.Select(l => HoldingSnapshotLine.Create(
+        if (oldSnapshot == null)
+        {
+            return new Error
+            {
+                ErrorType = ErrorType.SnapshotNotFound,
+                Message = "Selected old snapshot could not be found"
+            };
+        }
+
+        if (oldSnapshot.Lines.Count == 0)
+        {
+            return new Error
+            {
+                ErrorType = ErrorType.SnapshotEmpty,
+                Message = "Selected old snapshot is empty"
+            };
+        }
+
+        if (newSnapshot.Lines.Count == 0)
+        {
+            return new Error
+            {
+                ErrorType = ErrorType.SnapshotEmpty,
+                Message = "Selected new snapshot is empty"
+            };
+        }
+
+        var newSnapshotStruct = newSnapshot.Lines.Select(l => HoldingSnapshotLine.Create(
             l.Date, l.Fund, l.CompanyName, l.Ticker, l.Cusip, l.Shares, l.MarketValueUsd, l.Weight));
-        var oldSnapshotStruct = oldSnapshot.Select(l => HoldingSnapshotLine.Create(
+        var oldSnapshotStruct = oldSnapshot.Lines.Select(l => HoldingSnapshotLine.Create(
             l.Date, l.Fund, l.CompanyName, l.Ticker, l.Cusip, l.Shares, l.MarketValueUsd, l.Weight));
         // TODO handle various formats???
         var diff = new HoldingsDiff(oldSnapshotStruct, newSnapshotStruct);

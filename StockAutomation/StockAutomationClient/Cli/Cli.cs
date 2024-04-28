@@ -121,6 +121,9 @@ public class Cli
                     case EmailOperation.Send:
                         await SendEmail();
                         break;
+                    case EmailOperation.SendLatest:
+                        await SendEmailLatest();
+                        break;
                     default:
                         Console.WriteLine("Unknown command");
                         break;
@@ -262,6 +265,12 @@ public class Cli
         }
 
         var response = await EmailApi.SendEmail(chooseSnapshots.snapshotCompare);
+        Console.WriteLine(response);
+    }
+
+    private async Task SendEmailLatest()
+    {
+        var response = await EmailApi.SendEmailLatest();
         Console.WriteLine(response);
     }
 }

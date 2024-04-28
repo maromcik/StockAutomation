@@ -24,4 +24,22 @@ public class SendDifferencesFacade(IEmailService emailService, ISnapshotService 
 
         return email.Value;
     }
+
+    public async Task<Result<bool, Error>> ProcessDiffLatest()
+    {
+        var result = await snapshotService.CompareLatestSnapshotsAsync();
+        if (!result.IsOk)
+        {
+            return result.Error;
+        }
+
+        var diff = result.Value;
+        var email = await emailService.SendEmailAsync(diff);
+        if (!email.IsOk)
+        {
+            return email.Error;
+        }
+
+        return email.Value;
+    }
 }

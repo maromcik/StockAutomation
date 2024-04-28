@@ -22,6 +22,7 @@ public enum SnapshotOperation
 
 public enum EmailOperation
 {
+    [Display(Name = "send latest differences")] SendLatest,
     [Display(Name = "send differences")] Send,
     [Display(Name = "print subscribers")] Print,
     [Display(Name = "add subscriber")] Add,

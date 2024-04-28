@@ -28,6 +28,12 @@ public static class EmailApi
         return await response.Content.ReadAsStringAsync();
     }
 
+    public static async Task<string> SendEmailLatest()
+    {
+        var response = await Client.GetAsync($"{ApiConfiguration.ApiUri}/Email/SendLatest");
+        return await response.Content.ReadAsStringAsync();
+    }
+
     public static async Task<string> CreateSubscriber(SubscriberCreate subscriberCreate)
     {
         var response = await Client.PostAsJsonAsync(

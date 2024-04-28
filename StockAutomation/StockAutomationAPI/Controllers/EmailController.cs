@@ -37,6 +37,16 @@ public class EmailController(IEmailService emailService, ISendDifferencesFacade 
         );
     }
 
+    [HttpGet("SendLatest")]
+    public async Task<IActionResult> SendEmailLatest()
+    {
+        var result = await sendDifferencesFacade.ProcessDiffLatest();
+        return result.Match<IActionResult>(
+            s => Ok("Emails were successfully sent"),
+            e => BadRequest(e.Message)
+        );
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateSubscribers(SubscriberCreate subscriberCreate)
     {
