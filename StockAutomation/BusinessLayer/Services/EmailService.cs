@@ -136,7 +136,7 @@ public class EmailService(StockAutomationDbContext context, IConfiguration confi
         return true;
     }
 
-    private bool IsEmailAddressValid(string emailAddress)
+    private static bool IsEmailAddressValid(string emailAddress)
     {
         try
         {
