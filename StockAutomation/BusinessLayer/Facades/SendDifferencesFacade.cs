@@ -27,6 +27,11 @@ public class SendDifferencesFacade(IEmailService emailService, ISnapshotService 
 
     public async Task<Result<bool, Error>> ProcessDiffLatest()
     {
+        var download = await snapshotService.DownloadSnapshotAsync();
+        if (!download.IsOk)
+        {
+            return download.Error;
+        }
         var result = await snapshotService.CompareLatestSnapshotsAsync();
         if (!result.IsOk)
         {
