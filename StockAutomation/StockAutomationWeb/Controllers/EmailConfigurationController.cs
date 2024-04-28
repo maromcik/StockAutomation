@@ -7,27 +7,21 @@ using StockAutomationWeb.Models;
 namespace StockAutomationWeb.Controllers;
 
 [Route("[controller]/[action]")]
-public class EmailConfigurationController : BaseController
+public class EmailConfigurationController(ILogger<EmailConfigurationController> logger, IEmailService emailService)
+    : BaseController
 {
-    private readonly ILogger<HomeController> _logger;
-    private readonly IEmailService _emailService;
-
-    public EmailConfigurationController(ILogger<HomeController> logger, IEmailService emailService)
-    {
-        _logger = logger;
-        _emailService = emailService;
-    }
+    private readonly ILogger<EmailConfigurationController> _logger = logger;
 
     public async Task<IActionResult> Index()
     {
-        var settings = await _emailService.GetEmailSettings();
+        var settings = await emailService.GetEmailSettings();
         return View(settings);
     }
 
     [HttpPost]
     public async Task<IActionResult> SendEmails()
     {
-        await _emailService.SendEmailAsync("html diff here");
+        await emailService.SendEmailAsync("html diff here");
 
         return RedirectToAction("Index");
     }
@@ -41,8 +35,7 @@ public class EmailConfigurationController : BaseController
             return View("Index", settings);
         }
 
-        await _emailService.SaveEmailSettingsAsync(settings);
+        await emailService.SaveEmailSettingsAsync(settings);
         return RedirectToAction("Index");
     }
-
 }

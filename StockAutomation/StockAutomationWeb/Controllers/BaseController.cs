@@ -12,6 +12,9 @@ public class BaseController : Controller
     {
         return View("ErrorView",
             new ErrorViewModel
-                { ErrorType = err.ErrorType, Message = err.Message, RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            {
+                ErrorType = err.ErrorType, Message = err.Message,
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+            });
     }
 }

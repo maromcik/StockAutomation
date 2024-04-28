@@ -25,20 +25,20 @@
 <div class="text-center">
     <h1 class="display-4 mb-2">All snapshots</h1>
     <div class="scrollable-table mt-4">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Snapshot timestamp</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var snapshot in Model)
-                    {
-                        <tr>
-                            <td>@snapshot.DownloadedAt</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+        <table>
+            <thead>
+            <tr>
+                <th>Snapshot timestamp</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var snapshot in Model)
+            {
+                <tr>
+                    <td>@snapshot.DownloadedAt</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
 </div>

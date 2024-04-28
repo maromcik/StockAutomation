@@ -14,6 +14,6 @@ public class HoldingSnapshotLineEntity : BaseEntity
     public decimal MarketValueUsd { get; set; }
     public decimal Weight { get; set; }
 
-    public int HoldingSnapshotId { get; set; }  // Foreign key
+    public int HoldingSnapshotId { get; set; } // Foreign key
     [ForeignKey("HoldingSnapshotId")] public HoldingSnapshot HoldingSnapshot { get; set; } = null!; // Navigation
 }

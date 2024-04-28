@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using StockAutomationCore.Diff;
 using StockAutomationCore.DiffFormat;
 using StockAutomationCore.Download;
-using StockAutomationCore.Files;
 using StockAutomationCore.Model;
 using StockAutomationCore.Parser;
 
@@ -16,14 +15,11 @@ public class SnapshotService : ISnapshotService
     private readonly StockAutomationDbContext _context;
     private readonly HttpClient _client;
     private string DownloadUrl { get; set; }
-    private string SnapshotDir { get; set; }
 
     public SnapshotService(StockAutomationDbContext context, HttpClient client)
     {
         _context = context;
         _client = client;
-        SnapshotDir = Directory.GetCurrentDirectory() + "/../" + "/snapshots";
-        FileUtils.CreateSnapshotDir(SnapshotDir);
         var url = context.Configurations.FirstOrDefault()?.DownloadUrl;
         if (url is null)
         {
@@ -130,10 +126,5 @@ public class SnapshotService : ISnapshotService
         // TODO handle various formats???
         var diff = new HoldingsDiff(oldSnapshotStruct, newSnapshotStruct);
         return TextDiffFormatter.Format(diff);
-    }
-
-    private string GetFullPath(string filename)
-    {
-        return $"{SnapshotDir}/{filename}";
     }
 }

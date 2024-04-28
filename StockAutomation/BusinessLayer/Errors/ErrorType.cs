@@ -2,8 +2,6 @@ namespace BusinessLayer.Errors;
 
 public enum ErrorType
 {
-    FileNotFound,
-
     SnapshotNotFound,
     NoSnapshotsFound,
 

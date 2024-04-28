@@ -8,7 +8,8 @@ public static class StockAutomationConfig
 
     static StockAutomationConfig()
     {
-        var projectDir = Directory.GetParent(Directory.GetCurrentDirectory())?.FullName ?? Directory.GetCurrentDirectory();
+        var projectDir = Directory.GetParent(Directory.GetCurrentDirectory())?.FullName ??
+                         Directory.GetCurrentDirectory();
 
         var builder = new ConfigurationBuilder()
             .SetBasePath(projectDir)

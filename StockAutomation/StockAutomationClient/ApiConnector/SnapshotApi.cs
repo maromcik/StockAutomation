@@ -16,6 +16,7 @@ public static class SnapshotApi
         {
             snapshots = await response.Content.ReadFromJsonAsync<List<HoldingSnapshot>>() ?? [];
         }
+
         return snapshots;
     }
 

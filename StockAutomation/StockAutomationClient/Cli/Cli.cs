@@ -206,6 +206,7 @@ public class Cli
         {
             return;
         }
+
         var diff = await SnapshotApi.CompareSnapshots(chooseSnapshots.snapshotCompare);
         Console.WriteLine($"Differences:\n{diff}");
     }
@@ -259,6 +260,7 @@ public class Cli
         {
             return;
         }
+
         var response = await EmailApi.SendEmail(chooseSnapshots.snapshotCompare);
         Console.WriteLine(response);
     }

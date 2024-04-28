@@ -6,22 +6,16 @@ using StockAutomationWeb.Models;
 
 namespace StockAutomationWeb.Controllers;
 
-public class HomeController : BaseController
+public class HomeController(
+    ILogger<HomeController> logger,
+    ISnapshotService snapshotService)
+    : BaseController
 {
-    private readonly ILogger<HomeController> _logger;
-    private readonly IEmailService _emailService;
-    private readonly ISnapshotService _snapshotService;
-
-    public HomeController(ILogger<HomeController> logger, IEmailService emailService, ISnapshotService snapshotService)
-    {
-        _logger = logger;
-        _emailService = emailService;
-        _snapshotService = snapshotService;
-    }
+    private readonly ILogger<HomeController> _logger = logger;
 
     public async Task<IActionResult> Index()
     {
-        var snapshots = await _snapshotService.GetSnapshotsAsync();
+        var snapshots = await snapshotService.GetSnapshotsAsync();
         var snapshotsList = new List<HoldingSnapshot>(snapshots);
         return View(snapshotsList);
     }

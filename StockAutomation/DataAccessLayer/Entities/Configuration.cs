@@ -6,7 +6,6 @@ public class Configuration
 {
     [Key]
     public required int Id { get; set; } = 1;
-    public required string SnapshotDir { get; set; } = "";
     public required string DownloadUrl { get; set; } = "";
     public required OutputFormat OutputFormat { get; set; } = OutputFormat.HTML;
 }

@@ -70,11 +70,10 @@ public class EmailService(StockAutomationDbContext context, IConfiguration confi
         try
         {
             // needed to differentiate in used methods later (Add vs Update)
-            var dbConfig = await context.Configurations.FindAsync(1);
+            var dbConfig = await context.Configurations.FirstOrDefaultAsync();
             var config = dbConfig ?? new Configuration
             {
                 Id = 1,
-                SnapshotDir = "",
                 DownloadUrl = "",
                 OutputFormat = OutputFormat.Text
             };
@@ -87,6 +86,7 @@ public class EmailService(StockAutomationDbContext context, IConfiguration confi
             {
                 context.Configurations.Update(config);
             }
+
             await context.SaveChangesAsync();
             return true;
         }
@@ -102,7 +102,7 @@ public class EmailService(StockAutomationDbContext context, IConfiguration confi
 
     public async Task<FormatSettings> GetEmailSettings()
     {
-        var config = await context.Configurations.FindAsync(1);
+        var config = await context.Configurations.FirstOrDefaultAsync();
         var settings = new FormatSettings(config?.OutputFormat ?? OutputFormat.Text);
         return settings;
     }
@@ -175,7 +175,8 @@ public class EmailService(StockAutomationDbContext context, IConfiguration confi
         if (paginationSettings != null)
         {
             var subscribersCount = await subscribers.CountAsync();
-            var pageCount = subscribersCount / paginationSettings.PageSize + int.Min( subscribersCount % paginationSettings.PageSize, 1);
+            var pageCount = subscribersCount / paginationSettings.PageSize +
+                            int.Min(subscribersCount % paginationSettings.PageSize, 1);
             subscribers = subscribers
                 .Skip((paginationSettings.PageNumber - 1) * paginationSettings.PageSize)
                 .Take(paginationSettings.PageSize);
@@ -183,10 +184,10 @@ public class EmailService(StockAutomationDbContext context, IConfiguration confi
             return new SubscriberView(result,
                 paginationSettings.PageNumber, pageCount);
         }
+
         var result2 = await subscribers.ToListAsync();
         return new SubscriberView(result2,
             1, 1);
-
     }
 
     private string CreateEmailBody(string diff)
