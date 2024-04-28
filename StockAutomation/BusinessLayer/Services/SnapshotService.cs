@@ -33,7 +33,6 @@ public class SnapshotService : ISnapshotService
         {
             DownloadUrl = url;
         }
-
     }
 
     public async Task<IEnumerable<HoldingSnapshot>> GetSnapshotsAsync()
@@ -101,12 +100,12 @@ public class SnapshotService : ISnapshotService
 
     public async Task<Result<string, Error>> CompareSnapshotsAsync(int idNew, int idOld)
     {
-        var newSnapshot = _context.HoldingSnapshotLines
-            .Where(s => s.HoldingSnapshotId == idNew);
-        var oldSnapshot = _context.HoldingSnapshotLines
-            .Where(s => s.HoldingSnapshotId == idOld);
+        var newSnapshot = await _context.HoldingSnapshotLines
+            .Where(s => s.HoldingSnapshotId == idNew).ToListAsync();
+        var oldSnapshot = await _context.HoldingSnapshotLines
+            .Where(s => s.HoldingSnapshotId == idOld).ToListAsync();
 
-        if (oldSnapshot.Count() == 0)
+        if (oldSnapshot.Count == 0)
         {
             return new Error
             {
@@ -115,7 +114,7 @@ public class SnapshotService : ISnapshotService
             };
         }
 
-        if (newSnapshot.Count() == 0)
+        if (newSnapshot.Count == 0)
         {
             return new Error
             {
@@ -124,24 +123,13 @@ public class SnapshotService : ISnapshotService
             };
         }
 
-        try
-        {
-            var newSnapshotStruct = newSnapshot.Select(l => HoldingSnapshotLine.Create(
-                l.Date, l.Fund, l.CompanyName, l.Ticker, l.Cusip, l.Shares, l.MarketValueUsd, l.Weight));
-            var oldSnapshotStruct = oldSnapshot.Select(l => HoldingSnapshotLine.Create(
-                l.Date, l.Fund, l.CompanyName, l.Ticker, l.Cusip, l.Shares, l.MarketValueUsd, l.Weight));
-            // TODO handle various formats???
-            var diff = new HoldingsDiff(oldSnapshotStruct, newSnapshotStruct);
-            return TextDiffFormatter.Format(diff);
-        }
-        catch (IOException)
-        {
-            return new Error
-            {
-                ErrorType = ErrorType.FileNotFound,
-                Message = "File could not be found."
-            };
-        }
+        var newSnapshotStruct = newSnapshot.Select(l => HoldingSnapshotLine.Create(
+            l.Date, l.Fund, l.CompanyName, l.Ticker, l.Cusip, l.Shares, l.MarketValueUsd, l.Weight));
+        var oldSnapshotStruct = oldSnapshot.Select(l => HoldingSnapshotLine.Create(
+            l.Date, l.Fund, l.CompanyName, l.Ticker, l.Cusip, l.Shares, l.MarketValueUsd, l.Weight));
+        // TODO handle various formats???
+        var diff = new HoldingsDiff(oldSnapshotStruct, newSnapshotStruct);
+        return TextDiffFormatter.Format(diff);
     }
 
     private string GetFullPath(string filename)
