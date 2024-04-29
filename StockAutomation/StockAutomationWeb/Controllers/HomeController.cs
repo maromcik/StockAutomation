@@ -24,4 +24,13 @@ public class HomeController(
     {
         return View();
     }
+    
+    public async Task<IActionResult> Delete(int id)
+    {
+        var result = await snapshotService.DeleteSnapshotsAsync([id]);
+        return result.Match(
+            _ => RedirectToAction("Index", "Home"),
+            ErrorView
+        );
+    }
 }

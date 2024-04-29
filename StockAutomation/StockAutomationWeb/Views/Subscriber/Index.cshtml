@@ -29,17 +29,17 @@
     }
     .btn-danger {
         color: #dc3545;
-        background-color: transparent; /* Červené pozadí */
-        border: none; /* Žádný okraj */
+        background-color: transparent;
+        border: none;
     }
     .btn-danger i {
-        font-size: 16px; /* Velikost ikony */
+        font-size: 16px;
     }
 </style>
 
 
 <div class="header-row">
-    <div class="title">Subscribers</div>
+    <h2>Subscribers</h2>
     <form class="add-form" method="post" action="@Url.Action("AddSubscriber", "Subscriber", new { page = Model.CurrentPage })">
         <input type="email" class="form-control" id="email" name="EmailAddress" placeholder="Enter email address" required>
         <button type="submit" class="btn btn-primary">Add Subscriber</button>
