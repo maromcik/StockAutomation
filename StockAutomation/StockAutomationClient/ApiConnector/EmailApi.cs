@@ -35,7 +35,7 @@ public static class EmailApi
     public static async Task<string> CreateSubscriber(SubscriberCreate subscriberCreate)
     {
         var response = await Client.PostAsJsonAsync(
-            $"{ApiConfiguration.ApiUri}/Email", subscriberCreate);
+            $"{ApiConfiguration.ApiUri}/Email/CreateSubscriber", subscriberCreate);
         return await response.Content.ReadAsStringAsync();
     }
 
@@ -46,10 +46,10 @@ public static class EmailApi
         return await response.Content.ReadAsStringAsync();
     }
 
-    public static async Task<string> GetSupportedFormats()
+    public static async Task<string> SaveEmailFormat(FormatSettings formatSettings)
     {
-        var response = await Client.GetAsync(
-            $"{ApiConfiguration.ApiUri}/Email/SupportedFormats");
+        var response = await Client.PostAsJsonAsync(
+            $"{ApiConfiguration.ApiUri}/Email/SaveSettings", formatSettings);
         return await response.Content.ReadAsStringAsync();
     }
 }

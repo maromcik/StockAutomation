@@ -47,12 +47,22 @@ public class EmailController(IEmailService emailService, ISendDifferencesFacade 
         );
     }
 
-    [HttpPost]
+    [HttpPost("CreateSubscriber")]
     public async Task<IActionResult> CreateSubscribers(SubscriberCreate subscriberCreate)
     {
         var result = await emailService.CreateSubscriber(subscriberCreate);
         return result.Match<IActionResult>(
             _ => Ok("Successfully created"),
+            e => BadRequest(e.Message)
+        );
+    }
+
+    [HttpPost("SaveSettings")]
+    public async Task<IActionResult> SaveSettings(FormatSettings settings)
+    {
+        var result = await emailService.SaveEmailSettingsAsync(settings);
+        return result.Match<IActionResult>(
+            _ => Ok("Successfully Updated"),
             e => BadRequest(e.Message)
         );
     }

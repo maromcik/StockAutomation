@@ -278,6 +278,10 @@ public class Cli
 
     private async Task ChangeFormat()
     {
-
+        var format = Prompt.Select<OutputFormat>("Select format");
+        await EmailApi.SaveEmailFormat(new FormatSettings
+        {
+            PreferredFormat = format
+        });
     }
 }
