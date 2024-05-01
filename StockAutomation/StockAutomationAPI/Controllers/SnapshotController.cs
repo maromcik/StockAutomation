@@ -47,7 +47,7 @@ public class SnapshotController(ISnapshotService snapshotService) : Controller
                 return e.ErrorType switch
                 {
                     ErrorType.SnapshotNotFound => NotFound(e.Message),
-                    ErrorType.NoSnapshotsFound => NotFound(e.Message),
+                    ErrorType.SnapshotsNotFound => NotFound(e.Message),
                     _ => BadRequest(e.Message)
                 };
             }

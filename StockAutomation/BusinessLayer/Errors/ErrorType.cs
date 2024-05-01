@@ -4,12 +4,12 @@ public enum ErrorType
 {
     SnapshotEmpty,
     SnapshotNotFound,
-    NoSnapshotsFound,
+    SnapshotsNotFound,
 
     DownloadError,
 
     EmailEmpty,
-    NoSubscribersFound,
+    SubscribersNotFound,
     InvalidEmailAddress,
     InvalidEmailCredentials,
 

@@ -64,7 +64,7 @@ public class SnapshotService(StockAutomationDbContext context, HttpClient client
         {
             return new Error
             {
-                ErrorType = ErrorType.NoSnapshotsFound,
+                ErrorType = ErrorType.SnapshotsNotFound,
                 Message = "Could not delete selected snapshots - not found"
             };
         }
@@ -101,7 +101,7 @@ public class SnapshotService(StockAutomationDbContext context, HttpClient client
         {
             return new Error
             {
-                ErrorType = ErrorType.NoSnapshotsFound,
+                ErrorType = ErrorType.SnapshotsNotFound,
                 Message = "At least two or more snapshots must be downloaded."
             };
         }

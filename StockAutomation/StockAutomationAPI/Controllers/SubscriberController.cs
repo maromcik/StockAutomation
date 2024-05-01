@@ -27,7 +27,7 @@ public class SubscriberController(ISubscriberService subscriberService) : Contro
     }
 
 
-    [HttpPost("CreateSubscriber")]
+    [HttpPost]
     public async Task<IActionResult> CreateSubscribers(SubscriberCreate subscriberCreate)
     {
         var result = await subscriberService.CreateSubscriber(subscriberCreate);

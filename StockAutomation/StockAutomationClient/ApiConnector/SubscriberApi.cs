@@ -25,7 +25,7 @@ public static class SubscriberApi
     public static async Task<string> CreateSubscriber(SubscriberCreate subscriberCreate)
     {
         var response = await Client.PostAsJsonAsync(
-            $"{ApiConfiguration.ApiUri}/{Endpoint}/CreateSubscriber", subscriberCreate);
+            $"{ApiConfiguration.ApiUri}/{Endpoint}", subscriberCreate);
         return await response.Content.ReadAsStringAsync();
     }
 

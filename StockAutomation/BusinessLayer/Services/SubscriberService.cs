@@ -69,7 +69,7 @@ public class SubscriberService : ISubscriberService
         {
             return new Error
             {
-                ErrorType = ErrorType.NoSubscribersFound,
+                ErrorType = ErrorType.SubscribersNotFound,
                 Message = "Could not delete selected subscribers - not found"
             };
         }
