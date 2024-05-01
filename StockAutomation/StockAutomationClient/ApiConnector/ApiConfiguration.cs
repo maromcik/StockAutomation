@@ -5,5 +5,5 @@ namespace StockAutomationClient.ApiConnector;
 public static class ApiConfiguration
 {
     public static readonly string ApiUri = StockAutomationConfig.GetSection("Api")["defaultUrl"] ??
-                                           "http://localhost:5401";
+                                           "https://stock-automation.dyn.cloud.e-infra.cz/api";
 }
