@@ -109,20 +109,23 @@ public class SnapshotService : ISnapshotService
 
     public async Task<Result<string, Error>> CompareLatestSnapshotsAsync()
     {
-        var newSnapshot = await _context
+        var latestSnapshots = await _context
             .HoldingSnapshots
             .Include(s => s.Lines)
             .OrderByDescending(s => s.DownloadedAt)
-            .FirstOrDefaultAsync();
-        var oldSnapshot = await _context
-            .HoldingSnapshots
-            .Include(s => s.Lines)
-            .OrderByDescending(s => s.DownloadedAt)
-            .Skip(1)
-            .FirstOrDefaultAsync();
+            .Take(2)
+            .ToListAsync();
 
+        if (latestSnapshots.Count != 2)
+        {
+            return new Error
+            {
+                ErrorType = ErrorType.NoSnapshotsFound,
+                Message = "At least two or more snapshots must be downloaded."
+            };
+        }
 
-        return CompareSnapshotLinesAsync(newSnapshot, oldSnapshot);
+        return CompareSnapshotLinesAsync(latestSnapshots[0], latestSnapshots[1]);
     }
 
     private Result<string, Error> CompareSnapshotLinesAsync(HoldingSnapshot? newSnapshot, HoldingSnapshot? oldSnapshot)
