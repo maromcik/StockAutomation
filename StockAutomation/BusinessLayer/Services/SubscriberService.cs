@@ -3,7 +3,6 @@ using BusinessLayer.Models;
 using DataAccessLayer;
 using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace BusinessLayer.Services;
 
@@ -13,12 +12,10 @@ using System.Net.Mail;
 public class SubscriberService : ISubscriberService
 {
     private readonly StockAutomationDbContext _context;
-    private readonly IConfiguration _configuration;
 
-    public SubscriberService(StockAutomationDbContext context, IConfiguration configuration)
+    public SubscriberService(StockAutomationDbContext context)
     {
         _context = context;
-        _configuration = configuration;
         var config = _context.Configurations.FirstOrDefault();
         if (config == null)
         {
