@@ -4,8 +4,6 @@ using StockAutomationCore.Model;
 
 namespace StockAutomationCore.Tests;
 
-using StockAutomationCore;
-
 public class TextFormatterUnitTest
 {
     [SetUp]

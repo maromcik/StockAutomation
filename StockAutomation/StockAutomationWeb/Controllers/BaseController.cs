@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Security.Claims;
 using BusinessLayer.Errors;
 using Microsoft.AspNetCore.Mvc;
 using StockAutomationWeb.Models;

@@ -2,7 +2,6 @@ using BusinessLayer.Models;
 using DataAccessLayer.Entities;
 using Sharprompt;
 using StockAutomationClient.ApiConnector;
-using StockAutomationClient.Models;
 
 namespace StockAutomationClient.Cli;
 
@@ -123,6 +122,9 @@ public class Cli
                         break;
                     case EmailOperation.SendLatest:
                         await SendEmailLatest();
+                        break;
+                    case EmailOperation.ChangeFormat:
+                        await ChangeFormat();
                         break;
                     default:
                         Console.WriteLine("Unknown command");
@@ -272,5 +274,10 @@ public class Cli
     {
         var response = await EmailApi.SendEmailLatest();
         Console.WriteLine(response);
+    }
+
+    private async Task ChangeFormat()
+    {
+
     }
 }

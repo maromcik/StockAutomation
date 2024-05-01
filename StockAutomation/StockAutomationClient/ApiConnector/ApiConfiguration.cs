@@ -1,4 +1,4 @@
-using StockAutomationClient.Configuration;
+using StockAutomationCore.Configuration;
 
 namespace StockAutomationClient.ApiConnector;
 

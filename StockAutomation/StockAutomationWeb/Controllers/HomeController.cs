@@ -1,8 +1,6 @@
-using System.Diagnostics;
 using BusinessLayer.Services;
 using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Mvc;
-using StockAutomationWeb.Models;
 
 namespace StockAutomationWeb.Controllers;
 

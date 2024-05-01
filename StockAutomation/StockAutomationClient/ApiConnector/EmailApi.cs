@@ -1,8 +1,6 @@
 using System.Net.Http.Json;
 using BusinessLayer.Models;
-using StockAutomationClient.Models;
-using StockAutomationCore.Configuration;
-using StockAutomationConfig = StockAutomationClient.Configuration.StockAutomationConfig;
+using DataAccessLayer.Entities;
 
 namespace StockAutomationClient.ApiConnector;
 
@@ -45,6 +43,13 @@ public static class EmailApi
     {
         var response = await Client.PostAsJsonAsync(
             $"{ApiConfiguration.ApiUri}/Email/Delete", ids);
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    public static async Task<string> GetSupportedFormats()
+    {
+        var response = await Client.GetAsync(
+            $"{ApiConfiguration.ApiUri}/Email/SupportedFormats");
         return await response.Content.ReadAsStringAsync();
     }
 }

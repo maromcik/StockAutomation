@@ -27,4 +27,5 @@ public enum EmailOperation
     [Display(Name = "print subscribers")] Print,
     [Display(Name = "add subscriber")] Add,
     [Display(Name = "delete subscriber")] Delete,
+    [Display(Name = "change attachment format")] ChangeFormat,
 }

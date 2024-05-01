@@ -1,11 +1,8 @@
 using System.Numerics;
 using StockAutomationCore.Diff;
-using StockAutomationCore.DiffFormat;
 using StockAutomationCore.Model;
 
 namespace StockAutomationCore.Tests;
-
-using StockAutomationCore;
 
 public class HoldingsDiffUnitTest
 {
