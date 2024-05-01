@@ -1,3 +1,4 @@
+using BusinessLayer.Facades;
 using BusinessLayer.Services;
 using DataAccessLayer;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,7 @@ builder.Services.AddDbContext<StockAutomationDbContext>(options =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddTransient<ISnapshotService, SnapshotService>();
+builder.Services.AddTransient<ISendDifferencesFacade, SendDifferencesFacade>();
 builder.Services.AddHttpClient<ISnapshotService, SnapshotService>(c =>
 {
     c.DefaultRequestHeaders.Add("User-Agent", "StockAutomationCore/1.0");

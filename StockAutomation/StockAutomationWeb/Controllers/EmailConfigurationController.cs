@@ -1,13 +1,14 @@
 using System.Diagnostics;
 using BusinessLayer.Models;
 using BusinessLayer.Services;
+using BusinessLayer.Facades;
 using Microsoft.AspNetCore.Mvc;
 using StockAutomationWeb.Models;
 
 namespace StockAutomationWeb.Controllers;
 
 [Route("[controller]/[action]")]
-public class EmailConfigurationController(ILogger<EmailConfigurationController> logger, IEmailService emailService)
+public class EmailConfigurationController(ILogger<EmailConfigurationController> logger, IEmailService emailService, ISendDifferencesFacade sendDifferencesFacade)
     : BaseController
 {
     private readonly ILogger<EmailConfigurationController> _logger = logger;
@@ -21,7 +22,7 @@ public class EmailConfigurationController(ILogger<EmailConfigurationController> 
     [HttpPost]
     public async Task<IActionResult> SendEmails()
     {
-        await emailService.SendEmailAsync("html diff here");
+        await sendDifferencesFacade.ProcessDiffLatest();
 
         return RedirectToAction("Index");
     }
