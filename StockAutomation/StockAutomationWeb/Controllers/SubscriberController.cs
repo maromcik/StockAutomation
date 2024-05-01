@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace StockAutomationWeb.Controllers;
 
 [Route("[controller]/[action]")]
-public class SubscriberController(ILogger<SubscriberController> logger, IEmailService emailService)
+public class SubscriberController(ILogger<SubscriberController> logger, ISubscriberService subscriberService)
     : BaseController
 {
     private readonly ILogger<SubscriberController> _logger = logger;
@@ -14,13 +14,13 @@ public class SubscriberController(ILogger<SubscriberController> logger, IEmailSe
     public async Task<IActionResult> Index(int? page = 1)
     {
         var paginationSetting = new PaginationSettings(10, page ?? 1);
-        var subscribers = await emailService.SearchSubscribersAsync(paginationSetting, null);
+        var subscribers = await subscriberService.SearchSubscribersAsync(paginationSetting, null);
         return View(subscribers);
     }
 
     public async Task<IActionResult> Delete(int id)
     {
-        var result = await emailService.DeleteSubscribersAsync([id]);
+        var result = await subscriberService.DeleteSubscribersAsync([id]);
         return result.Match(
             _ => RedirectToAction("Index", "Subscriber", new { id = 1 }),
             ErrorView
@@ -34,7 +34,7 @@ public class SubscriberController(ILogger<SubscriberController> logger, IEmailSe
             return View("Index");
         }
 
-        var result = await emailService.CreateSubscriber(model);
+        var result = await subscriberService.CreateSubscriber(model);
         return result.Match(
             _ => RedirectToAction("Index", "Subscriber", new { id = 1 }),
             ErrorView

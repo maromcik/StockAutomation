@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace StockAutomationWeb.Controllers;
 
 [Route("[controller]/[action]")]
-public class EmailConfigurationController(ILogger<EmailConfigurationController> logger, IEmailService emailService, ISendDifferencesFacade sendDifferencesFacade)
+public class EmailController(ILogger<EmailController> logger, IEmailService emailService, ISendDifferencesFacade sendDifferencesFacade)
     : BaseController
 {
-    private readonly ILogger<EmailConfigurationController> _logger = logger;
+    private readonly ILogger<EmailController> _logger = logger;
 
     public async Task<IActionResult> Index()
     {

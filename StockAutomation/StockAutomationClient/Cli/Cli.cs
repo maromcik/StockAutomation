@@ -219,7 +219,7 @@ public class Cli
     private async Task AddSubscriber()
     {
         var email = Prompt.Input<string>("Enter email address of the new subscriber");
-        var response = await EmailApi.CreateSubscriber(new SubscriberCreate
+        var response = await SubscriberApi.CreateSubscriber(new SubscriberCreate
         {
             EmailAddress = email
         });
@@ -228,7 +228,7 @@ public class Cli
 
     private async Task PrintSubscriberList()
     {
-        var subscribers = await EmailApi.GetSubscribers();
+        var subscribers = await SubscriberApi.GetSubscribers();
         for (var i = 0; i < subscribers.Count; i++)
         {
             Console.WriteLine($"{i + 1}   {subscribers[i].EmailAddress}");
@@ -237,7 +237,7 @@ public class Cli
 
     private async Task DeleteSubscriber()
     {
-        var subscribers = await EmailApi.GetSubscribers();
+        var subscribers = await SubscriberApi.GetSubscribers();
         if (subscribers.Count == 0)
         {
             Console.WriteLine("Subscriber list is empty");
@@ -254,7 +254,7 @@ public class Cli
             return;
         }
 
-        var response = await EmailApi.DeleteSubscribers(toBeDeleted);
+        var response = await SubscriberApi.DeleteSubscribers(toBeDeleted);
         Console.WriteLine(response);
     }
 
@@ -278,10 +278,11 @@ public class Cli
 
     private async Task ChangeFormat()
     {
-        var format = Prompt.Select<OutputFormat>("Select format");
-        await EmailApi.SaveEmailFormat(new FormatSettings
+        var format = Prompt.Select<OutputFormat>("Select attachment format");
+        var response = await EmailApi.SaveEmailFormat(new FormatSettings
         {
             PreferredFormat = format
         });
+        Console.WriteLine(response);
     }
 }

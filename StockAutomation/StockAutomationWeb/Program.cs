@@ -16,6 +16,7 @@ builder.Services.AddDbContext<StockAutomationDbContext>(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IEmailService, EmailService>();
+builder.Services.AddTransient<ISubscriberService, SubscriberService>();
 builder.Services.AddTransient<ISnapshotService, SnapshotService>();
 builder.Services.AddTransient<ISendDifferencesFacade, SendDifferencesFacade>();
 builder.Services.AddHttpClient<ISnapshotService, SnapshotService>(c =>

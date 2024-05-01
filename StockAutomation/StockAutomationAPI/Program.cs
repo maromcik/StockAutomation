@@ -18,6 +18,7 @@ builder.Services.AddDbContext<StockAutomationDbContext>(options =>
 builder.Services.AddLogging();
 builder.Services.AddRazorPages();
 builder.Services.AddTransient<ISnapshotService, SnapshotService>();
+builder.Services.AddTransient<ISubscriberService, SubscriberService>();
 builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddHttpClient<ISnapshotService, SnapshotService>(c =>
 {
