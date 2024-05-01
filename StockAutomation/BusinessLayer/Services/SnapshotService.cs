@@ -10,37 +10,18 @@ using StockAutomationCore.Parser;
 
 namespace BusinessLayer.Services;
 
-public class SnapshotService : ISnapshotService
+public class SnapshotService(StockAutomationDbContext context, HttpClient client) : ISnapshotService
 {
-    private readonly StockAutomationDbContext _context;
-    private readonly HttpClient _client;
-    private string DownloadUrl { get; set; }
-
-    public SnapshotService(StockAutomationDbContext context, HttpClient client)
-    {
-        _context = context;
-        _client = client;
-        var url = context.Configurations.FirstOrDefault()?.DownloadUrl;
-        if (url is null)
-        {
-            DownloadUrl = client.BaseAddress?.ToString() ?? string.Empty;
-        }
-        else
-        {
-            DownloadUrl = url;
-        }
-    }
-
     public async Task<IEnumerable<HoldingSnapshot>> GetSnapshotsAsync()
     {
-        return await _context.HoldingSnapshots.OrderByDescending(s => s.DownloadedAt).ToListAsync();
+        return await context.HoldingSnapshots.OrderByDescending(s => s.DownloadedAt).ToListAsync();
     }
 
     public async Task<Result<bool, Error>> DownloadSnapshotAsync()
     {
         try
         {
-            var fileBytes = await Downloader.DownloadToBytes(_client, DownloadUrl);
+            var fileBytes = await Downloader.DownloadToBytes(client);
             var parsedFile = HoldingSnapshotLineParser.ParseLinesFromBytes(fileBytes);
             var lines = parsedFile.Select(snapshotLine => new HoldingSnapshotLineEntity
                 {
@@ -60,9 +41,9 @@ public class SnapshotService : ISnapshotService
                 DownloadedAt = DateTime.Now,
                 Lines = lines
             };
-            _context.HoldingSnapshots.Add(holdingSnapshot);
+            context.HoldingSnapshots.Add(holdingSnapshot);
 
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
             return true;
         }
         catch (Exception e)
@@ -77,7 +58,7 @@ public class SnapshotService : ISnapshotService
 
     public async Task<Result<bool, Error>> DeleteSnapshotsAsync(List<int> ids)
     {
-        var snapshots = await _context.HoldingSnapshots
+        var snapshots = await context.HoldingSnapshots
             .Where(s => ids.Contains(s.Id)).ToListAsync();
         if (snapshots.Count == 0)
         {
@@ -88,19 +69,19 @@ public class SnapshotService : ISnapshotService
             };
         }
 
-        _context.HoldingSnapshots.RemoveRange(snapshots);
+        context.HoldingSnapshots.RemoveRange(snapshots);
 
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
         return true;
     }
 
     public async Task<Result<string, Error>> CompareSnapshotsAsync(int idNew, int idOld)
     {
-        var newSnapshot = await _context
+        var newSnapshot = await context
             .HoldingSnapshots
             .Include(s => s.Lines)
             .FirstOrDefaultAsync(s => s.Id == idNew);
-        var oldSnapshot = await _context
+        var oldSnapshot = await context
             .HoldingSnapshots
             .Include(s => s.Lines)
             .FirstOrDefaultAsync(s => s.Id == idOld);
@@ -109,7 +90,7 @@ public class SnapshotService : ISnapshotService
 
     public async Task<Result<string, Error>> CompareLatestSnapshotsAsync()
     {
-        var latestSnapshots = await _context
+        var latestSnapshots = await context
             .HoldingSnapshots
             .Include(s => s.Lines)
             .OrderByDescending(s => s.DownloadedAt)

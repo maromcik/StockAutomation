@@ -10,17 +10,36 @@ namespace BusinessLayer.Services;
 using System.Net;
 using System.Net.Mail;
 
-public class EmailService(StockAutomationDbContext context, IConfiguration configuration) : IEmailService
+public class EmailService : IEmailService
 {
+    private readonly StockAutomationDbContext _context;
+    private readonly IConfiguration _configuration;
+
+    public EmailService(StockAutomationDbContext context, IConfiguration configuration)
+    {
+        _context = context;
+        _configuration = configuration;
+        var config = _context.Configurations.FirstOrDefault();
+        if (config == null)
+        {
+            _context.Configurations.Add(new Configuration
+            {
+                Id = 0,
+                OutputFormat = OutputFormat.Text
+            });
+            _context.SaveChanges();
+        }
+    }
+
     public async Task<IEnumerable<Subscriber>> GetSubscribersAsync()
     {
-        return await context.Subscribers.ToListAsync();
+        return await _context.Subscribers.ToListAsync();
     }
 
     public async Task<Result<bool, Error>> SendEmailAsync(string diff)
     {
-        var subscribers = await context.Subscribers.ToListAsync();
-        var smtpConfig = configuration.GetSection("SMTP");
+        var subscribers = await _context.Subscribers.ToListAsync();
+        var smtpConfig = _configuration.GetSection("SMTP");
 
         var host = smtpConfig["Host"];
         var port = Convert.ToInt32(smtpConfig["Port"]);
@@ -67,42 +86,26 @@ public class EmailService(StockAutomationDbContext context, IConfiguration confi
 
     public async Task<Result<bool, Error>> SaveEmailSettingsAsync(FormatSettings settings)
     {
-        try
-        {
-            // needed to differentiate in used methods later (Add vs Update)
-            var dbConfig = await context.Configurations.FirstOrDefaultAsync();
-            var config = dbConfig ?? new Configuration
-            {
-                Id = 1,
-                DownloadUrl = "",
-                OutputFormat = OutputFormat.Text
-            };
-            config.OutputFormat = settings.PreferredFormat;
-            if (dbConfig is null)
-            {
-                await context.Configurations.AddAsync(config);
-            }
-            else
-            {
-                context.Configurations.Update(config);
-            }
-
-            await context.SaveChangesAsync();
-            return true;
-        }
-        catch (Exception e)
+        var dbConfig = await _context.Configurations.FirstOrDefaultAsync();
+        if (dbConfig == null)
         {
             return new Error
             {
                 ErrorType = ErrorType.ConfigurationError,
-                Message = e.Message
+                Message = "No default config found."
             };
         }
+
+        dbConfig.OutputFormat = settings.PreferredFormat;
+        _context.Configurations.Update(dbConfig);
+
+        await _context.SaveChangesAsync();
+        return true;
     }
 
     public async Task<FormatSettings> GetEmailSettings()
     {
-        var config = await context.Configurations.FirstOrDefaultAsync();
+        var config = await _context.Configurations.FirstOrDefaultAsync();
         var settings = new FormatSettings(config?.OutputFormat ?? OutputFormat.Text);
         return settings;
     }
@@ -131,28 +134,14 @@ public class EmailService(StockAutomationDbContext context, IConfiguration confi
         {
             EmailAddress = subscriberCreate.EmailAddress
         };
-        context.Add(subscriber);
-        await context.SaveChangesAsync();
+        _context.Add(subscriber);
+        await _context.SaveChangesAsync();
         return true;
-    }
-
-    private static bool IsEmailAddressValid(string emailAddress)
-    {
-        try
-        {
-            var m = new MailAddress(emailAddress);
-
-            return true;
-        }
-        catch (FormatException)
-        {
-            return false;
-        }
     }
 
     public async Task<Result<bool, Error>> DeleteSubscribersAsync(List<int> ids)
     {
-        var subscribers = await context.Subscribers.Where(s => ids.Contains(s.Id)).ToListAsync();
+        var subscribers = await _context.Subscribers.Where(s => ids.Contains(s.Id)).ToListAsync();
         if (subscribers.Count == 0)
         {
             return new Error
@@ -162,15 +151,14 @@ public class EmailService(StockAutomationDbContext context, IConfiguration confi
             };
         }
 
-        context.Subscribers.RemoveRange(subscribers);
-        await context.SaveChangesAsync();
+        _context.Subscribers.RemoveRange(subscribers);
+        await _context.SaveChangesAsync();
         return true;
     }
 
     public async Task<SubscriberView> SearchSubscribersAsync(PaginationSettings? paginationSettings, string? query)
     {
-        var subscribers = context.Subscribers.AsQueryable();
-
+        var subscribers = _context.Subscribers.AsQueryable();
 
         if (paginationSettings != null)
         {
@@ -190,7 +178,7 @@ public class EmailService(StockAutomationDbContext context, IConfiguration confi
             1, 1);
     }
 
-    private string CreateEmailBody(string diff)
+    private static string CreateEmailBody(string diff)
     {
         var body = $@"
                     <html>
@@ -244,5 +232,19 @@ public class EmailService(StockAutomationDbContext context, IConfiguration confi
                     </html>
                     ";
         return body;
+    }
+
+    private static bool IsEmailAddressValid(string emailAddress)
+    {
+        try
+        {
+            var m = new MailAddress(emailAddress);
+
+            return true;
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
     }
 }
