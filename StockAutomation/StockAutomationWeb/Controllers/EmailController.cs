@@ -6,7 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace StockAutomationWeb.Controllers;
 
 [Route("[controller]/[action]")]
-public class EmailController(ILogger<EmailController> logger, IEmailService emailService, ISendDifferencesFacade sendDifferencesFacade)
+public class EmailController(
+    ILogger<EmailController> logger,
+    IEmailService emailService,
+    ISendDifferencesFacade sendDifferencesFacade)
     : BaseController
 {
     private readonly ILogger<EmailController> _logger = logger;
@@ -20,9 +23,10 @@ public class EmailController(ILogger<EmailController> logger, IEmailService emai
     [HttpPost]
     public async Task<IActionResult> SendEmails()
     {
-        await sendDifferencesFacade.ProcessDiffLatest();
-
-        return RedirectToAction("Index");
+        var res = await sendDifferencesFacade.ProcessDiffLatest();
+        return res.Match(
+            _ => RedirectToAction("Index"),
+            ErrorView);
     }
 
 
@@ -34,7 +38,9 @@ public class EmailController(ILogger<EmailController> logger, IEmailService emai
             return View("Index", settings);
         }
 
-        await emailService.SaveEmailSettingsAsync(settings);
-        return RedirectToAction("Index");
+        var res = await emailService.SaveEmailSettingsAsync(settings);
+        return res.Match(
+            _ => RedirectToAction("Index"),
+            ErrorView);
     }
 }
