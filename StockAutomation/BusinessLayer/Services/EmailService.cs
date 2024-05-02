@@ -105,36 +105,6 @@ public class EmailService : IEmailService
         return settings;
     }
 
-    public async Task<Result<bool, Error>> CreateSubscriber(SubscriberCreate subscriberCreate)
-    {
-        if (string.IsNullOrEmpty(subscriberCreate.EmailAddress))
-        {
-            return new Error
-            {
-                ErrorType = ErrorType.EmailEmpty,
-                Message = "Email address cannot be empty"
-            };
-        }
-
-        if (!IsEmailAddressValid(subscriberCreate.EmailAddress))
-        {
-            return new Error
-            {
-                ErrorType = ErrorType.InvalidEmailAddress,
-                Message = "Invalid email address"
-            };
-        }
-
-        var subscriber = new Subscriber
-        {
-            EmailAddress = subscriberCreate.EmailAddress
-        };
-        _context.Add(subscriber);
-        await _context.SaveChangesAsync();
-        return true;
-    }
-
-
     private static string CreateEmailBody(string diff)
     {
         var body = $@"
