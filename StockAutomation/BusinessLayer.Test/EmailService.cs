@@ -1,4 +1,4 @@
-using System.Transactions;
+// using System.Transactions;
 using BusinessLayer.Models;
 using BusinessLayer.Services;
 using DataAccessLayer;
@@ -6,8 +6,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Test;
 
-[TestFixture]
-[NonParallelizable]
 public class Tests
 {
     private DbContextOptions _options;
