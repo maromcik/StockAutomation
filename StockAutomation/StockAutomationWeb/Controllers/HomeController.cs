@@ -13,9 +13,8 @@ public class HomeController(
 
     public async Task<IActionResult> Index()
     {
-        var snapshots = await snapshotService.GetSnapshotsAsync();
-        var snapshotsList = new List<HoldingSnapshot>(snapshots);
-        return View(snapshotsList);
+        var snapshots = (await snapshotService.GetSnapshotsAsync()).Take(10).ToList();
+        return View(snapshots);
     }
 
     public IActionResult Privacy()
