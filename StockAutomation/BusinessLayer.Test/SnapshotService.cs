@@ -125,31 +125,31 @@ public class SnapshotServiceTests
         });
     }
 
-    // todo either make pass & uncomment or delete
-    // [Test]
-    // public async Task DeleteSnapshotsAsync_TargetSingleNonExistingEntry_ReturnsOk()
-    // {
-    //     // Arrange
-    //     var context = new StockAutomationDbContext(_options);
-    //     var client = new HttpClient
-    //     {
-    //         BaseAddress = new Uri($"file://{Directory.GetCurrentDirectory()}/{TestSnapshotFile}")
-    //     };
-    //     var service = new SnapshotService<DownloaderMock>(context, client);
-    //     var snapshots = await service.GetSnapshotsAsync();
-    //     var nonexistentId = 420;
+    // todo either make pass or delete
+    [Test]
+    public async Task DeleteSnapshotsAsync_TargetSingleNonExistingEntry_ReturnsOk()
+    {
+        // Arrange
+        var context = new StockAutomationDbContext(_options);
+        var client = new HttpClient
+        {
+            BaseAddress = new Uri($"file://{Directory.GetCurrentDirectory()}/{TestSnapshotFile}")
+        };
+        var service = new SnapshotService(context, client);
+        var snapshots = await service.GetSnapshotsAsync();
+        var nonexistentId = 420;
 
-    //     // Act
-    //     var result = await service.DeleteSnapshotsAsync([nonexistentId]);
-    //     var snapshotsAfter = await service.GetSnapshotsAsync();
+        // Act
+        var result = await service.DeleteSnapshotsAsync([nonexistentId]);
+        var snapshotsAfter = await service.GetSnapshotsAsync();
 
-    //     // Assert
-    //     Assert.Multiple(() =>
-    //     {
-    //         Assert.That(result.IsOk);
-    //         Assert.That(snapshotsAfter.Count(), Is.EqualTo(0));
-    //     });
-    // }
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.IsOk);
+            Assert.That(snapshotsAfter.Count(), Is.EqualTo(0));
+        });
+    }
 
     [Test]
     public async Task DeleteSnapshotsAsync_TargetOneOfExistingEntries_OthersUnaffected()

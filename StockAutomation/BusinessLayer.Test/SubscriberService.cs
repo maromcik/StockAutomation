@@ -157,25 +157,25 @@ public class Tests
                 });
         }
 
-        // todo either make pass & uncomment or delete
-        // [Test]
-        // public async Task DeleteSubscribersAsync_TargetSingleNonexistantEntry_ReturnsOk()
-        // {
-        //         // Arrange
+        // todo either make pass or delete
+        [Test]
+        public async Task DeleteSubscribersAsync_TargetSingleNonexistantEntry_ReturnsOk()
+        {
+                // Arrange
 
-        //         var context = new StockAutomationDbContext(_options);
+                var context = new StockAutomationDbContext(_options);
 
-        //         var service = new SubscriberService(context);
+                var service = new SubscriberService(context);
 
-        //         // Act
+                // Act
 
-        //         var idOfNonexistantEntry = 0;
-        //         var response = await service.DeleteSubscribersAsync([idOfNonexistantEntry]);
+                var idOfNonexistantEntry = 0;
+                var response = await service.DeleteSubscribersAsync([idOfNonexistantEntry]);
 
-        //         // Assert
+                // Assert
 
-        //         Assert.That(response.IsOk);
-        // }
+                Assert.That(response.IsOk);
+        }
 
         [Test]
         public async Task DeleteSubscribersAsync_TargetOneOfExistingEntries_OthersUnaffected()
