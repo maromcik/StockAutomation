@@ -1,22 +1,22 @@
 using System.Numerics;
 using StockAutomationCore.Diff;
-using StockAutomationCore.DiffFormat;
 using StockAutomationCore.Model;
 
 namespace StockAutomationCore.Tests;
-using StockAutomationCore;
 
 public class HoldingsDiffUnitTest
 {
     [SetUp]
-    public void Setup() { }
+    public void Setup()
+    {
+    }
 
     [Test]
     public void TestHoldingsDiffEmpty()
     {
         var diff = new HoldingsDiff(
-            new List<HoldingSnapshotLine> {},
-            new List<HoldingSnapshotLine> {}
+            new List<HoldingSnapshotLine> { },
+            new List<HoldingSnapshotLine> { }
         );
         Assert.That(diff.HoldingsDiffLines, Is.Empty);
     }
@@ -24,12 +24,14 @@ public class HoldingsDiffUnitTest
     [Test]
     public void TestHoldingsDiffSameHoldingsNoChanges()
     {
-        var holding1 = HoldingSnapshotLine.Create(DateTime.Today, "ARKK", "Company 1", "TICKER1", "CUSIP1", 100, 100, decimal.Parse("0.1"));
-        var holding2 = HoldingSnapshotLine.Create(DateTime.Today, "ARKK", "Company 2", "TICKER2", "CUSIP2", 200, 200, decimal.Parse("0.2"));
+        var holding1 = HoldingSnapshotLine.Create(DateTime.Today, "ARKK", "Company 1", "TICKER1", "CUSIP1", 100, 100,
+            decimal.Parse("0.1"));
+        var holding2 = HoldingSnapshotLine.Create(DateTime.Today, "ARKK", "Company 2", "TICKER2", "CUSIP2", 200, 200,
+            decimal.Parse("0.2"));
         var diff = new HoldingsDiff(
             new List<HoldingSnapshotLine> { holding1, holding2 },
             new List<HoldingSnapshotLine> { holding1, holding2 }
-         );
+        );
         Assert.Multiple(() =>
         {
             Assert.That(diff.HoldingsDiffLines.TryGetValue("CUSIP1", out var val1), Is.True);
@@ -60,8 +62,10 @@ public class HoldingsDiffUnitTest
     [Test]
     public void TestHoldingsDiffNewHoldings()
     {
-        var holding1 = HoldingSnapshotLine.Create(DateTime.Today, "ARKK", "Company 1", "TICKER1", "CUSIP1", 100, 100, decimal.Parse("0.1"));
-        var holding2 = HoldingSnapshotLine.Create(DateTime.Today, "ARKK", "Company 2", "TICKER2", "CUSIP2", 200, 200, decimal.Parse("0.2"));
+        var holding1 = HoldingSnapshotLine.Create(DateTime.Today, "ARKK", "Company 1", "TICKER1", "CUSIP1", 100, 100,
+            decimal.Parse("0.1"));
+        var holding2 = HoldingSnapshotLine.Create(DateTime.Today, "ARKK", "Company 2", "TICKER2", "CUSIP2", 200, 200,
+            decimal.Parse("0.2"));
         var diff = new HoldingsDiff(
             new List<HoldingSnapshotLine> { holding1 },
             new List<HoldingSnapshotLine> { holding1, holding2 }
@@ -96,8 +100,10 @@ public class HoldingsDiffUnitTest
     [Test]
     public void TestHoldingsDiffRemovedHoldings()
     {
-        var holding1 = HoldingSnapshotLine.Create(DateTime.Today, "ARKK", "Company 1", "TICKER1", "CUSIP1", 100, 100, decimal.Parse("0.1"));
-        var holding2 = HoldingSnapshotLine.Create(DateTime.Today, "ARKK", "Company 2", "TICKER2", "CUSIP2", 200, 200, decimal.Parse("0.2"));
+        var holding1 = HoldingSnapshotLine.Create(DateTime.Today, "ARKK", "Company 1", "TICKER1", "CUSIP1", 100, 100,
+            decimal.Parse("0.1"));
+        var holding2 = HoldingSnapshotLine.Create(DateTime.Today, "ARKK", "Company 2", "TICKER2", "CUSIP2", 200, 200,
+            decimal.Parse("0.2"));
         var diff = new HoldingsDiff(
             new List<HoldingSnapshotLine> { holding1, holding2 },
             new List<HoldingSnapshotLine> { holding1 }
@@ -126,16 +132,18 @@ public class HoldingsDiffUnitTest
             Assert.That(val2.New.MarketValueUsd, Is.EqualTo(0m));
             Assert.That(val2.Old.Weight, Is.EqualTo(decimal.Parse("0.2")));
             Assert.That(val2.New.Weight, Is.EqualTo(0m));
-
         });
     }
 
     [Test]
     public void TestHoldingsDiffChangedHoldings()
     {
-        var holding1 = HoldingSnapshotLine.Create(DateTime.Today, "ARKK", "Company 1", "TICKER1", "CUSIP1", 100, 100, decimal.Parse("0.1"));
-        var holding2 = HoldingSnapshotLine.Create(DateTime.Today, "ARKK", "Company 2", "TICKER2", "CUSIP2", 200, 200, decimal.Parse("0.2"));
-        var holding3 = HoldingSnapshotLine.Create(DateTime.Today, "ARKK", "Company 2", "TICKER2", "CUSIP2", 300, 300, decimal.Parse("0.3"));
+        var holding1 = HoldingSnapshotLine.Create(DateTime.Today, "ARKK", "Company 1", "TICKER1", "CUSIP1", 100, 100,
+            decimal.Parse("0.1"));
+        var holding2 = HoldingSnapshotLine.Create(DateTime.Today, "ARKK", "Company 2", "TICKER2", "CUSIP2", 200, 200,
+            decimal.Parse("0.2"));
+        var holding3 = HoldingSnapshotLine.Create(DateTime.Today, "ARKK", "Company 2", "TICKER2", "CUSIP2", 300, 300,
+            decimal.Parse("0.3"));
         var diff = new HoldingsDiff(
             new List<HoldingSnapshotLine> { holding1, holding2 },
             new List<HoldingSnapshotLine> { holding1, holding3 }
@@ -170,10 +178,14 @@ public class HoldingsDiffUnitTest
     [Test]
     public void TestHoldingsDiffEverythingAtOnce()
     {
-        var holding1 = HoldingSnapshotLine.Create(DateTime.Today, "ARKK", "Company 1", "TICKER1", "CUSIP1", 100, 100, decimal.Parse("0.1"));
-        var holding2 = HoldingSnapshotLine.Create(DateTime.Today, "ARKK", "Company 2", "TICKER2", "CUSIP2", 200, 200, decimal.Parse("0.2"));
-        var holding3 = HoldingSnapshotLine.Create(DateTime.Today, "ARKK", "Company 2", "TICKER2", "CUSIP2", 300, 300, decimal.Parse("0.3"));
-        var holding4 = HoldingSnapshotLine.Create(DateTime.Today, "ARKK", "Company 3", "TICKER3", "CUSIP3", 400, 400, decimal.Parse("0.4"));
+        var holding1 = HoldingSnapshotLine.Create(DateTime.Today, "ARKK", "Company 1", "TICKER1", "CUSIP1", 100, 100,
+            decimal.Parse("0.1"));
+        var holding2 = HoldingSnapshotLine.Create(DateTime.Today, "ARKK", "Company 2", "TICKER2", "CUSIP2", 200, 200,
+            decimal.Parse("0.2"));
+        var holding3 = HoldingSnapshotLine.Create(DateTime.Today, "ARKK", "Company 2", "TICKER2", "CUSIP2", 300, 300,
+            decimal.Parse("0.3"));
+        var holding4 = HoldingSnapshotLine.Create(DateTime.Today, "ARKK", "Company 3", "TICKER3", "CUSIP3", 400, 400,
+            decimal.Parse("0.4"));
 
         var diff = new HoldingsDiff(
             new List<HoldingSnapshotLine> { holding1, holding2 },
@@ -216,5 +228,4 @@ public class HoldingsDiffUnitTest
             Assert.That(val3.New.Weight, Is.EqualTo(decimal.Parse("0.4")));
         });
     }
-
 }

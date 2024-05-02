@@ -7,7 +7,6 @@ namespace DataAccessLayer;
 public class StockAutomationDbContext : DbContext
 {
     public DbSet<Configuration> Configurations { get; set; }
-    public DbSet<Snapshot> Snapshots { get; set; }
     public DbSet<Subscriber> Subscribers { get; set; }
     public DbSet<HoldingSnapshot> HoldingSnapshots { get; set; }
     public DbSet<HoldingSnapshotLineEntity> HoldingSnapshotLines { get; set; }

@@ -2,15 +2,14 @@ namespace BusinessLayer.Errors;
 
 public enum ErrorType
 {
-    FileNotFound,
-
+    SnapshotEmpty,
     SnapshotNotFound,
-    NoSnapshotsFound,
+    SnapshotsNotFound,
 
     DownloadError,
 
     EmailEmpty,
-    NoSubscribersFound,
+    SubscribersNotFound,
     InvalidEmailAddress,
     InvalidEmailCredentials,
 

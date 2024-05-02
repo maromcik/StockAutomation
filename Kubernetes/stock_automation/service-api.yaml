@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: stock-automation-svc
+  name: stock-automation-api-svc
 spec:
   type: ClusterIP
   ports:
-  - name: stock-automation-port
+  - name: stock-automation-api-port
     port: 80
     targetPort: 8080
   selector:
-    app: stock-automation
+    app: stock-automation-api

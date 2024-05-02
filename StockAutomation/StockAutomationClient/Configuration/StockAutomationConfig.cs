@@ -8,8 +8,9 @@ public static class StockAutomationConfig
 
     static StockAutomationConfig()
     {
+        var path = $"{Directory.GetCurrentDirectory()}/../../../";
         var builder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
+            .SetBasePath(path)
             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
         Configuration = builder.Build();

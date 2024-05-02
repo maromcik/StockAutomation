@@ -1,4 +1,3 @@
-using System.Text;
 using StockAutomationCore.Model;
 
 namespace StockAutomationCore.Diff;

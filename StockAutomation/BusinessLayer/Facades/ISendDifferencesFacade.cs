@@ -6,4 +6,5 @@ namespace BusinessLayer.Facades;
 public interface ISendDifferencesFacade
 {
     public Task<Result<bool, Error>> ProcessDiff(EmailSend snapshotCompare);
+    public Task<Result<bool, Error>> ProcessDiffLatest();
 }

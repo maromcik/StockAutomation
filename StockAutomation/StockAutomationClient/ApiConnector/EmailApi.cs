@@ -1,44 +1,31 @@
 using System.Net.Http.Json;
 using BusinessLayer.Models;
-using StockAutomationClient.Models;
-using StockAutomationCore.Configuration;
-using StockAutomationConfig = StockAutomationClient.Configuration.StockAutomationConfig;
+using DataAccessLayer.Entities;
 
 namespace StockAutomationClient.ApiConnector;
 
 public static class EmailApi
 {
     private static readonly HttpClient Client = new();
-
-    public static async Task<List<Subscriber>> GetSubscribers()
-    {
-        var emails = new List<Subscriber>();
-        var response = await Client.GetAsync($"{ApiConfiguration.ApiUri}/Email");
-        if (response.IsSuccessStatusCode)
-        {
-            emails = await response.Content.ReadFromJsonAsync<List<Subscriber>>() ?? [];
-        }
-
-        return emails;
-    }
+    private const string Endpoint = "Email";
 
     public static async Task<string> SendEmail(SnapshotCompare snapshotCompare)
     {
-        var response = await Client.PostAsJsonAsync($"{ApiConfiguration.ApiUri}/Email/Send", snapshotCompare);
+        var response = await Client.PostAsJsonAsync($"{ApiConfiguration.ApiUri}/{Endpoint}/Send", snapshotCompare);
         return await response.Content.ReadAsStringAsync();
     }
 
-    public static async Task<string> CreateSubscriber(SubscriberCreate subscriberCreate)
+    public static async Task<string> SendEmailLatest()
     {
-        var response = await Client.PostAsJsonAsync(
-            $"{ApiConfiguration.ApiUri}/Email", subscriberCreate);
+        var response = await Client.GetAsync($"{ApiConfiguration.ApiUri}/{Endpoint}/SendLatest");
         return await response.Content.ReadAsStringAsync();
     }
 
-    public static async Task<string> DeleteSubscribers(List<int> ids)
+
+    public static async Task<string> SaveEmailFormat(FormatSettings formatSettings)
     {
         var response = await Client.PostAsJsonAsync(
-            $"{ApiConfiguration.ApiUri}/Email/Delete", ids);
+            $"{ApiConfiguration.ApiUri}/{Endpoint}/SaveSettings", formatSettings);
         return await response.Content.ReadAsStringAsync();
     }
 }

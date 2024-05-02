@@ -10,23 +10,6 @@ namespace StockAutomationAPI.Controllers;
 [Route("[controller]")]
 public class EmailController(IEmailService emailService, ISendDifferencesFacade sendDifferencesFacade) : Controller
 {
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<Subscriber>>> GetSubscribers()
-    {
-        return Ok(await emailService.GetSubscribersAsync());
-    }
-
-
-    [HttpPost("Delete")]
-    public async Task<IActionResult> DeleteSubscribers(List<int> ids)
-    {
-        var result = await emailService.DeleteSubscribersAsync(ids);
-        return result.Match<IActionResult>(
-            _ => Ok("Successfully deleted"),
-            e => BadRequest(e.Message)
-        );
-    }
-
     [HttpPost("Send")]
     public async Task<IActionResult> SendEmail(EmailSend emailSend)
     {
@@ -37,12 +20,23 @@ public class EmailController(IEmailService emailService, ISendDifferencesFacade 
         );
     }
 
-    [HttpPost]
-    public async Task<IActionResult> CreateSubscribers(SubscriberCreate subscriberCreate)
+    [HttpGet("SendLatest")]
+    public async Task<IActionResult> SendEmailLatest()
     {
-        var result = await emailService.CreateSubscriber(subscriberCreate);
+        var result = await sendDifferencesFacade.ProcessDiffLatest();
         return result.Match<IActionResult>(
-            _ => Ok("Successfully created"),
+            s => Ok("Emails were successfully sent"),
+            e => BadRequest(e.Message)
+        );
+    }
+
+
+    [HttpPost("SaveSettings")]
+    public async Task<IActionResult> SaveSettings(FormatSettings settings)
+    {
+        var result = await emailService.SaveEmailSettingsAsync(settings);
+        return result.Match<IActionResult>(
+            _ => Ok("Successfully Updated"),
             e => BadRequest(e.Message)
         );
     }

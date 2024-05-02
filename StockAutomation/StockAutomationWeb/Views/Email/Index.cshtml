@@ -2,10 +2,10 @@
 @model BusinessLayer.Models.FormatSettings
 
 @{
-    ViewData["Title"] = "Email Configuration";
+    ViewData["Title"] = "Email Service";
 }
 
-<h1>@ViewData["Title"]</h1>
+<h2 class="text-center">@ViewData["Title"]</h2>
 <style>
     .blue-outline-button {
         color: #007bff; /* Blue text */
@@ -17,7 +17,9 @@
 <div class="mt-4" style="display: flex; flex-direction: column; align-items: stretch;">
     <form asp-action="SaveSettings" method="post">
         <div style="display: flex; align-items: center; margin-bottom: 20px;">
-            <div style="margin-right: 20px;"><label>Select email format:</label></div>
+            <div style="margin-right: 20px;">
+                <label>Select email format:</label>
+            </div>
             <div style="margin-right: 10px;">
                 <input type="radio" id="json" name="PreferredFormat" value="json" @(Model.PreferredFormat == OutputFormat.JSON ? "checked" : "")>
                 <label for="json">JSON</label>

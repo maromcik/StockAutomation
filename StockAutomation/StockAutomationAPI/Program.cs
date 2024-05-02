@@ -19,12 +19,13 @@ builder.Services.AddDbContext<StockAutomationDbContext>(options =>
 builder.Services.AddLogging();
 builder.Services.AddRazorPages();
 builder.Services.AddTransient<ISnapshotService, SnapshotService>();
+builder.Services.AddTransient<ISubscriberService, SubscriberService>();
 builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddHttpClient<ISnapshotService, SnapshotService>(c =>
 {
     c.DefaultRequestHeaders.Add("User-Agent", "StockAutomationCore/1.0");
-    c.BaseAddress = new Uri(configuration.GetSection("download")["defaultUrl"] ??
-                                   "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv");
+    c.BaseAddress = new Uri(configuration.GetSection("Download")["defaultUrl"] ??
+                            "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv");
 });
 
 builder.Services.AddTransient<ISendDifferencesFacade, SendDifferencesFacade>();
