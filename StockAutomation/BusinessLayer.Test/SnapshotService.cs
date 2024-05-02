@@ -2,7 +2,6 @@
 using BusinessLayer.Services;
 using DataAccessLayer;
 using Microsoft.EntityFrameworkCore;
-using StockAutomationCore.Download;
 
 namespace BusinessLayer.Test;
 

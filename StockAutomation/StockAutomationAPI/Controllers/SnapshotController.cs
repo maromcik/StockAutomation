@@ -3,7 +3,6 @@ using BusinessLayer.Models;
 using BusinessLayer.Services;
 using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Mvc;
-using StockAutomationCore.Download;
 
 namespace StockAutomationAPI.Controllers;
 

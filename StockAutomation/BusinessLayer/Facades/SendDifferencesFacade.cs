@@ -1,7 +1,6 @@
 using BusinessLayer.Errors;
 using BusinessLayer.Models;
 using BusinessLayer.Services;
-using StockAutomationCore.Download;
 
 namespace BusinessLayer.Facades;
 

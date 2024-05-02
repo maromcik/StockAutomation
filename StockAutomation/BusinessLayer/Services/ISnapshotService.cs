@@ -1,6 +1,5 @@
 using BusinessLayer.Errors;
 using DataAccessLayer.Entities;
-using StockAutomationCore.Download;
 
 namespace BusinessLayer.Services;
 

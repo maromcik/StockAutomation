@@ -1,6 +1,6 @@
 namespace StockAutomationCore.Download;
 
-public class Downloader
+public static class Downloader
 {
     public static async Task<string> DownloadToFile(HttpClient client, string snapshotDir)
     {
