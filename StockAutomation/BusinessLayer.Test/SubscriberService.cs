@@ -157,7 +157,6 @@ public class Tests
                 });
         }
 
-        // todo either make pass or delete
         [Test]
         public async Task DeleteSubscribersAsync_TargetSingleNonexistantEntry_ReturnsOk()
         {

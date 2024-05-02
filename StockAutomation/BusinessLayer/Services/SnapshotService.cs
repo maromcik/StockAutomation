@@ -60,14 +60,6 @@ public class SnapshotService(StockAutomationDbContext context, HttpClient client
     {
         var snapshots = await context.HoldingSnapshots
             .Where(s => ids.Contains(s.Id)).ToListAsync();
-        if (snapshots.Count == 0)
-        {
-            return new Error
-            {
-                ErrorType = ErrorType.SnapshotsNotFound,
-                Message = "Could not delete selected snapshots - not found"
-            };
-        }
 
         context.HoldingSnapshots.RemoveRange(snapshots);
 

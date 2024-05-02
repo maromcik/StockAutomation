@@ -124,7 +124,6 @@ public class SnapshotServiceTests
         });
     }
 
-    // todo either make pass or delete
     [Test]
     public async Task DeleteSnapshotsAsync_TargetSingleNonExistingEntry_ReturnsOk()
     {
