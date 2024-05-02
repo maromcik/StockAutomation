@@ -109,4 +109,121 @@ public class Tests
         var firstSubscriber = subscribersCollected.First();
         Assert.That(firstSubscriber.EmailAddress, Is.EqualTo(subscriber.EmailAddress));
     }
+
+    [Test]
+    public async Task DeleteSubscribersAsync_TargetSingleExistingEntry_DeletesThatEntry()
+    {
+        // Arrange
+
+        var context = new StockAutomationDbContext(_options);
+
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+        var service = new EmailService(context, null /* will not need configuration */);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+
+        var subscriber = new SubscriberCreate { EmailAddress = "_@_.com" };
+        var _response = await service.CreateSubscriber(subscriber);
+        var allSubscribers = await service.GetSubscribersAsync();
+
+        // Act
+
+        await service.DeleteSubscribersAsync(allSubscribers.Select(sub => sub.Id).ToList());
+
+        // assert
+
+        var allSubscribersAfterDelete = await service.GetSubscribersAsync();
+        Assert.That(allSubscribersAfterDelete.Count(), Is.EqualTo(0));
+    }
+
+    // todo inconsistant behavior of `DeleteSubscribersAsync`
+    //  - would expect either both of DeleteSubscribersAsync_TargetOneExistingAndOneNonexistant_DeletesExistingAndReturnsOk
+    //    and DeleteSubscribersAsync_TargetSingleNonexistantEntry_ReturnsOk to fail or both of them to succeed
+
+    [Test]
+    public async Task DeleteSubscribersAsync_TargetOneExistingAndOneNonexistant_DeletesExistingAndReturnsOk()
+    {
+        // Arrange
+
+        var context = new StockAutomationDbContext(_options);
+
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+        var service = new EmailService(context, null /* will not need configuration */);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+
+        var subscriber = new SubscriberCreate { EmailAddress = "_@_.com" };
+        var _response = await service.CreateSubscriber(subscriber);
+        var allSubscribers = await service.GetSubscribersAsync();
+
+        // Act
+
+        var idOfNonexistantEntry = 420;
+        var response = await service.DeleteSubscribersAsync(allSubscribers.Select(sub => sub.Id).Append(idOfNonexistantEntry).ToList());
+
+        Assert.Multiple(async () =>
+        {
+
+            // Assert
+
+            Assert.That(response.IsOk);
+            Assert.That((await service.GetSubscribersAsync()).Count(), Is.EqualTo(0));
+        });
+    }
+
+    // todo either make pass & uncomment or delete
+    //     [Test]
+    //     public async Task DeleteSubscribersAsync_TargetSingleNonexistantEntry_ReturnsOk()
+    //     {
+    //         // Arrange
+
+    //         var context = new StockAutomationDbContext(_options);
+
+    // #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+    //         var service = new EmailService(context, null /* will not need configuration */);
+    // #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+
+    //         // Act
+
+    //         var idOfNonexistantEntry = 0;
+    //         var response = await service.DeleteSubscribersAsync([idOfNonexistantEntry]);
+
+    //         // Assert
+
+    //         Assert.That(response.IsOk);
+    //     }
+
+    [Test]
+    public async Task DeleteSubscribersAsync_TargetOneOfExistingEntries_OthersUnaffected()
+    {
+        // Arrange
+
+        var context = new StockAutomationDbContext(_options);
+
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+        var service = new EmailService(context, null /* will not need configuration */);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+
+        var subscriber1 = new SubscriberCreate { EmailAddress = "1@_.com" };
+        var subscriber2 = new SubscriberCreate { EmailAddress = "2@_.com" };
+
+        var _response1 = await service.CreateSubscriber(subscriber1);
+        var subscriber1FromDb = (await service.GetSubscribersAsync()).ToList();
+
+        var _response2 = await service.CreateSubscriber(subscriber2);
+
+        // Act
+
+        var deleteResponse = await service.DeleteSubscribersAsync(subscriber1FromDb.Select(sub => sub.Id).ToList());
+
+        Assert.Multiple(async () =>
+        {
+
+            // Assert
+
+            Assert.That(deleteResponse.IsOk);
+
+            var subscribersAfterDelete = (await service.GetSubscribersAsync()).ToList();
+            Assert.That(subscribersAfterDelete, Has.Count.EqualTo(1));
+            Assert.That(subscribersAfterDelete[0].EmailAddress, Is.EqualTo(subscriber2.EmailAddress));
+        });
+    }
 }
