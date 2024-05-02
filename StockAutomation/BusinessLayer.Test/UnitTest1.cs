@@ -226,4 +226,92 @@ public class Tests
             Assert.That(subscribersAfterDelete[0].EmailAddress, Is.EqualTo(subscriber2.EmailAddress));
         });
     }
+
+    [Test]
+    public async Task SearchSubscribersAsync_EmptyDB_ReturnsEmpty()
+    {
+        // Arrange
+
+        var context = new StockAutomationDbContext(_options);
+
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+        var service = new EmailService(context, null /* will not need configuration */);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+
+        // Act
+
+        var paginatedSubsResponse = await service.SearchSubscribersAsync(new PaginationSettings(10, 1), null);
+
+        // Assert
+
+        Assert.That(paginatedSubsResponse.Subscribers.Count(), Is.EqualTo(0));
+    }
+
+    [Test]
+    public async Task SearchSubscribersAsync_SingleSubscriber_ReturnsThatSubscriber()
+    {
+        // Arrange
+
+        var context = new StockAutomationDbContext(_options);
+
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+        var service = new EmailService(context, null /* will not need configuration */);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+
+        var subscriber = new SubscriberCreate { EmailAddress = "_@_.com" };
+
+        var _response = await service.CreateSubscriber(subscriber);
+        var subscriberFromDb = (await service.GetSubscribersAsync()).ToList();
+
+        // Act
+
+        var paginatedSubsResponse = await service.SearchSubscribersAsync(new PaginationSettings(10, 1), null);
+        var subsOnCurrentPage = paginatedSubsResponse.Subscribers.ToList();
+
+        Assert.Multiple(() =>
+        {
+
+            // Assert
+
+            Assert.That(paginatedSubsResponse.CurrentPage, Is.EqualTo(1));
+            Assert.That(subsOnCurrentPage, Is.EqualTo(subscriberFromDb));
+        });
+    }
+
+    [Test]
+    public async Task SearchSubscribersAsync_TwoSubscribersTwoPages_ReturnsOneSubscriberPerPage()
+    {
+        // Arrange
+
+        var context = new StockAutomationDbContext(_options);
+
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+        var service = new EmailService(context, null /* will not need configuration */);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+
+        var subscriber1 = new SubscriberCreate { EmailAddress = "1@_.com" };
+        var subscriber2 = new SubscriberCreate { EmailAddress = "2@_.com" };
+
+        var _response1 = await service.CreateSubscriber(subscriber1);
+        var _response2 = await service.CreateSubscriber(subscriber2);
+
+        var subscribersFromDb = (await service.GetSubscribersAsync()).ToList();
+        var subscriber1FromDb = subscribersFromDb[0];
+        var subscriber2FromDb = subscribersFromDb[1];
+
+        // Act
+
+        var page1subscribers = (await service.SearchSubscribersAsync(new PaginationSettings(1, 1), null)).Subscribers.ToList();
+        var page2subscribers = (await service.SearchSubscribersAsync(new PaginationSettings(1, 2), null)).Subscribers.ToList();
+
+        // Assert
+
+        Assert.Multiple(() =>
+        {
+            // order of the pages undefined
+            Assert.That(page1subscribers, Is.Not.EqualTo(page2subscribers));
+            Assert.That(page1subscribers.Contains(subscriber1FromDb) || page1subscribers.Contains(subscriber2FromDb));
+            Assert.That(page2subscribers.Contains(subscriber1FromDb) || page2subscribers.Contains(subscriber2FromDb));
+        });
+    }
 }
