@@ -14,7 +14,10 @@ public class SnapshotService(StockAutomationDbContext context, HttpClient client
 {
     public async Task<IEnumerable<HoldingSnapshot>> GetSnapshotsAsync()
     {
-        return await context.HoldingSnapshots.OrderByDescending(s => s.DownloadedAt).ToListAsync();
+        return await context
+            .HoldingSnapshots
+            .OrderByDescending(s => s.DownloadedAt)
+            .ToListAsync();
     }
 
     public async Task<Result<bool, Error>> DownloadSnapshotAsync()
