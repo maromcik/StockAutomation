@@ -175,7 +175,7 @@ public class EmailService(StockAutomationDbContext context, IConfiguration confi
         if (paginationSettings != null)
         {
             var subscribersCount = await subscribers.CountAsync();
-            var pageCount = subscribersCount / paginationSettings.PageSize + int.Min( subscribersCount % paginationSettings.PageSize, 1);
+            var pageCount = subscribersCount / paginationSettings.PageSize + int.Min(subscribersCount % paginationSettings.PageSize, 1);
             subscribers = subscribers
                 .Skip((paginationSettings.PageNumber - 1) * paginationSettings.PageSize)
                 .Take(paginationSettings.PageSize);
