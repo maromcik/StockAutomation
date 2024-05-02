@@ -1,8 +1,14 @@
 namespace StockAutomationCore.Download;
 
-public static class Downloader
+public interface IDownloader
 {
-    public static async Task<string> DownloadToFile(HttpClient client, string downloadUrl, string snapshotDir)
+    Task<string> DownloadToFile(HttpClient client, string downloadUrl, string snapshotDir);
+    Task<byte[]> DownloadToBytes(HttpClient client, string downloadUrl);
+}
+
+public class Downloader : IDownloader
+{
+    public async Task<string> DownloadToFile(HttpClient client, string downloadUrl, string snapshotDir)
     {
         var timestamp = DateTime.Now.ToString("s");
         var filename = $"snapshot-{timestamp}.csv";
@@ -13,7 +19,7 @@ public static class Downloader
         return filename;
     }
 
-    public static async Task<byte[]> DownloadToBytes(HttpClient client, string downloadUrl)
+    public async Task<byte[]> DownloadToBytes(HttpClient client, string downloadUrl)
     {
         await using var streamResult = client.GetStreamAsync(downloadUrl).Result;
         await using var fileBytes = new MemoryStream(10240);  // should cover average snapshot size

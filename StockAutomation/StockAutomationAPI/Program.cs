@@ -2,6 +2,7 @@ using BusinessLayer.Facades;
 using BusinessLayer.Services;
 using DataAccessLayer;
 using Microsoft.EntityFrameworkCore;
+using StockAutomationCore.Download;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddConfiguration(StockAutomationCore.Configuration.StockAutomationConfig.Configuration);
@@ -17,16 +18,16 @@ builder.Services.AddDbContext<StockAutomationDbContext>(options =>
 
 builder.Services.AddLogging();
 builder.Services.AddRazorPages();
-builder.Services.AddTransient<ISnapshotService, SnapshotService>();
+builder.Services.AddTransient<ISnapshotService<Downloader>, SnapshotService<Downloader>>();
 builder.Services.AddTransient<IEmailService, EmailService>();
-builder.Services.AddHttpClient<ISnapshotService, SnapshotService>(c =>
+builder.Services.AddHttpClient<ISnapshotService<Downloader>, SnapshotService<Downloader>>(c =>
 {
     c.DefaultRequestHeaders.Add("User-Agent", "StockAutomationCore/1.0");
     c.BaseAddress = new Uri(configuration.GetSection("download")["defaultUrl"] ??
                                    "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv");
 });
 
-builder.Services.AddTransient<ISendDifferencesFacade, SendDifferencesFacade>();
+builder.Services.AddTransient<ISendDifferencesFacade, SendDifferencesFacade<IDownloader>>();
 
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>

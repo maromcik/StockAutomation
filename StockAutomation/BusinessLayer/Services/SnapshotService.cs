@@ -11,15 +11,17 @@ using StockAutomationCore.Parser;
 
 namespace BusinessLayer.Services;
 
-public class SnapshotService : ISnapshotService
+public class SnapshotService<D> : ISnapshotService<D> where D : IDownloader, new()
 {
     private readonly StockAutomationDbContext _context;
     private readonly HttpClient _client;
     private string DownloadUrl { get; set; }
     private string SnapshotDir { get; set; }
+    private readonly D downloader;
 
     public SnapshotService(StockAutomationDbContext context, HttpClient client)
     {
+        downloader = new D();
         _context = context;
         _client = client;
         SnapshotDir = Directory.GetCurrentDirectory() + "/../" + "/snapshots";
@@ -45,19 +47,19 @@ public class SnapshotService : ISnapshotService
     {
         try
         {
-            var fileBytes = await Downloader.DownloadToBytes(_client, DownloadUrl);
+            var fileBytes = await downloader.DownloadToBytes(_client, DownloadUrl);
             var parsedFile = HoldingSnapshotLineParser.ParseLinesFromBytes(fileBytes);
             var lines = parsedFile.Select(snapshotLine => new HoldingSnapshotLineEntity
-                {
-                    Date = snapshotLine.Date,
-                    Fund = snapshotLine.Fund,
-                    CompanyName = snapshotLine.CompanyName,
-                    Ticker = snapshotLine.Ticker,
-                    Cusip = snapshotLine.Cusip,
-                    Shares = snapshotLine.Shares,
-                    MarketValueUsd = snapshotLine.MarketValueUsd,
-                    Weight = snapshotLine.Weight,
-                }
+            {
+                Date = snapshotLine.Date,
+                Fund = snapshotLine.Fund,
+                CompanyName = snapshotLine.CompanyName,
+                Ticker = snapshotLine.Ticker,
+                Cusip = snapshotLine.Cusip,
+                Shares = snapshotLine.Shares,
+                MarketValueUsd = snapshotLine.MarketValueUsd,
+                Weight = snapshotLine.Weight,
+            }
             ).ToList();
 
             var holdingSnapshot = new HoldingSnapshot

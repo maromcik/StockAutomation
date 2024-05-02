@@ -1,9 +1,10 @@
 using BusinessLayer.Errors;
 using DataAccessLayer.Entities;
+using StockAutomationCore.Download;
 
 namespace BusinessLayer.Services;
 
-public interface ISnapshotService
+public interface ISnapshotService<D> where D : IDownloader
 {
     public Task<IEnumerable<HoldingSnapshot>> GetSnapshotsAsync();
     public Task<Result<bool, Error>> DownloadSnapshotAsync();
