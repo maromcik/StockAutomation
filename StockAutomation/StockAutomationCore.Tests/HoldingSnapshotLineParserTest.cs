@@ -76,8 +76,7 @@ public class HoldingSnapshotLineParserTest
         // Act
         void act()
         {
-            var thing = HoldingSnapshotLineParser.ParseLinesFromBytes(Encoding.UTF8.GetBytes(singleLineDataset)).ToList();
-            Console.WriteLine(thing[0]);
+            var _ = HoldingSnapshotLineParser.ParseLinesFromBytes(Encoding.UTF8.GetBytes(singleLineDataset)).ToList();
         }
 
         // Assert
