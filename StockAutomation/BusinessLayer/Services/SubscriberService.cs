@@ -65,12 +65,12 @@ public class SubscriberService : ISubscriberService
     public async Task<Result<bool, Error>> DeleteSubscribersAsync(List<int> ids)
     {
         var subscribers = await _context.Subscribers.Where(s => ids.Contains(s.Id)).ToListAsync();
-        if (subscribers.Count == 0)
+        if (subscribers.Count != ids.Count)
         {
             return new Error
             {
                 ErrorType = ErrorType.SubscribersNotFound,
-                Message = "Could not delete selected subscribers - not found"
+                Message = "One or more subscribers could not be found or do not exist. No action performed."
             };
         }
 

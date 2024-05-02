@@ -63,12 +63,12 @@ public class SnapshotService(StockAutomationDbContext context, HttpClient client
     {
         var snapshots = await context.HoldingSnapshots
             .Where(s => ids.Contains(s.Id)).ToListAsync();
-        if (snapshots.Count == 0)
+        if (snapshots.Count != ids.Count)
         {
             return new Error
             {
                 ErrorType = ErrorType.SnapshotsNotFound,
-                Message = "Could not delete selected snapshots - not found"
+                Message = "One or more snapshots could not be found or do not exist. No action performed."
             };
         }
 
