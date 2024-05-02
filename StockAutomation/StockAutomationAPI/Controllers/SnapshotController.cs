@@ -3,12 +3,13 @@ using BusinessLayer.Models;
 using BusinessLayer.Services;
 using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Mvc;
+using StockAutomationCore.Download;
 
 namespace StockAutomationAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class SnapshotController(ISnapshotService snapshotService) : Controller
+public class SnapshotController(ISnapshotService<Downloader> snapshotService) : Controller
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<HoldingSnapshot>>> GetSnapshots()
