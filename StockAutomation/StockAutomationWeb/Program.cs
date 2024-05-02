@@ -16,8 +16,8 @@ builder.Services.AddDbContext<StockAutomationDbContext>(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IEmailService, EmailService>();
-builder.Services.AddTransient<ISnapshotService<Downloader>, SnapshotService<Downloader>>();
-builder.Services.AddHttpClient<ISnapshotService<Downloader>, SnapshotService<Downloader>>(c =>
+builder.Services.AddTransient<ISnapshotService, SnapshotService>();
+builder.Services.AddHttpClient<ISnapshotService, SnapshotService>(c =>
 {
     c.DefaultRequestHeaders.Add("User-Agent", "StockAutomationCore/1.0");
     c.BaseAddress = new Uri(configuration.GetSection("download")["defaultUrl"] ??

@@ -9,7 +9,7 @@ namespace StockAutomationAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class SnapshotController(ISnapshotService<Downloader> snapshotService) : Controller
+public class SnapshotController(ISnapshotService snapshotService) : Controller
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<HoldingSnapshot>>> GetSnapshots()

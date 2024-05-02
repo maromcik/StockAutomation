@@ -11,25 +11,6 @@ public class SnapshotServiceTests
 {
     private const string TestSnapshotFile = "../../../test_snapshot.csv"; // no comment
 
-    private class DownloaderMock : IDownloader
-    {
-        public Task<string> DownloadToFile(HttpClient client, string downloadUrl, string snapshotDir)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<byte[]> DownloadToBytes(HttpClient _c, string _s)
-        {
-            // abuse the opportunity to specify the filepath in the downloadUrl
-            if (!File.Exists(TestSnapshotFile))
-            {
-                throw new FileNotFoundException();
-            }
-
-            return Task.FromResult(File.ReadAllBytes(TestSnapshotFile));
-        }
-    }
-
     private DbContextOptions _options;
     // private TransactionScope _transaction;
 
@@ -58,7 +39,12 @@ public class SnapshotServiceTests
 
         var context = new StockAutomationDbContext(_options);
 
-        var service = new SnapshotService<DownloaderMock>(context, new HttpClient());
+        var client = new HttpClient
+        {
+            BaseAddress = new Uri($"file://{Directory.GetCurrentDirectory()}/{TestSnapshotFile}")
+        };
+
+        var service = new SnapshotService(context, client);
 
         Assert.That((await service.DownloadSnapshotAsync()).IsOk);
     }
@@ -68,7 +54,11 @@ public class SnapshotServiceTests
     {
         // Arrange
         var context = new StockAutomationDbContext(_options);
-        var service = new SnapshotService<DownloaderMock>(context, new HttpClient());
+        var client = new HttpClient
+        {
+            BaseAddress = new Uri($"file://{Directory.GetCurrentDirectory()}/{TestSnapshotFile}")
+        };
+        var service = new SnapshotService(context, client);
         await service.DownloadSnapshotAsync();
 
         // Act
@@ -83,7 +73,11 @@ public class SnapshotServiceTests
     {
         // Arrange
         var context = new StockAutomationDbContext(_options);
-        var service = new SnapshotService<DownloaderMock>(context, new HttpClient());
+        var client = new HttpClient
+        {
+            BaseAddress = new Uri($"file://{Directory.GetCurrentDirectory()}/{TestSnapshotFile}")
+        };
+        var service = new SnapshotService(context, client);
         await service.DownloadSnapshotAsync();
         var snapshots = await service.GetSnapshotsAsync();
         var snapshot = snapshots.First();
@@ -106,7 +100,11 @@ public class SnapshotServiceTests
         // Arrange
 
         var context = new StockAutomationDbContext(_options);
-        var service = new SnapshotService<DownloaderMock>(context, new HttpClient());
+        var client = new HttpClient
+        {
+            BaseAddress = new Uri($"file://{Directory.GetCurrentDirectory()}/{TestSnapshotFile}")
+        };
+        var service = new SnapshotService(context, client);
         await service.DownloadSnapshotAsync();
         var snapshots = await service.GetSnapshotsAsync();
         var snapshot = snapshots.First();
@@ -133,7 +131,11 @@ public class SnapshotServiceTests
     // {
     //     // Arrange
     //     var context = new StockAutomationDbContext(_options);
-    //     var service = new SnapshotService<DownloaderMock>(context, new HttpClient());
+    //     var client = new HttpClient
+    //     {
+    //         BaseAddress = new Uri($"file://{Directory.GetCurrentDirectory()}/{TestSnapshotFile}")
+    //     };
+    //     var service = new SnapshotService<DownloaderMock>(context, client);
     //     var snapshots = await service.GetSnapshotsAsync();
     //     var nonexistentId = 420;
 
@@ -155,7 +157,11 @@ public class SnapshotServiceTests
         // Arrange
 
         var context = new StockAutomationDbContext(_options);
-        var service = new SnapshotService<DownloaderMock>(context, new HttpClient());
+        var client = new HttpClient
+        {
+            BaseAddress = new Uri($"file://{Directory.GetCurrentDirectory()}/{TestSnapshotFile}")
+        };
+        var service = new SnapshotService(context, client);
 
         await service.DownloadSnapshotAsync();
         var snapshotsAfterFirstDownload = await service.GetSnapshotsAsync();
@@ -181,7 +187,11 @@ public class SnapshotServiceTests
     {
         // Arrange
         var context = new StockAutomationDbContext(_options);
-        var service = new SnapshotService<DownloaderMock>(context, new HttpClient());
+        var client = new HttpClient
+        {
+            BaseAddress = new Uri($"file://{Directory.GetCurrentDirectory()}/{TestSnapshotFile}")
+        };
+        var service = new SnapshotService(context, client);
         await service.DownloadSnapshotAsync();
         var snapshots = await service.GetSnapshotsAsync();
         var snapshot = snapshots.First();

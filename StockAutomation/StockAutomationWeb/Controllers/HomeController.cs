@@ -11,9 +11,9 @@ public class HomeController : BaseController
 {
     private readonly ILogger<HomeController> _logger;
     private readonly IEmailService _emailService;
-    private readonly ISnapshotService<Downloader> _snapshotService;
+    private readonly ISnapshotService _snapshotService;
 
-    public HomeController(ILogger<HomeController> logger, IEmailService emailService, ISnapshotService<Downloader> snapshotService)
+    public HomeController(ILogger<HomeController> logger, IEmailService emailService, ISnapshotService snapshotService)
     {
         _logger = logger;
         _emailService = emailService;

@@ -5,7 +5,7 @@ using StockAutomationCore.Download;
 
 namespace BusinessLayer.Facades;
 
-public class SendDifferencesFacade<D>(IEmailService emailService, ISnapshotService<D> snapshotService) : ISendDifferencesFacade where D : IDownloader
+public class SendDifferencesFacade(IEmailService emailService, ISnapshotService snapshotService) : ISendDifferencesFacade
 {
     public async Task<Result<bool, Error>> ProcessDiff(EmailSend emailSend)
     {

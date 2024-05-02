@@ -4,7 +4,7 @@ using StockAutomationCore.Download;
 
 namespace BusinessLayer.Services;
 
-public interface ISnapshotService<D> where D : IDownloader
+public interface ISnapshotService
 {
     public Task<IEnumerable<HoldingSnapshot>> GetSnapshotsAsync();
     public Task<Result<bool, Error>> DownloadSnapshotAsync();
