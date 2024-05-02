@@ -27,16 +27,16 @@ public class SnapshotService(StockAutomationDbContext context, HttpClient client
             var fileBytes = await Downloader.DownloadToBytes(client);
             var parsedFile = HoldingSnapshotLineParser.ParseLinesFromBytes(fileBytes);
             var lines = parsedFile.Select(snapshotLine => new HoldingSnapshotLineEntity
-            {
-                Date = snapshotLine.Date,
-                Fund = snapshotLine.Fund,
-                CompanyName = snapshotLine.CompanyName,
-                Ticker = snapshotLine.Ticker,
-                Cusip = snapshotLine.Cusip,
-                Shares = snapshotLine.Shares,
-                MarketValueUsd = snapshotLine.MarketValueUsd,
-                Weight = snapshotLine.Weight,
-            }
+                {
+                    Date = snapshotLine.Date,
+                    Fund = snapshotLine.Fund,
+                    CompanyName = snapshotLine.CompanyName,
+                    Ticker = snapshotLine.Ticker,
+                    Cusip = snapshotLine.Cusip,
+                    Shares = snapshotLine.Shares,
+                    MarketValueUsd = snapshotLine.MarketValueUsd,
+                    Weight = snapshotLine.Weight,
+                }
             ).ToList();
 
             var holdingSnapshot = new HoldingSnapshot
@@ -63,6 +63,14 @@ public class SnapshotService(StockAutomationDbContext context, HttpClient client
     {
         var snapshots = await context.HoldingSnapshots
             .Where(s => ids.Contains(s.Id)).ToListAsync();
+        if (snapshots.Count != ids.Count)
+        {
+            return new Error
+            {
+                ErrorType = ErrorType.SnapshotsNotFound,
+                Message = "One or more snapshots could not be found or do not exist. No action performed."
+            };
+        }
 
         context.HoldingSnapshots.RemoveRange(snapshots);
 
