@@ -2,6 +2,8 @@ using BusinessLayer.Facades;
 using BusinessLayer.Services;
 using DataAccessLayer;
 using Microsoft.EntityFrameworkCore;
+using Quartz;
+using StockAutomationWeb.Scheduler;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddConfiguration(StockAutomationCore.Configuration.StockAutomationConfig.Configuration);
@@ -25,6 +27,20 @@ builder.Services.AddHttpClient<ISnapshotService, SnapshotService>(c =>
     c.BaseAddress = new Uri(configuration.GetSection("Download")["defaultUrl"] ??
                             "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv");
 });
+
+builder.Services.AddTransient<SendMailJob>();
+builder.Services.AddQuartz(q =>
+{
+    var jobKey = new JobKey("SendEmailJob");
+    q.AddJob<SendMailJob>(opts => opts.WithIdentity(jobKey));
+    q.AddTrigger(opts => opts
+        .ForJob(jobKey)
+        .WithIdentity("SendEmailJob-trigger")
+        .WithCronSchedule("0 * * ? * *")
+    );
+});
+
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
 var app = builder.Build();
 

@@ -10,6 +10,7 @@ public class StockAutomationDbContext : DbContext
     public DbSet<Subscriber> Subscribers { get; set; }
     public DbSet<HoldingSnapshot> HoldingSnapshots { get; set; }
     public DbSet<HoldingSnapshotLineEntity> HoldingSnapshotLines { get; set; }
+    public DbSet<EmailSchedule> EmailSchedules { get; set; }
 
     public StockAutomationDbContext(DbContextOptions options) : base(options)
     {
