@@ -4,6 +4,7 @@ using DataAccessLayer;
 using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Quartz;
 
 namespace BusinessLayer.Services;
 
@@ -14,11 +15,13 @@ public class EmailService : IEmailService
 {
     private readonly StockAutomationDbContext _context;
     private readonly IConfiguration _configuration;
+    private readonly IScheduler _scheduler;
 
-    public EmailService(StockAutomationDbContext context, IConfiguration configuration)
+    public EmailService(StockAutomationDbContext context, IConfiguration configuration, IScheduler scheduler)
     {
         _context = context;
         _configuration = configuration;
+        _scheduler = scheduler;
         var config = _context.Configurations.FirstOrDefault();
         if (config == null)
         {
