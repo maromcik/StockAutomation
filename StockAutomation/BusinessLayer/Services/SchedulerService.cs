@@ -57,18 +57,34 @@ public class SchedulerService(StockAutomationDbContext context, IScheduler sched
                 .WithIdentity(SendMailJob.TriggerKey)
                 .WithCronSchedule(cronSchedule)
                 .Build();
-
             if (await scheduler.CheckExists(SendMailJob.JobKey))
             {
                 await scheduler.RescheduleJob(SendMailJob.TriggerKey, trigger);
-                return true;
+            }
+            else
+            {
+                var jobDetail = JobBuilder.Create<SendMailJob>()
+                    .WithIdentity(SendMailJob.JobKey)
+                    .Build();
+
+                await scheduler.ScheduleJob(jobDetail, trigger);
             }
 
-            var jobDetail = JobBuilder.Create<SendMailJob>()
-                .WithIdentity(SendMailJob.JobKey)
-                .Build();
+            var scheduleDb = await context.EmailSchedules.FirstOrDefaultAsync();
+            if (scheduleDb == null)
+            {
+                context.Add(schedule);
+            }
+            else
+            {
+                scheduleDb.Days = schedule.Days;
+                scheduleDb.Hours = schedule.Hours;
+                scheduleDb.Minutes = schedule.Minutes;
+                context.Update(scheduleDb);
+            }
 
-            await scheduler.ScheduleJob(jobDetail, trigger);
+            await context.SaveChangesAsync();
+            return true;
         }
 
         catch (Exception e)
@@ -79,22 +95,6 @@ public class SchedulerService(StockAutomationDbContext context, IScheduler sched
                 Message = e.Message
             };
         }
-
-        var scheduleDb = await context.EmailSchedules.FirstOrDefaultAsync();
-        if (scheduleDb == null)
-        {
-            context.Add(schedule);
-        }
-        else
-        {
-            scheduleDb.Days = schedule.Days;
-            scheduleDb.Hours = schedule.Hours;
-            scheduleDb.Minutes = schedule.Minutes;
-            context.Update(scheduleDb);
-        }
-
-        await context.SaveChangesAsync();
-        return true;
     }
 
     private string GetCronSchedule(EmailSchedule schedule)
