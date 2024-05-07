@@ -1,7 +1,9 @@
 using BusinessLayer.Facades;
+using BusinessLayer.Scheduler;
 using BusinessLayer.Services;
 using DataAccessLayer;
 using Microsoft.EntityFrameworkCore;
+using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddConfiguration(StockAutomationCore.Configuration.StockAutomationConfig.Configuration);
@@ -17,6 +19,13 @@ builder.Services.AddDbContext<StockAutomationDbContext>(options =>
 
 builder.Services.AddLogging();
 builder.Services.AddRazorPages();
+builder.Services.AddQuartz();
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+builder.Services.AddSingleton<IScheduler>(provider =>
+{
+    var schedulerFactory = provider.GetRequiredService<ISchedulerFactory>();
+    return schedulerFactory.GetScheduler().GetAwaiter().GetResult();
+});
 builder.Services.AddTransient<ISnapshotService, SnapshotService>();
 builder.Services.AddTransient<ISubscriberService, SubscriberService>();
 builder.Services.AddTransient<IEmailService, EmailService>();
@@ -28,6 +37,9 @@ builder.Services.AddHttpClient<ISnapshotService, SnapshotService>(c =>
 });
 
 builder.Services.AddTransient<ISendDifferencesFacade, SendDifferencesFacade>();
+builder.Services.AddTransient<SendMailJob>();
+builder.Services.AddTransient<ISchedulerService, SchedulerService>();
+
 
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>
@@ -60,4 +72,11 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 app.UseCors();
+
+using (var serviceScope = app.Services.CreateScope())
+{
+    var services = serviceScope.ServiceProvider;
+    var schedulerService = services.GetRequiredService<ISchedulerService>();
+    await schedulerService.ScheduleJob();
+}
 app.Run();

@@ -36,5 +36,4 @@ public class SubscriberController(ISubscriberService subscriberService) : Contro
             e => BadRequest(e.Message)
         );
     }
-
 }

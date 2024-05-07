@@ -1,13 +1,17 @@
 using BusinessLayer.Facades;
 using BusinessLayer.Models;
 using BusinessLayer.Services;
+using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace StockAutomationAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class EmailController(IEmailService emailService, ISendDifferencesFacade sendDifferencesFacade) : Controller
+public class EmailController(
+    IEmailService emailService,
+    ISchedulerService schedulerService,
+    ISendDifferencesFacade sendDifferencesFacade) : Controller
 {
     [HttpPost("Send")]
     public async Task<IActionResult> SendEmail(EmailSend emailSend)
@@ -38,5 +42,19 @@ public class EmailController(IEmailService emailService, ISendDifferencesFacade 
             _ => Ok("Successfully Updated"),
             e => BadRequest(e.Message)
         );
+    }
+
+    [HttpGet("GetSchedule")]
+    public async Task<IActionResult> GetSchedule()
+    {
+        var schedule = await schedulerService.GetSchedule();
+        return Ok(schedule);
+    }
+
+    [HttpPost("Reschedule")]
+    public async Task<IActionResult> Reschedule(EmailSchedule emailSchedule)
+    {
+        await schedulerService.RescheduleJob(emailSchedule);
+        return Ok("Successfully Rescheduled");
     }
 }

@@ -9,7 +9,7 @@ namespace BusinessLayer.Services;
 public class SchedulerService(StockAutomationDbContext context, IScheduler scheduler)
     : ISchedulerService
 {
-    private static readonly EmailSchedule DefaultSchedule = new EmailSchedule
+    private static readonly EmailSchedule DefaultSchedule = new()
     {
         Days = 1,
         Hours = 8,
@@ -43,7 +43,6 @@ public class SchedulerService(StockAutomationDbContext context, IScheduler sched
             .WithCronSchedule(cronSchedule)
             .Build();
 
-
         await scheduler.ScheduleJob(jobDetail, trigger);
     }
 
@@ -62,6 +61,7 @@ public class SchedulerService(StockAutomationDbContext context, IScheduler sched
             scheduleDb.Minutes = schedule.Minutes;
             context.Update(scheduleDb);
         }
+
         await context.SaveChangesAsync();
 
         var cronSchedule = GetCronSchedule(schedule);
@@ -74,11 +74,8 @@ public class SchedulerService(StockAutomationDbContext context, IScheduler sched
         if (await scheduler.CheckExists(SendMailJob.JobKey))
         {
             await scheduler.RescheduleJob(SendMailJob.TriggerKey, trigger);
-            Console.WriteLine("Job exists");
             return;
         }
-
-        Console.WriteLine("Job does not exist");
 
         var jobDetail = JobBuilder.Create<SendMailJob>()
             .WithIdentity(SendMailJob.JobKey)
@@ -96,7 +93,8 @@ public class SchedulerService(StockAutomationDbContext context, IScheduler sched
         {
             days = "*";
         }
-        var cron =  $"0 {minutes} {hours} ? * {days} *";
+
+        var cron = $"0 {minutes} {hours} ? * {days} *";
         Console.WriteLine(cron);
         return cron;
     }

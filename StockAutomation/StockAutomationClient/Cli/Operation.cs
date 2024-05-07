@@ -4,6 +4,10 @@ namespace StockAutomationClient.Cli;
 
 public enum Operation
 {
+    [Display(Name = "send latest differences")]
+    SendLatest,
+    [Display(Name = "send differences")] Send,
+
     [Display(Name = "snapshot operations")]
     Snapshot,
     [Display(Name = "email operations")] Email,
@@ -22,10 +26,12 @@ public enum SnapshotOperation
 
 public enum EmailOperation
 {
-    [Display(Name = "send latest differences")] SendLatest,
-    [Display(Name = "send differences")] Send,
     [Display(Name = "print subscribers")] Print,
     [Display(Name = "add subscriber")] Add,
     [Display(Name = "delete subscriber")] Delete,
-    [Display(Name = "change attachment format")] ChangeFormat,
+
+    [Display(Name = "change attachment format")]
+    ChangeFormat,
+    [Display(Name = "get schedule")] GetSchedule,
+    [Display(Name = "reschedule")] Reschedule,
 }
