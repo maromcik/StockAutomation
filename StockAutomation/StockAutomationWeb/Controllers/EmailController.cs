@@ -3,6 +3,7 @@ using BusinessLayer.Services;
 using BusinessLayer.Facades;
 using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Mvc;
+using StockAutomationWeb.Models;
 
 namespace StockAutomationWeb.Controllers;
 
@@ -19,7 +20,8 @@ public class EmailController(
     public async Task<IActionResult> Index()
     {
         var settings = await emailService.GetEmailSettings();
-        return View(settings);
+        var schedule = await schedulerService.GetSchedule();
+        return View(new EmailViewModel { Settings = settings, Schedule = schedule });
     }
 
     [HttpPost]

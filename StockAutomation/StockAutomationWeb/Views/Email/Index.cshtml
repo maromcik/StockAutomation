@@ -1,5 +1,5 @@
 @using DataAccessLayer.Entities
-@model BusinessLayer.Models.FormatSettings
+@model EmailViewModel
 
 @{
     ViewData["Title"] = "Email Service";
@@ -21,15 +21,15 @@
                 <label>Select email format:</label>
             </div>
             <div style="margin-right: 10px;">
-                <input type="radio" id="json" name="PreferredFormat" value="json" @(Model.PreferredFormat == OutputFormat.JSON ? "checked" : "")>
+                <input type="radio" id="json" name="PreferredFormat" value="json" @(Model.Settings.PreferredFormat == OutputFormat.JSON ? "checked" : "")>
                 <label for="json">JSON</label>
             </div>
             <div>
-                <input type="radio" id="html" name="PreferredFormat" value="html" @(Model.PreferredFormat == OutputFormat.HTML ? "checked" : "")>
+                <input type="radio" id="html" name="PreferredFormat" value="html" @(Model.Settings.PreferredFormat == OutputFormat.HTML ? "checked" : "")>
                 <label for="html">HTML</label>
             </div>
             <div style="margin-left: 10px;">
-                <input type="radio" id="text" name="PreferredFormat" value="text" @(Model.PreferredFormat == OutputFormat.Text ? "checked" : "")>
+                <input type="radio" id="text" name="PreferredFormat" value="text" @(Model.Settings.PreferredFormat == OutputFormat.Text ? "checked" : "")>
                 <label for="text">Text</label>
             </div>
         </div>
@@ -41,6 +41,13 @@
         </button>
     </form>
     <form asp-action="Reschedule" method="post" class="mt-4">
+        <div class="mb-3">
+            <span>
+                Send email every <input type="number" id="schedule-days" name="days" min="0" value="@(Model.Schedule.Days)" style="width: 3rem"/> days
+                at <input type="number" id="schedule-at-hour" name="hours" min="0" value="@(Model.Schedule.Hours)" style="width: 3rem"/>:
+                <input type="number" id="schedule-at-minuter" name="minutes" min="0" value="@(Model.Schedule.Minutes)" style="width: 3rem"/>
+            </span>
+        </div>
         <button type="submit" class="btn blue-outline-button">
             Reschedule
         </button>

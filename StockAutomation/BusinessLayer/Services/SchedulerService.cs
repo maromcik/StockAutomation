@@ -1,4 +1,3 @@
-using BusinessLayer.Errors;
 using BusinessLayer.Scheduler;
 using DataAccessLayer;
 using DataAccessLayer.Entities;
@@ -10,18 +9,16 @@ namespace BusinessLayer.Services;
 public class SchedulerService(StockAutomationDbContext context, IScheduler scheduler)
     : ISchedulerService
 {
-    public async Task<Result<EmailSchedule, Error>> GetSchedule()
+    private static readonly EmailSchedule DefaultSchedule = new EmailSchedule
     {
-        var schedule = await context.EmailSchedules.FirstOrDefaultAsync();
-        if (schedule == null)
-        {
-            return new Error
-            {
-                ErrorType = ErrorType.SchedulerError,
-                Message = "No schedule found"
-            };
-        }
+        Days = 1,
+        Hours = 8,
+        Minutes = 0
+    };
 
+    public async Task<EmailSchedule> GetSchedule()
+    {
+        var schedule = await context.EmailSchedules.FirstOrDefaultAsync() ?? DefaultSchedule;
         return schedule;
     }
 
@@ -30,12 +27,7 @@ public class SchedulerService(StockAutomationDbContext context, IScheduler sched
         var schedule = await context.EmailSchedules.FirstOrDefaultAsync();
         if (schedule == null)
         {
-            schedule = new EmailSchedule
-            {
-                Days = 1,
-                Hours = 8,
-                Minutes = 0
-            };
+            schedule = DefaultSchedule;
             context.Add(schedule);
             await context.SaveChangesAsync();
         }
@@ -58,8 +50,7 @@ public class SchedulerService(StockAutomationDbContext context, IScheduler sched
 
     public async Task RescheduleJob(EmailSchedule schedule)
     {
-        var scheduleDb = await context.EmailSchedules.FirstOrDefaultAsync(s =>
-            s.Days == schedule.Days && s.Hours == schedule.Hours && s.Minutes == schedule.Minutes);
+        var scheduleDb = await context.EmailSchedules.FirstOrDefaultAsync();
         if (scheduleDb == null)
         {
             context.Add(schedule);
@@ -98,6 +89,15 @@ public class SchedulerService(StockAutomationDbContext context, IScheduler sched
 
     private string GetCronSchedule(EmailSchedule schedule)
     {
-        return $"0 {schedule.Minutes} {schedule.Hours} ? * 1/{schedule.Days} *";
+        var minutes = $"{schedule.Minutes}";
+        var hours = $"{schedule.Hours}";
+        var days = $"1/{schedule.Days}";
+        if (schedule.Days is 0 or 1)
+        {
+            days = "*";
+        }
+        var cron =  $"0 {minutes} {hours} ? * {days} *";
+        Console.WriteLine(cron);
+        return cron;
     }
 }
