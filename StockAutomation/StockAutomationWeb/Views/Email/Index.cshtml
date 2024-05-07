@@ -44,8 +44,8 @@
         <div class="mb-3">
             <span>
                 Send email every <input type="number" id="schedule-days" name="days" min="1" value="@(Model.Schedule.Days)" style="width: 3rem"/> days
-                at <input type="number" id="schedule-at-hour" name="hours" min="0" value="@(Model.Schedule.Hours)" style="width: 3rem"/>:
-                <input type="number" id="schedule-at-minuter" name="minutes" min="0" value="@(Model.Schedule.Minutes)" style="width: 3rem"/>
+                at <input type="number" id="schedule-at-hour" name="hours" min="0" max="23" value="@(Model.Schedule.Hours)" style="width: 3rem"/>:
+                <input type="number" id="schedule-at-minuter" name="minutes" min="0" max="59" value="@(Model.Schedule.Minutes)" style="width: 3rem"/>
             </span>
         </div>
         <button type="submit" class="btn blue-outline-button">

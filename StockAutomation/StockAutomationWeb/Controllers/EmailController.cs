@@ -52,7 +52,9 @@ public class EmailController(
     [HttpPost]
     public async Task<IActionResult> Reschedule(EmailSchedule schedule)
     {
-        await schedulerService.RescheduleJob(schedule);
-        return RedirectToAction("Index");
+        var res = await schedulerService.RescheduleJob(schedule);
+        return res.Match(
+            _ => RedirectToAction("Index"),
+            ErrorView);
     }
 }

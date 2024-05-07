@@ -54,7 +54,10 @@ public class EmailController(
     [HttpPost("Reschedule")]
     public async Task<IActionResult> Reschedule(EmailSchedule emailSchedule)
     {
-        await schedulerService.RescheduleJob(emailSchedule);
-        return Ok("Successfully Rescheduled");
+        var res = await schedulerService.RescheduleJob(emailSchedule);
+        return res.Match<IActionResult>(
+            _ => Ok("Successfully Rescheduled"),
+            e => BadRequest(e.Message)
+        );
     }
 }

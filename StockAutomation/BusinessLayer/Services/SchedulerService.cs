@@ -1,3 +1,4 @@
+using BusinessLayer.Errors;
 using BusinessLayer.Scheduler;
 using DataAccessLayer;
 using DataAccessLayer.Entities;
@@ -47,8 +48,38 @@ public class SchedulerService(StockAutomationDbContext context, IScheduler sched
     }
 
 
-    public async Task RescheduleJob(EmailSchedule schedule)
+    public async Task<Result<bool, Error>> RescheduleJob(EmailSchedule schedule)
     {
+        try
+        {
+            var cronSchedule = GetCronSchedule(schedule);
+            var trigger = TriggerBuilder.Create()
+                .WithIdentity(SendMailJob.TriggerKey)
+                .WithCronSchedule(cronSchedule)
+                .Build();
+
+            if (await scheduler.CheckExists(SendMailJob.JobKey))
+            {
+                await scheduler.RescheduleJob(SendMailJob.TriggerKey, trigger);
+                return true;
+            }
+
+            var jobDetail = JobBuilder.Create<SendMailJob>()
+                .WithIdentity(SendMailJob.JobKey)
+                .Build();
+
+            await scheduler.ScheduleJob(jobDetail, trigger);
+        }
+
+        catch (Exception e)
+        {
+            return new Error
+            {
+                ErrorType = ErrorType.SchedulerError,
+                Message = e.Message
+            };
+        }
+
         var scheduleDb = await context.EmailSchedules.FirstOrDefaultAsync();
         if (scheduleDb == null)
         {
@@ -63,25 +94,7 @@ public class SchedulerService(StockAutomationDbContext context, IScheduler sched
         }
 
         await context.SaveChangesAsync();
-
-        var cronSchedule = GetCronSchedule(schedule);
-
-        var trigger = TriggerBuilder.Create()
-            .WithIdentity(SendMailJob.TriggerKey)
-            .WithCronSchedule(cronSchedule)
-            .Build();
-
-        if (await scheduler.CheckExists(SendMailJob.JobKey))
-        {
-            await scheduler.RescheduleJob(SendMailJob.TriggerKey, trigger);
-            return;
-        }
-
-        var jobDetail = JobBuilder.Create<SendMailJob>()
-            .WithIdentity(SendMailJob.JobKey)
-            .Build();
-
-        await scheduler.ScheduleJob(jobDetail, trigger);
+        return true;
     }
 
     private string GetCronSchedule(EmailSchedule schedule)
