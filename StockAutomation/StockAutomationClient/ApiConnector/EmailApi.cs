@@ -1,6 +1,5 @@
 using System.Net.Http.Json;
 using BusinessLayer.Models;
-using DataAccessLayer.Entities;
 
 namespace StockAutomationClient.ApiConnector;
 

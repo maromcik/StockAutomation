@@ -14,4 +14,6 @@ public enum ErrorType
     InvalidEmailCredentials,
 
     ConfigurationError,
+
+    SchedulerError
 }

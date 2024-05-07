@@ -1,6 +1,7 @@
 using BusinessLayer.Models;
 using BusinessLayer.Services;
 using BusinessLayer.Facades;
+using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace StockAutomationWeb.Controllers;
@@ -9,7 +10,8 @@ namespace StockAutomationWeb.Controllers;
 public class EmailController(
     ILogger<EmailController> logger,
     IEmailService emailService,
-    ISendDifferencesFacade sendDifferencesFacade)
+    ISendDifferencesFacade sendDifferencesFacade,
+    ISchedulerService schedulerService)
     : BaseController
 {
     private readonly ILogger<EmailController> _logger = logger;
@@ -42,5 +44,13 @@ public class EmailController(
         return res.Match(
             _ => RedirectToAction("Index"),
             ErrorView);
+    }
+
+
+    [HttpPost]
+    public async Task<IActionResult> Reschedule(EmailSchedule schedule)
+    {
+        await schedulerService.RescheduleJob(schedule);
+        return RedirectToAction("Index");
     }
 }

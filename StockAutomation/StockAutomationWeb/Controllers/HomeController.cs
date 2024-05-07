@@ -1,5 +1,4 @@
 using BusinessLayer.Services;
-using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace StockAutomationWeb.Controllers;
