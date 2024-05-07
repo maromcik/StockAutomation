@@ -32,6 +32,7 @@ public class SendDifferencesFacade(IEmailService emailService, ISnapshotService 
         {
             return download.Error;
         }
+
         var result = await snapshotService.CompareLatestSnapshotsAsync();
         if (!result.IsOk)
         {

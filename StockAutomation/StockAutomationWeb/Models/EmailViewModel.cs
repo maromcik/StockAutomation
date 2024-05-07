@@ -3,7 +3,6 @@ using DataAccessLayer.Entities;
 
 namespace StockAutomationWeb.Models;
 
-
 public class EmailViewModel
 {
     public required FormatSettings Settings { get; set; }

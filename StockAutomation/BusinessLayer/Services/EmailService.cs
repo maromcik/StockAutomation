@@ -29,7 +29,6 @@ public class EmailService : IEmailService
             });
             _context.SaveChanges();
         }
-
     }
 
 

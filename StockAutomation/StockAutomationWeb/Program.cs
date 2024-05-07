@@ -68,4 +68,5 @@ using (var serviceScope = app.Services.CreateScope())
     var schedulerService = services.GetRequiredService<ISchedulerService>();
     await schedulerService.ScheduleJob();
 }
+
 app.Run();
