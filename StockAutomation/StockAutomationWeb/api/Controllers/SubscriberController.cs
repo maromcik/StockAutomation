@@ -3,10 +3,11 @@ using BusinessLayer.Services;
 using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Mvc;
 
-namespace StockAutomationAPI.Controllers;
+namespace StockAutomationWeb.api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Area("Api")]
+[Route("api/[controller]")]
 public class SubscriberController(ISubscriberService subscriberService) : Controller
 {
     [HttpGet]
@@ -28,7 +29,7 @@ public class SubscriberController(ISubscriberService subscriberService) : Contro
 
 
     [HttpPost]
-    public async Task<IActionResult> CreateSubscribers(SubscriberCreate subscriberCreate)
+    public async Task<IActionResult> CreateSubscriber(SubscriberCreate subscriberCreate)
     {
         var result = await subscriberService.CreateSubscriber(subscriberCreate);
         return result.Match<IActionResult>(

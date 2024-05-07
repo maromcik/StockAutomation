@@ -5,6 +5,7 @@ using StockAutomationWeb.Models;
 
 namespace StockAutomationWeb.Controllers;
 
+[ApiExplorerSettings(IgnoreApi = true)]
 public class BaseController : Controller
 {
     public IActionResult ErrorView(Error err)

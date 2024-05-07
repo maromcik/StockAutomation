@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace StockAutomationWeb.Controllers;
 
+[ApiExplorerSettings(IgnoreApi = true)]
 public class HomeController(
     ILogger<HomeController> logger,
     ISnapshotService snapshotService)

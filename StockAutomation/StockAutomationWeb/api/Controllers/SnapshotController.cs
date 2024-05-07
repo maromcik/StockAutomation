@@ -4,10 +4,11 @@ using BusinessLayer.Services;
 using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Mvc;
 
-namespace StockAutomationAPI.Controllers;
+namespace StockAutomationWeb.api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Area("Api")]
+[Route("api/[controller]")]
 public class SnapshotController(ISnapshotService snapshotService) : Controller
 {
     [HttpGet]

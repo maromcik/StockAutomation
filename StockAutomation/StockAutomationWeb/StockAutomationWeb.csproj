@@ -14,8 +14,38 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.4" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+      <PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.3-beta1" />
       <PackageReference Include="Quartz" Version="3.8.1" />
       <PackageReference Include="Quartz.AspNetCore" Version="3.8.1" />
+      <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.5.0" />
+      <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.5.0" />
+      <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.5.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="Views\Email\Index.cshtml" />
+      <AdditionalFiles Include="Views\Home\Index.cshtml" />
+      <AdditionalFiles Include="Views\Home\Privacy.cshtml" />
+      <AdditionalFiles Include="Views\Shared\ErrorView.cshtml" />
+      <AdditionalFiles Include="Views\Shared\_Layout.cshtml" />
+      <AdditionalFiles Include="Views\Shared\_ValidationScriptsPartial.cshtml" />
+      <AdditionalFiles Include="Views\Subscriber\Index.cshtml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Areas\Web\Views\Shared\ErrorView.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Web\Views\Shared\_Layout.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Web\Views\Shared\_ValidationScriptsPartial.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Web\Views\Home\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Web\Views\Home\Privacy.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Home\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Home\Privacy.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Shared\ErrorView.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Shared\_Layout.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Shared\_ValidationScriptsPartial.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Web\Views\Subscriber\Index.cshtml" />
     </ItemGroup>
 
 </Project>

@@ -3,6 +3,7 @@ using BusinessLayer.Scheduler;
 using BusinessLayer.Services;
 using DataAccessLayer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,6 +40,12 @@ builder.Services.AddHttpClient<ISnapshotService, SnapshotService>(c =>
 
 builder.Services.AddTransient<ISchedulerService, SchedulerService>();
 
+builder.Services.AddRazorPages();
+builder.Services.AddSwaggerGen();
+builder.Services.AddEndpointsApiExplorer();
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -61,6 +68,19 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}"
 );
 
+app.MapControllerRoute(
+    name: "Api",
+    pattern: "api/{controller=Home}/{action=Index}/{id?}"
+);
+
+app.UseSwagger(c => { c.RouteTemplate = "api/{documentName}/swagger.json"; });
+
+// Configure SwaggerUI
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/api/v1/swagger.json", "StockAutomation API");
+    c.RoutePrefix = "api"; // Serve the Swagger UI at the root URL
+});
 
 using (var serviceScope = app.Services.CreateScope())
 {
@@ -68,5 +88,7 @@ using (var serviceScope = app.Services.CreateScope())
     var schedulerService = services.GetRequiredService<ISchedulerService>();
     await schedulerService.ScheduleJob();
 }
+app.MapControllers();
+app.MapRazorPages();
 
 app.Run();

@@ -8,6 +8,7 @@ using StockAutomationWeb.Models;
 namespace StockAutomationWeb.Controllers;
 
 [Route("[controller]/[action]")]
+[ApiExplorerSettings(IgnoreApi = true)]
 public class EmailController(
     ILogger<EmailController> logger,
     IEmailService emailService,
