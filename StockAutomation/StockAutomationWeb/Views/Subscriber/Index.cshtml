@@ -40,7 +40,7 @@
 
 <div class="header-row">
     <h2>Subscribers</h2>
-    <form class="add-form" method="post" action="@Url.Action("CreateSubscriber", "Subscriber", new { page = Model.CurrentPage })">
+    <form class="add-form" method="post" action="@Url.Action("Add", "Subscriber", new { page = Model.CurrentPage })">
         <input type="email" class="form-control" id="email" name="EmailAddress" placeholder="Enter email address" required>
         <button type="submit" class="btn btn-primary">Add Subscriber</button>
     </form>

@@ -28,7 +28,7 @@ public class SubscriberController(ILogger<SubscriberController> logger, ISubscri
         );
     }
 
-    public async Task<IActionResult> CreateSubscriber(SubscriberCreate model)
+    public async Task<IActionResult> Add(SubscriberCreate model)
     {
         if (!ModelState.IsValid)
         {

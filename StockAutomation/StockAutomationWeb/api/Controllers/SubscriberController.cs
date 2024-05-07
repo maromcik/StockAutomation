@@ -29,7 +29,7 @@ public class SubscriberController(ISubscriberService subscriberService) : Contro
 
 
     [HttpPost]
-    public async Task<IActionResult> CreateSubscriber(SubscriberCreate subscriberCreate)
+    public async Task<IActionResult> AddSubscriber(SubscriberCreate subscriberCreate)
     {
         var result = await subscriberService.CreateSubscriber(subscriberCreate);
         return result.Match<IActionResult>(
