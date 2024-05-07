@@ -40,7 +40,7 @@ public class EmailController(
     {
         if (!ModelState.IsValid)
         {
-            return View("Index", settings);
+            return RedirectToAction("Index");
         }
 
         var res = await emailService.SaveEmailSettingsAsync(settings);
