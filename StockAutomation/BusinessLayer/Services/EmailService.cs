@@ -35,6 +35,7 @@ public class EmailService : IEmailService
     public async Task<Result<bool, Error>> SendEmailAsync(string diff)
     {
         var subscribers = await _context.Subscribers.ToListAsync();
+
         var smtpConfig = _configuration.GetSection("SMTP");
 
         var host = smtpConfig["Host"];
@@ -76,8 +77,19 @@ public class EmailService : IEmailService
             mailMessage.Bcc.Add(subscription.EmailAddress);
         }
 
-        smtpClient.Send(mailMessage);
-        return true;
+        try
+        {
+            smtpClient.Send(mailMessage);
+            return true;
+        }
+        catch (Exception e)
+        {
+            return new Error
+            {
+                ErrorType = ErrorType.SendEmailError,
+                Message = e.Message
+            };
+        }
     }
 
     public async Task<Result<bool, Error>> SaveEmailSettingsAsync(FormatSettings settings)
