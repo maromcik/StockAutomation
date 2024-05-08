@@ -4,11 +4,10 @@ using DataAccessLayer;
 using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-
-namespace BusinessLayer.Services;
-
 using System.Net;
 using System.Net.Mail;
+
+namespace BusinessLayer.Services;
 
 public class EmailService : IEmailService
 {
@@ -172,19 +171,5 @@ public class EmailService : IEmailService
                     </html>
                     ";
         return body;
-    }
-
-    private static bool IsEmailAddressValid(string emailAddress)
-    {
-        try
-        {
-            var m = new MailAddress(emailAddress);
-
-            return true;
-        }
-        catch (FormatException)
-        {
-            return false;
-        }
     }
 }
