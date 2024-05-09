@@ -88,7 +88,7 @@ public class SnapshotService(StockAutomationDbContext context, HttpClient client
             .HoldingSnapshots
             .Include(s => s.Lines)
             .FirstOrDefaultAsync(s => s.Id == idOld);
-        return CompareSnapshotLinesAsync(newSnapshot, oldSnapshot);
+        return await CompareSnapshotLinesAsync(newSnapshot, oldSnapshot);
     }
 
     public async Task<Result<string, Error>> CompareLatestSnapshotsAsync()
@@ -109,10 +109,10 @@ public class SnapshotService(StockAutomationDbContext context, HttpClient client
             };
         }
 
-        return CompareSnapshotLinesAsync(latestSnapshots[0], latestSnapshots[1]);
+        return await CompareSnapshotLinesAsync(latestSnapshots[0], latestSnapshots[1]);
     }
 
-    private Result<string, Error> CompareSnapshotLinesAsync(HoldingSnapshot? newSnapshot, HoldingSnapshot? oldSnapshot)
+    private async Task<Result<string, Error>> CompareSnapshotLinesAsync(HoldingSnapshot? newSnapshot, HoldingSnapshot? oldSnapshot)
     {
         if (newSnapshot == null)
         {
@@ -154,8 +154,14 @@ public class SnapshotService(StockAutomationDbContext context, HttpClient client
             l.Date, l.Fund, l.CompanyName, l.Ticker, l.Cusip, l.Shares, l.MarketValueUsd, l.Weight));
         var oldSnapshotStruct = oldSnapshot.Lines.Select(l => HoldingSnapshotLine.Create(
             l.Date, l.Fund, l.CompanyName, l.Ticker, l.Cusip, l.Shares, l.MarketValueUsd, l.Weight));
-        // TODO handle various formats???
+
         var diff = new HoldingsDiff(oldSnapshotStruct, newSnapshotStruct);
-        return TextDiffFormatter.Format(diff);
+        var config = await context.Configurations.FirstOrDefaultAsync();
+        return config?.OutputFormat switch
+        {
+            OutputFormat.HTML => diff.FormatHtml(),
+            OutputFormat.JSON => diff.SerializeJson(),
+            _ => diff.FormatText()
+        };
     }
 }
