@@ -42,7 +42,7 @@ public class SnapshotController(ISnapshotService snapshotService) : Controller
     {
         var result = await snapshotService.CompareSnapshotsAsync(compare.NewId, compare.OldId);
         return result.Match<IActionResult>(
-            Ok,
+            s => Ok(s),
             e =>
             {
                 return e.ErrorType switch

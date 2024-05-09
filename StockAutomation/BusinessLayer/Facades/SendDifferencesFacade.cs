@@ -7,16 +7,16 @@ namespace BusinessLayer.Facades;
 public class SendDifferencesFacade(IEmailService emailService, ISnapshotService snapshotService)
     : ISendDifferencesFacade
 {
-    public async Task<Result<bool, Error>> ProcessDiff(EmailSend emailSend)
+    public async Task<Result<bool, Error>> ProcessDiff(EmailSend snapshotCompare)
     {
-        var result = await snapshotService.CompareSnapshotsAsync(emailSend.NewId, emailSend.OldId);
+        var result = await snapshotService.CompareSnapshotsAsync(snapshotCompare.NewId, snapshotCompare.OldId);
         if (!result.IsOk)
         {
             return result.Error;
         }
 
-        var diff = result.Value;
-        var email = await emailService.SendEmailAsync(diff);
+        var (emailBody, attachmentContent) = result.Value;
+        var email = await emailService.SendEmailAsync(emailBody, attachmentContent);
         if (!email.IsOk)
         {
             return email.Error;
@@ -39,8 +39,8 @@ public class SendDifferencesFacade(IEmailService emailService, ISnapshotService 
             return result.Error;
         }
 
-        var diff = result.Value;
-        var email = await emailService.SendEmailAsync(diff);
+        var (emailBody, emailAttachment)= result.Value;
+        var email = await emailService.SendEmailAsync(emailBody, emailAttachment);
         if (!email.IsOk)
         {
             return email.Error;

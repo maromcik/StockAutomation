@@ -1,4 +1,5 @@
 using BusinessLayer.Errors;
+using BusinessLayer.Models;
 using DataAccessLayer;
 using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -78,7 +79,7 @@ public class SnapshotService(StockAutomationDbContext context, HttpClient client
         return true;
     }
 
-    public async Task<Result<string, Error>> CompareSnapshotsAsync(int idNew, int idOld)
+    public async Task<Result<(string, string), Error>> CompareSnapshotsAsync(int idNew, int idOld)
     {
         var newSnapshot = await context
             .HoldingSnapshots
@@ -91,7 +92,7 @@ public class SnapshotService(StockAutomationDbContext context, HttpClient client
         return await CompareSnapshotLinesAsync(newSnapshot, oldSnapshot);
     }
 
-    public async Task<Result<string, Error>> CompareLatestSnapshotsAsync()
+    public async Task<Result<(string, string), Error>> CompareLatestSnapshotsAsync()
     {
         var latestSnapshots = await context
             .HoldingSnapshots
@@ -112,7 +113,7 @@ public class SnapshotService(StockAutomationDbContext context, HttpClient client
         return await CompareSnapshotLinesAsync(latestSnapshots[0], latestSnapshots[1]);
     }
 
-    private async Task<Result<string, Error>> CompareSnapshotLinesAsync(HoldingSnapshot? newSnapshot, HoldingSnapshot? oldSnapshot)
+    private async Task<Result<(string, string), Error>> CompareSnapshotLinesAsync(HoldingSnapshot? newSnapshot, HoldingSnapshot? oldSnapshot)
     {
         if (newSnapshot == null)
         {
@@ -156,12 +157,9 @@ public class SnapshotService(StockAutomationDbContext context, HttpClient client
             l.Date, l.Fund, l.CompanyName, l.Ticker, l.Cusip, l.Shares, l.MarketValueUsd, l.Weight));
 
         var diff = new HoldingsDiff(oldSnapshotStruct, newSnapshotStruct);
+        var emailBody = diff.FormatHtml();
         var config = await context.Configurations.FirstOrDefaultAsync();
-        return config?.OutputFormat switch
-        {
-            OutputFormat.HTML => diff.FormatHtml(),
-            OutputFormat.JSON => diff.SerializeJson(),
-            _ => diff.FormatText()
-        };
+        var attachmentContent = config?.OutputFormat.FormatDiff(diff) ?? diff.FormatText();
+        return (emailBody, attachmentContent);
     }
 }

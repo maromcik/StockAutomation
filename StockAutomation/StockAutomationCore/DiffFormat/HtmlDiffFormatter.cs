@@ -72,7 +72,7 @@ public static class HtmlDiffFormatter
 
     private static string GetDiff(HoldingsDiffLine diffLine)
     {
-        var diff = decimal.Abs((decimal) diffLine.QuantityDiff / (decimal) diffLine.Old.Shares);
+        var diff = (decimal) diffLine.QuantityDiff / (decimal) diffLine.Old.Shares;
         return diffLine.QuantityDiff > 0 ? string.Format(PositiveDiff, diff) : string.Format(NegativeDiff, diff);
     }
 }
