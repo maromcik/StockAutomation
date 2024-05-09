@@ -21,6 +21,9 @@ spec:
       - name: stock-automation
         image: cerit.io/roman_alexander_mariancik/stock-automation-image
         imagePullPolicy: Always
+        env:
+          - name: TZ
+            value: Europe/Prague
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
