@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using System.Net;
 using System.Net.Mail;
 using System.Net.Mime;
-using RazorEngine;
 using Encoding = System.Text.Encoding;
 
 namespace BusinessLayer.Services;
