@@ -40,18 +40,16 @@ public class SnapshotController(ISnapshotService snapshotService) : Controller
     [HttpPost("Compare")]
     public async Task<IActionResult> CompareSnapshots(SnapshotCompare compare)
     {
-        var result = await snapshotService.CompareSnapshotsAsync(compare.NewId, compare.OldId);
-        return result.Match<IActionResult>(
-            s => Ok(s),
-            e =>
+        var diff = await snapshotService.CompareSnapshotsAsync(compare.NewId, compare.OldId);
+        if (!diff.IsOk)
+            return diff.Error.ErrorType switch
             {
-                return e.ErrorType switch
-                {
-                    ErrorType.SnapshotNotFound => NotFound(e.Message),
-                    ErrorType.SnapshotsNotFound => NotFound(e.Message),
-                    _ => BadRequest(e.Message)
-                };
-            }
-        );
+                ErrorType.SnapshotNotFound => NotFound(diff.Error.Message),
+                ErrorType.SnapshotsNotFound => NotFound(diff.Error.Message),
+                _ => BadRequest(diff.Error.Message)
+            };
+        var output = await snapshotService.FormatDiff(diff.Value, OutputFormat.Text);
+        return Ok(output.body);
+
     }
 }

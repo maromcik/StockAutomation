@@ -1,6 +1,7 @@
 using BusinessLayer.Errors;
 using BusinessLayer.Models;
 using BusinessLayer.Services;
+using DataAccessLayer.Entities;
 
 namespace BusinessLayer.Facades;
 
@@ -9,14 +10,15 @@ public class SendDifferencesFacade(IEmailService emailService, ISnapshotService 
 {
     public async Task<Result<bool, Error>> ProcessDiff(EmailSend snapshotCompare)
     {
-        var result = await snapshotService.CompareSnapshotsAsync(snapshotCompare.NewId, snapshotCompare.OldId);
-        if (!result.IsOk)
+        var diff =
+            await snapshotService.CompareSnapshotsAsync(snapshotCompare.NewId, snapshotCompare.OldId);
+        if (!diff.IsOk)
         {
-            return result.Error;
+            return diff.Error;
         }
 
-        var (emailBody, attachmentContent) = result.Value;
-        var email = await emailService.SendEmailAsync(emailBody, attachmentContent);
+        var (emailBody, emailAttachment) = await snapshotService.FormatDiff(diff.Value, OutputFormat.HTML);
+        var email = await emailService.SendEmailAsync(emailBody, emailAttachment);
         if (!email.IsOk)
         {
             return email.Error;
@@ -33,13 +35,13 @@ public class SendDifferencesFacade(IEmailService emailService, ISnapshotService 
             return download.Error;
         }
 
-        var result = await snapshotService.CompareLatestSnapshotsAsync();
-        if (!result.IsOk)
+        var diff = await snapshotService.CompareLatestSnapshotsAsync();
+        if (!diff.IsOk)
         {
-            return result.Error;
+            return diff.Error;
         }
 
-        var (emailBody, emailAttachment)= result.Value;
+        var (emailBody, emailAttachment) = await snapshotService.FormatDiff(diff.Value, OutputFormat.HTML);
         var email = await emailService.SendEmailAsync(emailBody, emailAttachment);
         if (!email.IsOk)
         {

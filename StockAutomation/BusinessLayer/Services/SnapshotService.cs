@@ -79,7 +79,7 @@ public class SnapshotService(StockAutomationDbContext context, HttpClient client
         return true;
     }
 
-    public async Task<Result<(string, string), Error>> CompareSnapshotsAsync(int idNew, int idOld)
+    public async Task<Result<HoldingsDiff, Error>> CompareSnapshotsAsync(int idNew, int idOld)
     {
         var newSnapshot = await context
             .HoldingSnapshots
@@ -89,10 +89,10 @@ public class SnapshotService(StockAutomationDbContext context, HttpClient client
             .HoldingSnapshots
             .Include(s => s.Lines)
             .FirstOrDefaultAsync(s => s.Id == idOld);
-        return await CompareSnapshotLinesAsync(newSnapshot, oldSnapshot);
+        return CompareSnapshotLinesAsync(newSnapshot, oldSnapshot);
     }
 
-    public async Task<Result<(string, string), Error>> CompareLatestSnapshotsAsync()
+    public async Task<Result<HoldingsDiff, Error>> CompareLatestSnapshotsAsync()
     {
         var latestSnapshots = await context
             .HoldingSnapshots
@@ -110,10 +110,11 @@ public class SnapshotService(StockAutomationDbContext context, HttpClient client
             };
         }
 
-        return await CompareSnapshotLinesAsync(latestSnapshots[0], latestSnapshots[1]);
+        return CompareSnapshotLinesAsync(latestSnapshots[0], latestSnapshots[1]);
     }
 
-    private async Task<Result<(string, string), Error>> CompareSnapshotLinesAsync(HoldingSnapshot? newSnapshot, HoldingSnapshot? oldSnapshot)
+    private Result<HoldingsDiff, Error> CompareSnapshotLinesAsync(HoldingSnapshot? newSnapshot,
+        HoldingSnapshot? oldSnapshot)
     {
         if (newSnapshot == null)
         {
@@ -157,7 +158,12 @@ public class SnapshotService(StockAutomationDbContext context, HttpClient client
             l.Date, l.Fund, l.CompanyName, l.Ticker, l.Cusip, l.Shares, l.MarketValueUsd, l.Weight));
 
         var diff = new HoldingsDiff(oldSnapshotStruct, newSnapshotStruct);
-        var emailBody = diff.FormatHtml();
+        return diff;
+    }
+
+    public async Task<(string body, string attachment)> FormatDiff(HoldingsDiff diff, OutputFormat emailBodyFormat)
+    {
+        var emailBody = emailBodyFormat.FormatDiff(diff);
         var config = await context.Configurations.FirstOrDefaultAsync();
         var attachmentContent = config?.OutputFormat.FormatDiff(diff) ?? diff.FormatText();
         return (emailBody, attachmentContent);
