@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Net;
 using System.Net.Mail;
+using System.Net.Mime;
+using Encoding = System.Text.Encoding;
 
 namespace BusinessLayer.Services;
 
@@ -31,7 +33,7 @@ public class EmailService : IEmailService
     }
 
 
-    public async Task<Result<bool, Error>> SendEmailAsync(string diff)
+    public async Task<Result<bool, Error>> SendEmailAsync(string emailBody, string? attachmentContent)
     {
         var subscribers = await _context.Subscribers.ToListAsync();
 
@@ -67,9 +69,20 @@ public class EmailService : IEmailService
         {
             From = new MailAddress(from),
             Subject = "Update in holdings is here!",
-            Body = CreateEmailBody(diff),
+            Body = CreateEmailBody(emailBody),
             IsBodyHtml = true,
         };
+
+        if (attachmentContent != null)
+        {
+
+            var config = await _context.Configurations.FirstOrDefaultAsync();
+            var extension = config?.OutputFormat.GetFileExtension() ?? "txt";
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(attachmentContent));
+            var attachment = new Attachment(stream, $"holdings_diff.{extension}", MediaTypeNames.Application.Octet);
+            mailMessage.Attachments.Add(attachment);
+        }
+
 
         foreach (var subscription in subscribers)
         {
