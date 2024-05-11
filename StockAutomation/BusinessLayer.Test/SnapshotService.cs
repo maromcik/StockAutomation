@@ -21,23 +21,6 @@ public class SnapshotServiceTests
     }
 
     [Test]
-    public async Task PlsWork()
-    {
-        // Arrange
-
-        var context = new StockAutomationDbContext(_options);
-
-        var client = new HttpClient
-        {
-            BaseAddress = new Uri($"file://{Directory.GetCurrentDirectory()}/{TestSnapshotFile}")
-        };
-
-        var service = new SnapshotService(context, client);
-
-        Assert.That((await service.DownloadSnapshotAsync()).IsOk);
-    }
-
-    [Test]
     public async Task GetSnapshotsAsync_DownloadedSnapshot_ReturnsThatSnapshot()
     {
         // Arrange
