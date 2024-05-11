@@ -61,10 +61,6 @@ public class SnapshotServiceTests
         Assert.That(snapshotsAfter.Count(), Is.EqualTo(0));
     }
 
-    // todo inconsistant behavior of `DeleteSnapshotsAsync`
-    //  - would expect either both of DeleteSnapshotsAsync_TargetOneExistingAndOneNonExistingEntry_DeletesExistingAndReturnsOk
-    //    and DeleteSnapshotsAsync_TargetSingleNonExistingEntry_ReturnsOk to fail or both of them to succeed
-
     [Test]
     public async Task DeleteSnapshotsAsync_TargetOneExistingAndOneNonExistingEntry_ReturnsErrorAndDoesNotDelete()
     {
