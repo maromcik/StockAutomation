@@ -9,7 +9,6 @@ namespace BusinessLayer.Test;
 public class EmailServiceTests
 {
     private DbContextOptions _options;
-    // private TransactionScope _transaction;
 
     [SetUp]
     public void Setup()

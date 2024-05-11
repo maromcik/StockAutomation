@@ -66,7 +66,7 @@ public class SnapshotServiceTests
     //    and DeleteSnapshotsAsync_TargetSingleNonExistingEntry_ReturnsOk to fail or both of them to succeed
 
     [Test]
-    public async Task DeleteSnapshotsAsync_TargetOneExistingAndOneNonExistingEntry_DeletesExistingAndReturnsOk()
+    public async Task DeleteSnapshotsAsync_TargetOneExistingAndOneNonExistingEntry_ReturnsErrorAndDoesNotDelete()
     {
         // Arrange
 
@@ -91,13 +91,13 @@ public class SnapshotServiceTests
         {
 
             // Assert
-            Assert.That(result.IsOk);
-            Assert.That(snapshotsAfter.Count(), Is.EqualTo(0));
+            Assert.That(!result.IsOk);
+            Assert.That(snapshotsAfter.Count(), Is.EqualTo(1));
         });
     }
 
     [Test]
-    public async Task DeleteSnapshotsAsync_TargetSingleNonExistingEntry_ReturnsOk()
+    public async Task DeleteSnapshotsAsync_TargetSingleNonExistingEntry_ReturnsError()
     {
         // Arrange
         var context = new StockAutomationDbContext(_options);
@@ -116,7 +116,7 @@ public class SnapshotServiceTests
         // Assert
         Assert.Multiple(() =>
         {
-            Assert.That(result.IsOk);
+            Assert.That(!result.IsOk);
             Assert.That(snapshotsAfter.Count(), Is.EqualTo(0));
         });
     }

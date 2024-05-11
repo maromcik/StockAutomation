@@ -114,12 +114,9 @@ public class Tests
                 Assert.That(allSubscribersAfterDelete.Count(), Is.EqualTo(0));
         }
 
-        // todo inconsistant behavior of `DeleteSubscribersAsync`
-        //  - would expect either both of DeleteSubscribersAsync_TargetOneExistingAndOneNonexistant_DeletesExistingAndReturnsOk
-        //    and DeleteSubscribersAsync_TargetSingleNonexistantEntry_ReturnsOk to fail or both of them to succeed
 
         [Test]
-        public async Task DeleteSubscribersAsync_TargetOneExistingAndOneNonexistant_DeletesExistingAndReturnsOk()
+        public async Task DeleteSubscribersAsync_TargetOneExistingAndOneNonexistant_ReturnsErrorAndDoesNotDelete()
         {
                 // Arrange
 
@@ -141,13 +138,13 @@ public class Tests
 
                         // Assert
 
-                        Assert.That(response.IsOk);
-                        Assert.That((await service.GetSubscribersAsync()).Count(), Is.EqualTo(0));
+                        Assert.That(!response.IsOk);
+                        Assert.That((await service.GetSubscribersAsync()).Count(), Is.EqualTo(1));
                 });
         }
 
         [Test]
-        public async Task DeleteSubscribersAsync_TargetSingleNonexistantEntry_ReturnsOk()
+        public async Task DeleteSubscribersAsync_TargetSingleNonexistantEntry_ReturnsError()
         {
                 // Arrange
 
@@ -162,7 +159,7 @@ public class Tests
 
                 // Assert
 
-                Assert.That(response.IsOk);
+                Assert.That(!response.IsOk);
         }
 
         [Test]
