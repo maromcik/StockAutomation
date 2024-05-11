@@ -17,16 +17,7 @@ public static class Downloader
     {
         var downloadUrl = client.BaseAddress!.ToString();
 
-        string? maybeValidFilePath = null;
-        if (downloadUrl.StartsWith("file://"))
-        {
-            maybeValidFilePath = downloadUrl[7..];
-        }
-
-        await using var streamResult = (maybeValidFilePath != null && File.Exists(maybeValidFilePath))
-            ? File.OpenRead(maybeValidFilePath)
-            : client.GetStreamAsync(downloadUrl).Result;
-
+        await using var streamResult = client.GetStreamAsync(downloadUrl).Result;
         await using var fileBytes = new MemoryStream(10240);  // should cover average snapshot size
         await streamResult.CopyToAsync(fileBytes);
         await fileBytes.FlushAsync();
