@@ -8,28 +8,27 @@ namespace BusinessLayer.Test;
 
 public class SnapshotServiceTests
 {
-    private const string TestSnapshotFile = "../../../test_snapshot.csv"; // no comment
-
-    private DbContextOptions _options;
+    private SnapshotService service;
 
     [SetUp]
     public void Setup()
     {
         var uniqueDbName = Guid.NewGuid().ToString();
 
-        _options = new DbContextOptionsBuilder().UseInMemoryDatabase(uniqueDbName).Options;
+        var options = new DbContextOptionsBuilder().UseInMemoryDatabase(uniqueDbName).Options;
+
+        var context = new StockAutomationDbContext(options);
+        var client = new HttpClient();
+        client.DefaultRequestHeaders.Add("User-Agent", "StockAutomationCore/1.0");
+        client.BaseAddress = new Uri("https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv");
+
+        service = new SnapshotService(context, client);
     }
 
     [Test]
     public async Task GetSnapshotsAsync_DownloadedSnapshot_ReturnsThatSnapshot()
     {
         // Arrange
-        var context = new StockAutomationDbContext(_options);
-        var client = new HttpClient
-        {
-            BaseAddress = new Uri($"file://{Directory.GetCurrentDirectory()}/{TestSnapshotFile}")
-        };
-        var service = new SnapshotService(context, client);
         await service.DownloadSnapshotAsync();
 
         // Act
@@ -43,12 +42,6 @@ public class SnapshotServiceTests
     public async Task DeleteSnapshotsAsync_TargetSingleExistingEntry_DeletesThatEntry()
     {
         // Arrange
-        var context = new StockAutomationDbContext(_options);
-        var client = new HttpClient
-        {
-            BaseAddress = new Uri($"file://{Directory.GetCurrentDirectory()}/{TestSnapshotFile}")
-        };
-        var service = new SnapshotService(context, client);
         await service.DownloadSnapshotAsync();
         var snapshots = await service.GetSnapshotsAsync();
         var snapshot = snapshots.First();
@@ -65,13 +58,6 @@ public class SnapshotServiceTests
     public async Task DeleteSnapshotsAsync_TargetOneExistingAndOneNonExistingEntry_ReturnsErrorAndDoesNotDelete()
     {
         // Arrange
-
-        var context = new StockAutomationDbContext(_options);
-        var client = new HttpClient
-        {
-            BaseAddress = new Uri($"file://{Directory.GetCurrentDirectory()}/{TestSnapshotFile}")
-        };
-        var service = new SnapshotService(context, client);
         await service.DownloadSnapshotAsync();
         var snapshots = await service.GetSnapshotsAsync();
         var snapshot = snapshots.First();
@@ -96,12 +82,6 @@ public class SnapshotServiceTests
     public async Task DeleteSnapshotsAsync_TargetSingleNonExistingEntry_ReturnsError()
     {
         // Arrange
-        var context = new StockAutomationDbContext(_options);
-        var client = new HttpClient
-        {
-            BaseAddress = new Uri($"file://{Directory.GetCurrentDirectory()}/{TestSnapshotFile}")
-        };
-        var service = new SnapshotService(context, client);
         var snapshots = await service.GetSnapshotsAsync();
         var nonexistentId = 420;
 
@@ -121,13 +101,6 @@ public class SnapshotServiceTests
     public async Task DeleteSnapshotsAsync_TargetOneOfExistingEntries_OthersUnaffected()
     {
         // Arrange
-
-        var context = new StockAutomationDbContext(_options);
-        var client = new HttpClient
-        {
-            BaseAddress = new Uri($"file://{Directory.GetCurrentDirectory()}/{TestSnapshotFile}")
-        };
-        var service = new SnapshotService(context, client);
 
         await service.DownloadSnapshotAsync();
         var snapshotsAfterFirstDownload = await service.GetSnapshotsAsync();
@@ -152,12 +125,6 @@ public class SnapshotServiceTests
     public async Task CompareSnapshotsAsync_SameSnapshot_IsOk()
     {
         // Arrange
-        var context = new StockAutomationDbContext(_options);
-        var client = new HttpClient
-        {
-            BaseAddress = new Uri($"file://{Directory.GetCurrentDirectory()}/{TestSnapshotFile}")
-        };
-        var service = new SnapshotService(context, client);
         await service.DownloadSnapshotAsync();
         var snapshots = await service.GetSnapshotsAsync();
         var snapshot = snapshots.First();
