@@ -12,12 +12,12 @@ namespace StockAutomationWeb.api.Controllers;
 public class EmailController(
     IEmailService emailService,
     ISchedulerService schedulerService,
-    ISendDifferencesFacade sendDifferencesFacade) : Controller
+    IProcessDiffFacade processDiffFacade) : Controller
 {
     [HttpPost("Send")]
     public async Task<IActionResult> SendEmail(EmailSend emailSend)
     {
-        var result = await sendDifferencesFacade.ProcessDiff(emailSend);
+        var result = await processDiffFacade.ProcessSendDiff(emailSend);
         return result.Match<IActionResult>(
             s => Ok("Emails were successfully sent"),
             e => BadRequest(e.Message)
@@ -27,7 +27,7 @@ public class EmailController(
     [HttpGet("SendLatest")]
     public async Task<IActionResult> SendEmailLatest()
     {
-        var result = await sendDifferencesFacade.ProcessDiffLatestEmail();
+        var result = await processDiffFacade.ProcessSendDiffLatest();
         return result.Match<IActionResult>(
             s => Ok("Emails were successfully sent"),
             e => BadRequest(e.Message)

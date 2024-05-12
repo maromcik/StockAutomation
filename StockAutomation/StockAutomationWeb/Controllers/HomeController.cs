@@ -8,20 +8,17 @@ namespace StockAutomationWeb.Controllers;
 public class HomeController(
     ILogger<HomeController> logger,
     ISnapshotService snapshotService,
-    ISendDifferencesFacade sendDifferencesFacade)
+    IProcessDiffFacade processDiffFacade)
     : BaseController
 {
     private readonly ILogger<HomeController> _logger = logger;
 
     public async Task<IActionResult> Index()
     {
-        var diff_body = await sendDifferencesFacade.ProcessLatestDiff();
-        if (!diff_body.IsOk)
-        {
-            return View("Index", diff_body.Error.Message);
-        }
-
-        return View("Index", diff_body.Value);
+        var res = await processDiffFacade.ProcessDiffLatest();
+        return res.Match(
+            s => View("Index", s),
+            ErrorView);
     }
 
     public IActionResult Privacy()

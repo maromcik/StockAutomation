@@ -28,7 +28,7 @@ builder.Services.AddSingleton<IScheduler>(provider =>
 builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddTransient<ISubscriberService, SubscriberService>();
 builder.Services.AddTransient<ISnapshotService, SnapshotService>();
-builder.Services.AddTransient<ISendDifferencesFacade, SendDifferencesFacade>();
+builder.Services.AddTransient<IProcessDiffFacade, ProcessDiffFacade>();
 builder.Services.AddTransient<SendMailJob>();
 
 builder.Services.AddHttpClient<ISnapshotService, SnapshotService>(c =>

@@ -12,7 +12,7 @@ namespace StockAutomationWeb.Controllers;
 public class EmailController(
     ILogger<EmailController> logger,
     IEmailService emailService,
-    ISendDifferencesFacade sendDifferencesFacade,
+    IProcessDiffFacade processDiffFacade,
     ISchedulerService schedulerService)
     : BaseController
 {
@@ -28,7 +28,7 @@ public class EmailController(
     [HttpPost]
     public async Task<IActionResult> SendEmails()
     {
-        var res = await sendDifferencesFacade.ProcessDiffLatestEmail();
+        var res = await processDiffFacade.ProcessSendDiffLatest();
         return res.Match(
             _ => RedirectToAction("Index"),
             ErrorView);

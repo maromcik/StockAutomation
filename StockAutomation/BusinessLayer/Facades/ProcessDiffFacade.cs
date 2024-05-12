@@ -5,10 +5,10 @@ using DataAccessLayer.Entities;
 
 namespace BusinessLayer.Facades;
 
-public class SendDifferencesFacade(IEmailService emailService, ISnapshotService snapshotService)
-    : ISendDifferencesFacade
+public class ProcessDiffFacade(IEmailService emailService, ISnapshotService snapshotService)
+    : IProcessDiffFacade
 {
-    public async Task<Result<bool, Error>> ProcessDiff(EmailSend snapshotCompare)
+    public async Task<Result<bool, Error>> ProcessSendDiff(EmailSend snapshotCompare)
     {
         var diff =
             await snapshotService.CompareSnapshotsAsync(snapshotCompare.NewId, snapshotCompare.OldId);
@@ -27,7 +27,7 @@ public class SendDifferencesFacade(IEmailService emailService, ISnapshotService 
         return email.Value;
     }
 
-    public async Task<Result<bool, Error>> ProcessDiffLatestEmail()
+    public async Task<Result<bool, Error>> ProcessSendDiffLatest()
     {
         var download = await snapshotService.DownloadSnapshotAsync();
         if (!download.IsOk)
@@ -50,8 +50,8 @@ public class SendDifferencesFacade(IEmailService emailService, ISnapshotService 
 
         return email.Value;
     }
-    
-    public async Task<Result<string, Error>> ProcessLatestDiff()
+
+    public async Task<Result<string, Error>> ProcessDiffLatest()
     {
         var diff = await snapshotService.CompareLatestSnapshotsAsync();
         if (!diff.IsOk)
@@ -60,7 +60,7 @@ public class SendDifferencesFacade(IEmailService emailService, ISnapshotService 
         }
 
         var (emailBody, _) = await snapshotService.FormatDiff(diff.Value, OutputFormat.HTML);
-        
+
         return emailBody;
     }
 }
