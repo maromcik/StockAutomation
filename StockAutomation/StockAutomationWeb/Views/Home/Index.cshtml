@@ -1,4 +1,4 @@
-﻿@model List<DataAccessLayer.Entities.HoldingSnapshot>
+﻿@model string
 
 @{
     ViewData["Title"] = "Home Page";
@@ -10,4 +10,14 @@
 </head>
 <style>
 </style>
-<h2 class="text-center">Latest snapshots difference will be here</h2>
+
+<div class="diff-container">
+    @if (!string.IsNullOrEmpty(Model))
+    {
+        @Html.Raw(Model)
+    }
+    else
+    {
+        <p>No differences found.</p>
+    }
+</div>

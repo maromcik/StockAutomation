@@ -28,7 +28,7 @@ public class EmailController(
     [HttpPost]
     public async Task<IActionResult> SendEmails()
     {
-        var res = await sendDifferencesFacade.ProcessDiffLatest();
+        var res = await sendDifferencesFacade.ProcessDiffLatestEmail();
         return res.Match(
             _ => RedirectToAction("Index"),
             ErrorView);

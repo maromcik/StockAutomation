@@ -27,7 +27,7 @@ public class EmailController(
     [HttpGet("SendLatest")]
     public async Task<IActionResult> SendEmailLatest()
     {
-        var result = await sendDifferencesFacade.ProcessDiffLatest();
+        var result = await sendDifferencesFacade.ProcessDiffLatestEmail();
         return result.Match<IActionResult>(
             s => Ok("Emails were successfully sent"),
             e => BadRequest(e.Message)

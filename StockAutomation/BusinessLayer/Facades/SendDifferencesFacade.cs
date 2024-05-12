@@ -27,7 +27,7 @@ public class SendDifferencesFacade(IEmailService emailService, ISnapshotService 
         return email.Value;
     }
 
-    public async Task<Result<bool, Error>> ProcessDiffLatest()
+    public async Task<Result<bool, Error>> ProcessDiffLatestEmail()
     {
         var download = await snapshotService.DownloadSnapshotAsync();
         if (!download.IsOk)
@@ -49,5 +49,18 @@ public class SendDifferencesFacade(IEmailService emailService, ISnapshotService 
         }
 
         return email.Value;
+    }
+    
+    public async Task<Result<string, Error>> ProcessLatestDiff()
+    {
+        var diff = await snapshotService.CompareLatestSnapshotsAsync();
+        if (!diff.IsOk)
+        {
+            return diff.Error;
+        }
+
+        var (emailBody, _) = await snapshotService.FormatDiff(diff.Value, OutputFormat.HTML);
+        
+        return emailBody;
     }
 }
