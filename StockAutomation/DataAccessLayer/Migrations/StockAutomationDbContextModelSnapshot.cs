@@ -39,6 +39,28 @@ namespace DataAccessLayer.Migrations
                     b.ToTable("Configurations");
                 });
 
+            modelBuilder.Entity("DataAccessLayer.Entities.EmailSchedule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Days")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Hours")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Minutes")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EmailSchedules");
+                });
+
             modelBuilder.Entity("DataAccessLayer.Entities.HoldingSnapshot", b =>
                 {
                     b.Property<int>("Id")

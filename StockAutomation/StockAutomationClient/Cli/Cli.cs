@@ -46,6 +46,12 @@ public class Cli
         {
             switch (value)
             {
+                case Operation.Send:
+                    await SendEmail();
+                    break;
+                case Operation.SendLatest:
+                    await SendEmailLatest();
+                    break;
                 case Operation.Snapshot:
                     await SnapshotOperations();
                     break;
@@ -117,14 +123,14 @@ public class Cli
                     case EmailOperation.Delete:
                         await DeleteSubscriber();
                         break;
-                    case EmailOperation.Send:
-                        await SendEmail();
-                        break;
-                    case EmailOperation.SendLatest:
-                        await SendEmailLatest();
-                        break;
                     case EmailOperation.ChangeFormat:
                         await ChangeFormat();
+                        break;
+                    case EmailOperation.GetSchedule:
+                        await GetSchedule();
+                        break;
+                    case EmailOperation.Reschedule:
+                        await Reschedule();
                         break;
                     default:
                         Console.WriteLine("Unknown command");
@@ -284,5 +290,25 @@ public class Cli
             PreferredFormat = format
         });
         Console.WriteLine(response);
+    }
+
+    private async Task Reschedule()
+    {
+        var days = Prompt.Input<int>("Send emails every: ");
+        var hours = Prompt.Input<int>("At (hour): ");
+        var minutes = Prompt.Input<int>("At (minute): ");
+        var response = await EmailApi.Reschedule(new EmailSchedule
+        {
+            Days = days,
+            Hours = hours,
+            Minutes = minutes
+        });
+        Console.WriteLine(response);
+    }
+
+    private async Task GetSchedule()
+    {
+        var response = await EmailApi.GetSchedule();
+        Console.WriteLine($"Sending emails every {response.Days} days at {response.Hours:D2}:{response.Minutes:D2}");
     }
 }

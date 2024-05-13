@@ -3,16 +3,20 @@ using BusinessLayer.Models;
 using BusinessLayer.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace StockAutomationAPI.Controllers;
+namespace StockAutomationWeb.api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
-public class EmailController(IEmailService emailService, ISendDifferencesFacade sendDifferencesFacade) : Controller
+[Area("Api")]
+[Route("api/[controller]")]
+public class EmailController(
+    IEmailService emailService,
+    ISchedulerService schedulerService,
+    IProcessDiffFacade processDiffFacade) : Controller
 {
     [HttpPost("Send")]
     public async Task<IActionResult> SendEmail(EmailSend emailSend)
     {
-        var result = await sendDifferencesFacade.ProcessDiff(emailSend);
+        var result = await processDiffFacade.ProcessSendDiff(emailSend);
         return result.Match<IActionResult>(
             s => Ok("Emails were successfully sent"),
             e => BadRequest(e.Message)
@@ -22,7 +26,7 @@ public class EmailController(IEmailService emailService, ISendDifferencesFacade 
     [HttpGet("SendLatest")]
     public async Task<IActionResult> SendEmailLatest()
     {
-        var result = await sendDifferencesFacade.ProcessDiffLatest();
+        var result = await processDiffFacade.ProcessSendDiffLatest();
         return result.Match<IActionResult>(
             s => Ok("Emails were successfully sent"),
             e => BadRequest(e.Message)
@@ -36,6 +40,23 @@ public class EmailController(IEmailService emailService, ISendDifferencesFacade 
         var result = await emailService.SaveEmailSettingsAsync(settings);
         return result.Match<IActionResult>(
             _ => Ok("Successfully Updated"),
+            e => BadRequest(e.Message)
+        );
+    }
+
+    [HttpGet("GetSchedule")]
+    public async Task<IActionResult> GetSchedule()
+    {
+        var schedule = await schedulerService.GetSchedule();
+        return Ok(schedule);
+    }
+
+    [HttpPost("Reschedule")]
+    public async Task<IActionResult> Reschedule(EmailSchedule emailSchedule)
+    {
+        var res = await schedulerService.RescheduleJob(emailSchedule);
+        return res.Match<IActionResult>(
+            _ => Ok("Successfully Rescheduled"),
             e => BadRequest(e.Message)
         );
     }

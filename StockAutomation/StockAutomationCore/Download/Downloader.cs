@@ -15,10 +15,8 @@ public static class Downloader
 
     public static async Task<byte[]> DownloadToBytes(HttpClient client)
     {
-        var downloadUrl = client.BaseAddress!.ToString();
-
-        await using var streamResult = client.GetStreamAsync(downloadUrl).Result;
-        await using var fileBytes = new MemoryStream(10240);  // should cover average snapshot size
+        await using var streamResult = client.GetStreamAsync(string.Empty).Result;
+        await using var fileBytes = new MemoryStream(100240); // should cover average snapshot size
         await streamResult.CopyToAsync(fileBytes);
         await fileBytes.FlushAsync();
         return fileBytes.ToArray();

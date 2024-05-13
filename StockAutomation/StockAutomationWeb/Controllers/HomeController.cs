@@ -1,33 +1,28 @@
+using BusinessLayer.Facades;
 using BusinessLayer.Services;
-using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace StockAutomationWeb.Controllers;
 
+[ApiExplorerSettings(IgnoreApi = true)]
 public class HomeController(
     ILogger<HomeController> logger,
-    ISnapshotService snapshotService)
+    ISnapshotService snapshotService,
+    IProcessDiffFacade processDiffFacade)
     : BaseController
 {
     private readonly ILogger<HomeController> _logger = logger;
 
     public async Task<IActionResult> Index()
     {
-        var snapshots = (await snapshotService.GetSnapshotsAsync()).Take(10).ToList();
-        return View(snapshots);
+        var res = await processDiffFacade.ProcessDiffLatest();
+        return res.Match(
+            s => View("Index", s),
+            ErrorView);
     }
 
     public IActionResult Privacy()
     {
         return View();
-    }
-
-    public async Task<IActionResult> Delete(int id)
-    {
-        var result = await snapshotService.DeleteSnapshotsAsync([id]);
-        return result.Match(
-            _ => RedirectToAction("Index", "Home"),
-            ErrorView
-        );
     }
 }

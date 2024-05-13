@@ -4,11 +4,12 @@ using DataAccessLayer;
 using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-
-namespace BusinessLayer.Services;
-
 using System.Net;
 using System.Net.Mail;
+using System.Net.Mime;
+using Encoding = System.Text.Encoding;
+
+namespace BusinessLayer.Services;
 
 public class EmailService : IEmailService
 {
@@ -31,9 +32,11 @@ public class EmailService : IEmailService
         }
     }
 
-    public async Task<Result<bool, Error>> SendEmailAsync(string diff)
+
+    public async Task<Result<bool, Error>> SendEmailAsync(string emailBody, string? attachmentContent)
     {
         var subscribers = await _context.Subscribers.ToListAsync();
+
         var smtpConfig = _configuration.GetSection("SMTP");
 
         var host = smtpConfig["Host"];
@@ -66,17 +69,39 @@ public class EmailService : IEmailService
         {
             From = new MailAddress(from),
             Subject = "Update in holdings is here!",
-            Body = CreateEmailBody(diff),
+            Body = CreateEmailBody(emailBody),
             IsBodyHtml = true,
         };
+
+        if (attachmentContent != null)
+        {
+
+            var config = await _context.Configurations.FirstOrDefaultAsync();
+            var extension = config?.OutputFormat.GetFileExtension() ?? "txt";
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(attachmentContent));
+            var attachment = new Attachment(stream, $"holdings_diff.{extension}", MediaTypeNames.Application.Octet);
+            mailMessage.Attachments.Add(attachment);
+        }
+
 
         foreach (var subscription in subscribers)
         {
             mailMessage.Bcc.Add(subscription.EmailAddress);
         }
 
-        smtpClient.Send(mailMessage);
-        return true;
+        try
+        {
+            smtpClient.Send(mailMessage);
+            return true;
+        }
+        catch (Exception e)
+        {
+            return new Error
+            {
+                ErrorType = ErrorType.SendEmailError,
+                Message = e.Message
+            };
+        }
     }
 
     public async Task<Result<bool, Error>> SaveEmailSettingsAsync(FormatSettings settings)
@@ -160,19 +185,5 @@ public class EmailService : IEmailService
                     </html>
                     ";
         return body;
-    }
-
-    private static bool IsEmailAddressValid(string emailAddress)
-    {
-        try
-        {
-            var m = new MailAddress(emailAddress);
-
-            return true;
-        }
-        catch (FormatException)
-        {
-            return false;
-        }
     }
 }

@@ -22,13 +22,6 @@ spec:
   - host: "stock-automation.dyn.cloud.e-infra.cz"
     http:
       paths:
-      - path: /api
-        pathType: Prefix
-        backend:
-            service:
-              name: stock-automation-api-svc
-              port:
-                number: 80
       - path: /
         pathType: Prefix
         backend:

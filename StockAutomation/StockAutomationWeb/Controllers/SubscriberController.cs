@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace StockAutomationWeb.Controllers;
 
 [Route("[controller]/[action]")]
+[ApiExplorerSettings(IgnoreApi = true)]
 public class SubscriberController(ILogger<SubscriberController> logger, ISubscriberService subscriberService)
     : BaseController
 {
@@ -27,7 +28,7 @@ public class SubscriberController(ILogger<SubscriberController> logger, ISubscri
         );
     }
 
-    public async Task<IActionResult> AddSubscriber(SubscriberCreate model)
+    public async Task<IActionResult> Add(SubscriberCreate model)
     {
         if (!ModelState.IsValid)
         {

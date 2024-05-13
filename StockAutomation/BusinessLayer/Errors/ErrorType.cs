@@ -12,6 +12,9 @@ public enum ErrorType
     SubscribersNotFound,
     InvalidEmailAddress,
     InvalidEmailCredentials,
+    SendEmailError,
 
     ConfigurationError,
+
+    SchedulerError
 }

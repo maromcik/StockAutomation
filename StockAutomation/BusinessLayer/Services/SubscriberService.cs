@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLayer.Services;
 
-using System.Net;
 using System.Net.Mail;
 
 public class SubscriberService : ISubscriberService
