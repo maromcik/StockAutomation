@@ -20,11 +20,8 @@
     </ItemGroup>
 
     <ItemGroup>
-<<<<<<< HEAD
       <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.4.0" />
-=======
       <PackageReference Include="Quartz" Version="3.8.1" />
->>>>>>> refs/heads/release2-final
     </ItemGroup>
 
 </Project>

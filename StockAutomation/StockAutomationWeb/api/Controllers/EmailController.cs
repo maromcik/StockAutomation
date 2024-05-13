@@ -1,6 +1,7 @@
 using BusinessLayer.Facades;
 using BusinessLayer.Models;
 using BusinessLayer.Services;
+using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace StockAutomationWeb.api.Controllers;
