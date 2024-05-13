@@ -4,7 +4,7 @@ namespace StockAutomationCore.Model;
 
 public readonly struct HoldingSnapshotLine
 {
-    public DateTime Date { get; } // apparently no `Date` type in this java version
+    public DateTime Date { get; } // apparently no `Date` type
     public string Fund { get; }
     public string CompanyName { get; }
     public string Ticker { get; }

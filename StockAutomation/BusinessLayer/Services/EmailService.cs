@@ -130,7 +130,6 @@ public class EmailService : IEmailService
         return settings;
     }
 
-
     private static string CreateEmailBody(string diff)
     {
         var body = $@"
