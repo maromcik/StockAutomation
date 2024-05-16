@@ -7,6 +7,6 @@ spec:
   ports:
   - name: stock-automation-port
     port: 80
-    targetPort: 80
+    targetPort: 8080
   selector:
     app: stock-automation

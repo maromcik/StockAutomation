@@ -1,0 +1,93 @@
+@using DataAccessLayer.Entities
+@model EmailViewModel
+
+@{
+    ViewData["Title"] = "Email Service";
+}
+
+<h2 class="text-center">@ViewData["Title"]</h2>
+<style>
+    .blue-outline-button {
+        color: #007bff;
+        background-color: white;
+        border: 1px solid #007bff;
+        transition: background-color 0.3s, color 0.3s;
+    }
+    
+    .blue-outline-button:hover {
+        color: white;
+        background-color: #007bff;
+        border: 1px solid white;
+    }
+    
+    .btn-primary:hover{
+        color: #007bff;
+        background-color: white;
+        border: 1px solid #007bff;
+        transition: background-color 0.3s, color 0.3s;
+    }
+    
+    .form-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-top: 20px;
+    }
+    .left-form {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .right-form {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 40px;
+    }
+</style>
+<div class="form-container">
+    <div class="left-form">
+        <span style="margin-bottom: 10px">
+            Do you want to send emails manually?
+        </span>
+        <form asp-action="SendEmails" method="post">
+            <button type="submit" class="btn btn-primary">
+                Send Emails Now
+            </button>
+        </form>
+    </div>
+    <div class="right-form">
+        <form asp-action="SaveSettings" method="post">
+            <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                <div style="margin-right: 20px;">
+                    <label>Select email format:</label>
+                </div>
+                <div style="margin-right: 10px;">
+                    <input type="radio" id="json" name="PreferredFormat" value="json" @(Model.Settings.PreferredFormat == OutputFormat.JSON ? "checked" : "")>
+                    <label for="json">JSON</label>
+                </div>
+                <div>
+                    <input type="radio" id="html" name="PreferredFormat" value="html" @(Model.Settings.PreferredFormat == OutputFormat.HTML ? "checked" : "")>
+                    <label for="html">HTML</label>
+                </div>
+                <div style="margin-left: 10px;">
+                    <input type="radio" id="text" name="PreferredFormat" value="text" @(Model.Settings.PreferredFormat == OutputFormat.Text ? "checked" : "")>
+                    <label for="text">Text</label>
+                </div>
+            </div>
+            <button style="float: right" type="submit" class="btn blue-outline-button">Save Settings</button>
+        </form>
+        <form asp-action="Reschedule" method="post">
+            <div class="mb-3">
+                <span>
+                    Send email every <input type="number" id="schedule-days" name="days" min="1" value="@(Model.Schedule.Days)" style="width: 3rem"/> days
+                    at <input type="number" id="schedule-at-hour" name="hours" min="0" max="23" value="@(Model.Schedule.Hours)" style="width: 3rem"/>:
+                    <input type="number" id="schedule-at-minuter" name="minutes" min="0" max="59" value="@(Model.Schedule.Minutes)" style="width: 3rem"/>
+                </span>
+            </div>
+            <button style="float: right" type="submit" class="btn blue-outline-button">
+                Reschedule
+            </button>
+        </form>
+    </div>
+</div>
