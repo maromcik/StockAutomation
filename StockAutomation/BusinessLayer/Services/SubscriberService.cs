@@ -105,7 +105,7 @@ public class SubscriberService : ISubscriberService
     {
         try
         {
-            var m = new MailAddress(emailAddress);
+            _ = new MailAddress(emailAddress);
 
             return true;
         }

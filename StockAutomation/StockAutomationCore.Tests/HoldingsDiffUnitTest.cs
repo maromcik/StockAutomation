@@ -15,8 +15,8 @@ public class HoldingsDiffUnitTest
     public void TestHoldingsDiffEmpty()
     {
         var diff = new HoldingsDiff(
-            new List<HoldingSnapshotLine> { },
-            new List<HoldingSnapshotLine> { }
+            new List<HoldingSnapshotLine>(),
+            new List<HoldingSnapshotLine>()
         );
         Assert.That(diff.HoldingsDiffLines, Is.Empty);
     }

@@ -15,8 +15,8 @@ public class TextFormatterUnitTest
     public void TestHoldingsDiffToTextEmptyEmptyNoChanges()
     {
         var diff = new HoldingsDiff(
-            new List<HoldingSnapshotLine> { },
-            new List<HoldingSnapshotLine> { }
+            new List<HoldingSnapshotLine>(),
+            new List<HoldingSnapshotLine>()
         );
         const string expected = "No changes in the index";
         Assert.That(TextDiffFormatter.FormatText(diff), Is.EqualTo(expected));

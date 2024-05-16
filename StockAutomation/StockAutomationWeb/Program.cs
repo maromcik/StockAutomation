@@ -3,7 +3,6 @@ using BusinessLayer.Scheduler;
 using BusinessLayer.Services;
 using DataAccessLayer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
